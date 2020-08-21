@@ -282,19 +282,11 @@ Following operations are performed in the process of Migration.
     -  Select Authentication type SSH, give the username give the SSH key generated in previous step. 
     -  Select the disk size. 
     -  Select the inbound rule for SSH as 22 and HTTP as 80.
-    
-      ![Create a VM Screenshot](images/vm1.png)![Create a VM Screenshot 2](images/vm2.png)![Create a VM Screenshot 3](images/vm3.png)
     -  Click next on Disk section.
     -  Select the OS disk type. There are 3 choices Standard SSD, Premium SSD, Standard HDD 
     -  Keep the other parameters as default. 
-    
-      ![Create a VM Screenshot 2](images/vm4.png)
     -  Click next on networking and select the virtual network created in above step and the public IP and keep the above parameters as default.
-    
-      ![Create a VM Screenshot 3](images/vm5.png)
     -  Click on next for management and keep the parameters as default. 
-    
-      ![Create a VM Screenshot 4](images/vm6.png)
     -   Keeping the other parameters as default Click on review and create.
         ```
             #command to create Virtual machine
