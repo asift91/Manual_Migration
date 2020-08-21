@@ -569,7 +569,8 @@ Following operations are performed in the process of Migration.
         - User now hit the load balancer DNS name to get the migrated moodle web page. 
     
 ## Post Migration
-    -   Post migration of Moodle application user need to update the certs and log paths as follows
+    
+    - Post migration of Moodle application user need to update the certs and log paths as follows
     
 - **Virtual Machine:**
     - **Log Paths**               
