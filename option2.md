@@ -28,9 +28,12 @@ This document explains how to migrate Moodle from OnPrem servers to Azure cloud.
 Following operations are performed in the process of Migration.
 
 - **Pre Migration**
-    - Data Export from OnPrem to Azure Cloud
-    - Import data from Azure cloud.
-    - Creating resources on Azure.
+    - Create Subscription
+    - Install Azure CLI
+    - Create Resource Group
+    - Create Storage Account
+    - Backup of on-prem data
+    - Copy Archive file to Blob storage
 
 - **Migration**
     - Installing pre-requisites of Moodle
