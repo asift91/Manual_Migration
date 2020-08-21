@@ -110,7 +110,7 @@ Data Export from OnPrem to Azure Cloud
     - [Maximum](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-maximal.json): This maximal deployment will use Azure Files, MySQL with highest SKU, Redis cache, elastic search (3 VMs), and pretty large storage sizes (both data disks and DB).
 * To deploy any of the predefined size template click on the launch option.
 * It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
-![custom_deployment](https://github.com/sayali0512/manual-migration/blob/master/images/customdeployment.png)
+![custom_deployment](images/customdeployment.png)
 * Click on purchase to start the deployment of Moodle on Azure. Link for pricing [calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
 * The deployment will install Infrastructure and Moodle 
     - Moodle version: 3.8, 3.9 and 3.5  
@@ -159,7 +159,7 @@ Data Export from OnPrem to Azure Cloud
             - NFS and glusterFS will create a container  
             - Azure files will create a file share. 
     - To access the containers and file share etc. navigate to storage account in resource       group in the portal. 
-    ![storage_account](https://github.com/sayali0512/manual-migration/blob/master/images/storage-account.png)
+    ![storage_account](images/storage-account.png)
 * **Database Template:** 
     - Creates an Azure Database for MySQL server. [click here](https://docs.microsoft.com/en-in/azure/mysql/) 
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
@@ -168,7 +168,7 @@ Data Export from OnPrem to Azure Cloud
     - Ways to connect to database server 
         - Use MySQL client or tools such as MySQL Workbench. 
         - For workbench give the connection name, hostname (server name), username (server admin login name) 
-    ![mysqlworkbench](https://github.com/sayali0512/manual-migration/blob/master/images/mysql-workbench.png)
+    ![mysqlworkbench](images/mysql-workbench.png)
         - After giving the details test connection. If the connection is successful it will prompt for password .Provide the password to get connected. 
 * **Virtual Machine Template:** Creates a Virtual Machine
     * Controller VM: 
@@ -195,8 +195,8 @@ Data Export from OnPrem to Azure Cloud
     - Copy the public IP of controller VM and paste as host name 
     - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. 
     - Click on Open and it will prompt to give the username. Give it as azureadmin as it is hard coded in template
-    ![puttyloginpage](https://github.com/sayali0512/manual-migration/blob/master/images/puttyloginpage.PNG)
-    ![puttykey](https://github.com/sayali0512/manual-migration/blob/master/images/puttykeybrowse.PNG)
+    ![puttyloginpage](images/puttyloginpage.PNG)
+    ![puttykey](images/puttykeybrowse.PNG)
 * After the login, run the following set of commands to migrate 
     - Download the onprem compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location. 
     - Replace the moodle folder  
