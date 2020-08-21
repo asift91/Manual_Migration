@@ -34,11 +34,14 @@ Moodle Migration involves following steps,
 - Import data from Azure cloud.
 - DB migration.
 
-Data Export from OnPrem to Azure Cloud
-- User must have Azure subscription to create a blob storage.
-- Select existing subscription or user can add a subscription [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
-- Install Azure CLI to copy the onprem data to cloud.
-    - Install Azure CLI 
+### Data Export from OnPrem to Azure Cloud
+
+
+- **Create Subscription:**
+    - User must have Azure subscription to create a blob storage.
+    - Select existing subscription or user can add a subscription [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
+- **Install Azure CLI** 
+    - Install Azure CLI to copy the onprem data to cloud.
         ```
         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         ```
@@ -53,7 +56,8 @@ Data Export from OnPrem to Azure Cloud
         ```
             az login -u <username> -p <password>
         ```
-- After creating the subscription, create a [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
+- **Create Resource Group:**
+    - After creating the subscription, create a [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
     ```
         # cmd to create a RG
         az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
