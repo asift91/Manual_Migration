@@ -216,7 +216,7 @@ Following operations are performed in the process of Migration.
         - Replication is Premium Locally-redundant storage (LRS)  
         - Type is File Storage  
     - These storage mechanisms will differ according to storage type such as 
-        - NFS and glusterFS will create a container 
+        <!-- - NFS and glusterFS will create a container  -->
         - Azure files will create a file share. 
     - To access the containers and file share etc. navigate to storage account in resource group in the portal. 
     
@@ -619,14 +619,41 @@ Following operations are performed in the process of Migration.
 
 - **Virtual Machine Scale Set:**
     - **Log Paths**               
-        - On-prem might be having different log path location and those paths need to be updated with Azure log paths.
-        - Log path are defaulted to /var/log/nginx.
-             - access.log and error.log are created
-
+        - On-prem might be having different log path location and those paths need to be updated with Azure log paths. 
+        - TBD Need to be check how to configure log paths in Azure.
+        
     - **Restart servers**
-        - Update the time stap to update the local copy in VMSS instance.
+        - Update the time stamp to update the local copy in VMSS instance.
+            ```
+                # command to update the timestamp
+            ```
         - Restart the nginx and php-fpm servers
             ```
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
             ```
+    - **Set Rules**
+        - Set the Load Balancing rules and Auto Scaling rules.
+        - **Load Balancing Rules**
+            - Go to the Load Balancer Resource in Azure portal.
+            - Set the http (TCP/80) and https (TCP/443) rules.
+                ```
+                    az network lb rule create -g MyResourceGroup --lb-name MyLb -n MyLbRule --protocol Tcp \
+                        --frontend-ip-name MyFrontEndIp --frontend-port 80 \
+                        --backend-pool-name MyAddressPool --backend-port 80
+                ```
+        - **Auto Scaling Rules**
+            - Go to the Virtual Machine Scale Set Resource in Azure portal.
+            - In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
+                ```
+                    # rules can be created with scaling count or scaling precentage
+
+                    az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
+                        --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+                    # Scale to 5 instances when the CPU Percentage across instances is greater than 75 averaged over 10 minutes.
+
+                    az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
+                        --scale in 50% --condition "Percentage CPU < 25 avg 15m"
+                    # Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
+                ```
+        
