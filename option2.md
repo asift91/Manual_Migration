@@ -86,8 +86,7 @@ Following operations are performed in the process of Migration.
         - Create Azure Storage Account in the same Resource Group 
             - Create a [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) with AutoKind value as "BlobStorage"
             ```
-                # cmd to create a Storage account
-                
+                az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
             - Give the storage account name must be in combination of lowercase and numericals, click on create button as shown above.
             - Storage Account is created, can be used to store the onprem data.
@@ -128,25 +127,16 @@ Following operations are performed in the process of Migration.
 ## Migration
     
 - **Migration of Moodle**
-    - **Creating Resources**
+    - **Resources Creation**
         - Import the data from Azure blob storage to VM to migrate.
-        * For installing the infrastructure for Moodle navigate to the [azure portal](portal.azure.com) 
-        * In the home section go the resource group section and add a new a resource group for the Moodle infrastructure [click here](https://ms.portal.azure.com/#blade/HubsExtension/BrowseResourceGroups) 000
-        * Select the created subscription, give the resource group name and select the region for deployment.
-            ```
-                # Command to create a RG
-            ```
-        * Note: The subscription and region will be same for all the resources created under the deployment.
-        * Add the tag for more specification 
-        * Tags are name-value pairs that are used to organize resources in Azure Portal [click here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources) 
-        * Click on review and create for creating a resource group 
-        * Once resource group is created navigate to it and start create resources under it. 
+        - For installing the infrastructure for Moodle navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
+        - Create the infrastructure by adding the resources.
 
 - ##### Creating Resources to host the Moodle application 
 - **Network Resources**
     * **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
         ```
-            #command to deploy load balancer
+            az network lb create -g MyResourceGroup -n MyLb --sku Basic
         ```
     *  In the Basics tab, Select the same subscription and same resource created in above step, give the instance details such as name for load balancer, and default region. 
     *  Select the type as public and sku as standard. 
@@ -159,6 +149,10 @@ Following operations are performed in the process of Migration.
     - **Virtual Network** - An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
         ```
             #command to create virtual network
+            az network vnet create \
+                --name myVirtualNetwork \
+                --resource-group myResourceGroup \
+                --subnet-name default
         ```
     - Navigate to the resource group, select Create a resource. From the Azure Marketplace, select Networking > Virtual network.
     - In Create virtual network, for Basics section provide this information: 
@@ -170,6 +164,8 @@ Following operations are performed in the process of Migration.
     - Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
         ```
             #command to create subnet
+            az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet \
+                --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
         ```
 
     - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
@@ -224,6 +220,7 @@ Following operations are performed in the process of Migration.
     
         ```
             #command to deploy storage account
+            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
         ```
 
   
@@ -233,6 +230,7 @@ Following operations are performed in the process of Migration.
     
         ```
             #command to create Azure database for MySQL
+            az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
         ```
     - Select the Create a resource button (+) in the upper left corner of the portal in resource group
     - Select Databases > Azure Database for MySQL. If you cannot find MySQL Server under the Databases category, click See all to show all available database services. You can also type Azure Database for MySQL in the search box to quickly find the service. 
@@ -252,6 +250,11 @@ Following operations are performed in the process of Migration.
         - Click on review and create for creating a storage account
     - **Configure firewall:**
     -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
+        ```
+            # Configure a server-level firewall rule
+            az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
+
+        ```
     -  Click your newly created  MySQL server, and then click Connection security.
     -  ![connectionSecurity SS](images/connection security.png)
     -  You can Add My IP, or configure firewall rules here.click Save after you have created the rules. You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool. 
@@ -290,6 +293,13 @@ Following operations are performed in the process of Migration.
     -   Keeping the other parameters as default Click on review and create.
         ```
             #command to create Virtual machine
+            az vm create \
+                --resource-group myResourceGroup \
+                --name myVM \
+                --image UbuntuLTS \
+                --admin-username azureuser \
+                --authentication-type ssh
+                --generate-ssh-keys
         ```
     -   Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
     -   Copy the public IP of controller VM and paste as host name and expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. Click on Open and it will prompt to give the username as azureadmin same as given while deployment that is azureadmin 
@@ -313,16 +323,15 @@ Following operations are performed in the process of Migration.
             ```
                 bash install_prerequisites.sh <webserverType> <WebserverVersion> <phpVersion>
             ```
-            Note: If on-prem has any additional php extensions those will be installed by the user.
-
-            ```
-                sudo apt-get install -y php-<extensionName>
-            ```
         -   Above script will perform following task
             -   Install web server (nginx/apache) with the given version
             -   Install PHP with its extensions
                 - List of Extensions are below 
                     - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+            Note: If on-prem has any additional php extensions those will be installed by the user.
+                ```
+                    sudo apt-get install -y php-<extensionName>
+                ```
     - **Create Moodle Shared folder**
         -   Create a moodle shared folder to install Moodle (/moodle)
             ```
@@ -332,7 +341,6 @@ Following operations are performed in the process of Migration.
                 mkdir -p /moodle/certs
             ```
                 
-
     - **Download on-prem archive file** 
         - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
         - Download moodle.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
