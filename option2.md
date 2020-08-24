@@ -161,21 +161,21 @@ Following operations are performed in the process of Migration.
     - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
     - For more Details [click here](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-portal)
 
-    **Network Security Group:**
+    - **Network Security Group:**
     - A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 
         Create a network security group using Azure CLI
         ```
             az network nsg create --resource-group myResourceGroup --name myNSG
         ```
-    **Network Interface:**
+    -   **Network Interface:**
     -   A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
     -   Create Network Interface with Azure CLI command
         ```
             az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
         ```
 
-    * **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
+    - **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
         ```
             #Create a public IP
             az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
@@ -259,13 +259,7 @@ Following operations are performed in the process of Migration.
     -   Keeping the other parameters as default Click on review and create.
         ```
             #command to create Virtual machine
-            az vm create \
-                --resource-group myResourceGroup \
-                --name myVM \
-                --image UbuntuLTS \
-                --admin-username azureuser \
-                --authentication-type ssh
-                --generate-ssh-keys
+            az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
         ```
     -   Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
     -   Copy the public IP of controller VM and paste as host name and expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. Click on Open and it will prompt to give the username as azureadmin same as given while deployment that is azureadmin 
@@ -445,7 +439,7 @@ Following operations are performed in the process of Migration.
 
     - Scale set can be created from Azure CLI
         ```
-            # Command for creating Scale Set
+            az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
         ```
     - VMSS will create a VM instance with an internal IP. User need to have a VPN gateway to access the VM. 
     - To setup the Virtual Network Gateway please read the [document](GitHub Link to be provided).
@@ -562,10 +556,7 @@ Following operations are performed in the process of Migration.
 
         - You can also generate a self-signed certificate, useful for testing only:
             ```
-                openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-                -keyout /moodle/certs/nginx.key \
-                -out /moodle/certs/nginx.crt \
-                -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+                openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             ```
         - It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
             ```
@@ -602,17 +593,7 @@ Following operations are performed in the process of Migration.
             - Go to the Load Balancer Resource in Azure portal.
             - Set the http (TCP/80) and https (TCP/443) rules.
                 ```
-                    az network lb rule create \
-                        --resource-group myResourceGroupLB \
-                        --lb-name myLoadBalancer \
-                        --name myHTTPRule \
-                        --protocol tcp \
-                        --frontend-port 80 \
-                        --backend-port 80 \
-                        --frontend-ip-name myFrontEnd \
-                        --backend-pool-name myBackEndPool \
-                        --probe-name myHealthProbe \
-                        --disable-outbound-snat true
+                    az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
                 ```
         - **Auto Scaling Rules**
             - Go to the Virtual Machine Scale Set Resource in Azure portal.
