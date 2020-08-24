@@ -88,10 +88,12 @@ Following operations are performed in the process of Migration.
             ```
                 az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
-            - Give the storage account name must be in combination of lowercase and numericals, click on create button as shown above.
+            - The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
             - Storage Account is created, can be used to store the onprem data.
     - **Backup of on-prem data:**
-        - Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
+        - Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder.
+        - Here is the folder structure 
+            ![folderStructure](images/folderstructure.png)
         - Moodle and Moodledata
             - Moodle folder consists of site HTML content and Moodledata contains Moodle site data
         - Configurations
