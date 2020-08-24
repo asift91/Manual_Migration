@@ -245,11 +245,9 @@ Following operations are performed in the process of Migration.
         -  The public and private key is generated.
     -  Create a VM with ubuntu 16.04 operating system with SSH public key 
     -  Select the default subscription and same resource group and give name for virtual machine. 
-    -  Give the default region group. 
     -  Keep the availability options as default. 
-    -  Image is the size of the virtual machine. Browse the image and select it.
+    -  Select the Image of the virtual machine and Select the disk size. 
     -  Select Authentication type SSH, give the username give the SSH key generated in previous step. 
-    -  Select the disk size. 
     -  Select the inbound rule for SSH as 22 and HTTP as 80.
     -  Click next on Disk section.
     -  Select the OS disk type. There are 3 choices Standard SSD, Premium SSD, Standard HDD 
@@ -266,8 +264,6 @@ Following operations are performed in the process of Migration.
     
      ![putty ss1](images/puttyloginpage.PNG)   ![putty ss1](images/puttykeybrowse.PNG)
 
-   
-    
     ##### Download and execute a moodle scripts
 
     - **Install prerequisites for Moodle**.
@@ -428,7 +424,6 @@ Following operations are performed in the process of Migration.
         - Enter your desired username, and select which authentication type as SSH and give the same SSH key and username as azureadmin.
         - Select the image or browse the image for the scale set 
         - Select the size for the disk. 
-        - Select the authentication type as SSH and provide the same username as azureadmin and SSH key 
         - Click Next for the disk tab select the OS disk type as per choice 
         - Click Next for the networking section
         - Select the created virtual network.
