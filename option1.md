@@ -1,112 +1,159 @@
 ## Moodle Manual  Migration
 This document explains how to migrate Moodle from OnPrem servers to Azure cloud.
+
+### Option 1: Migrating Moodle with Azure ARM Templates 
+-   Migration of Moodle with   Azure ARM Template  creates the infrastructure in Azure and migrate Moodle on it.
+-   The Azure infrastructure is the basic skeleton of the resources which will host the Moodle application.
+
 ## Prerequisites
-- If the predefined templates does not match with on-prem configuration then on-prem Moodle has to be upgraded to more recent versions.
-- Must have access to the OnPrem servers to take backup of Moodle and database/configurations.
-- Should have a Azure subscription and the Azure Blob storage created before migration.
-- This migration activity supports and validated with Softwares.
-    - Ubuntu 16.04 LTS
-    - Nginx web server 1.14.3
-    - MySQL PaaS 5.6, 5.7 or 8.0 database server
-    - PHP 7.2, 7.3, or 7.4
-    - Moodle 3.8 & 3.9
+
+-   If the predefined templates does not match with on-prem configuration then on-prem Moodle has to be upgraded to more recent versions.
+-   Must have access to the OnPrem servers to take backup of Moodle and database/configurations.
+-   Should have a Azure subscription and the Azure Blob storage created before migration.
+-   Azure cli should be installed in onprem to use AZCOPY
+-   This migration activity supports with the following Softwares.
+    -   Ubuntu 16.04 LTS
+    -   Nginx web server 1.10.3
+    -   Apache 2 2.4
+    -   MySQL PaaS 5.6, 5.7 or 8.0 database server
+    -   PHP 7.2, 7.3, or 7.4
+    -   Moodle 3.8 & 3.9
+
+## Migration Approach
+
+-   Migration of Moodle application has 3 phases
+    -   Pre Migration
+    -   Migration
+    -   Post Migration
+
+Following operations are performed in the process of Migration.
+
+-   **Pre Migration**
+    
+    -   Data Export from OnPrem to Azure Cloud
+        -   Create Subscription
+        -   Install Azure CLI
+        -   Create Resource Group
+        - Create Storage Account
+        -   Backup of on-prem data
+        -   Copy Archive file to Blob storage
+
+
+-   **Migration**
+    
+    -   Migration of Moodle
+        -   Deploy the Azure template of any pre-defined type or custom deployment to install moodle
+        - Copy the onprem data to Virtual Machine.
+        - Replace the on-prem data.
+        
+       
+-   **Post Migration**
+    
+    -   Update log paths
+    -   Updating Cron Job
+    -   Configuring certs
+    -   Restarting servers
+
+## Pre Migration
+
+-   **Data Export from OnPrem to Azure Cloud:**
+    -   **Create Subscription:**
+        -   User must have Azure subscription to create a blob storage.
+        -   Select existing subscription or user can add a subscription  [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select  [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
+    -   **Install Azure CLI**
+        -   Install Azure CLI to copy the onprem data to cloud.
+            -   Install Azure CLI
+                
+                ```
+                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                ```
+                
+        -   Now login into your Azure account
+            
+            ```
+                az login
+            ```
+            
+        -   If the CLI can open your default browser, it will do so and load an Azure sign-in page.
+        -   Otherwise, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin)  and enter the authorization code displayed in your terminal.
+        -   Sign in with your account credentials in the browser.
+        -   Sign in with credentials on the command line
+            
+            ```
+                az login -u <username> -p <password>
+            ```
+            
+    -   **Create Resource Group:**
+        -   After creating the subscription, create a  [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
+            
+            ```
+                # cmd to create a RG
+                az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
+            
+            ```
+            
+   
+   **Create Storage Account:**
+
+-   Create Azure Storage Account in the same Resource Group
+    
+    -   Create a  [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount)  with AutoKind value as "BlobStorage"
+    
+    ```
+        az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
+    
+    ```
+    
+    -   The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
+    -   Storage Account is created, can be used to store the onprem data.
+    -   **Backup of on-prem data:**
+        -   Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
+        -   Moodle and Moodledata
+            -   Moodle folder consists of site HTML content and Moodledata contains Moodle site data
+        -   Configurations
+            -   Copy the php configurations files such as php-fpm.conf, php.ini, pool.d and conf.d folder to phpconfig folder under the configuration folder.
+            -   copy the ngnix or apache configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig folder under the configuration folder
+        -   create a backup of database
+            -   Before taking backup of database onprem should have mysql-server to be installed.
+                
+                ```
+                    sudo -s
+                    sudo apt install mysql-server
+                    mysql -u dbUserName -p
+                    # After the above command user will prompted for database password
+                    mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
+                    # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
+                
+                ```
+                
+        -   Create an archive tar.gz file of backup folder
+            
+            ```
+                tar -zcvf moodle.tar.gz <source/folder/name>
+            
+            ```
+            
+    -   **Copy Archive file to Blob storage**
+        -   Copy the onprem archive file to blob storage by following command.
+            -   To copy use AzCopy user should generate SAS Token.
+            -   Go to the created Storage Account Resource and navigate to Shared access signature in the left pannel.
+            -   Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
+            -   copy the SAS token for further use.
+                
+                ```
+                    az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
+                    sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+                
+                ```
+                
+            -   With the above steps onprem compressed data is exported to Azure blob storage.
 
 ## Migration
-
-<!-- Moodle Migration involves following steps,
-- Data Export from OnPrem to Azure Cloud
-- Import data to Azure cloud.
-- DB migration.
-
- Data Export from OnPrem to Azure Cloud
- 
- 
-- Create Azure Blob storage in the Azure subscription and create below folders, - moodle -      moodledata - configurations - dbbackup
-- Make a tar file of the Moodle folder. Ex: /moodle
-- Make a tar file of the Moodle data folder. Ex: /moodledata
-- Make a tar file of php, nginx & moodle configurations. Ex: config.tar.gz
-- Take the back of the MySQL DB.
-- Use AZCopy to copy above backup files to respective folders in Azure Blob storage.
-- Import data to Azure cloud -->
-
-Moodle Migration involves following steps,
-- Data Export from OnPrem to Azure Cloud
-- Import data from Azure cloud.
-- DB migration.
-
-### Data Export from OnPrem to Azure Cloud
-
-
-- **Create Subscription:**
-    - User must have Azure subscription to create a blob storage.
-    - Select existing subscription or user can add a subscription [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
-- **Install Azure CLI** 
-    - Install Azure CLI to copy the onprem data to cloud.
-        ```
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-        ```
-    - Now login into your Azure account
-        ```
-            az login
-        ```
-    - If the CLI can open your default browser, it will do so and load an Azure sign-in page.
-    - Otherwise, open a browser page at https://aka.ms/devicelogin and enter the authorization code displayed in your terminal.
-    - Sign in with your account credentials in the browser.
-    - Sign in with credentials on the command line
-        ```
-            az login -u <username> -p <password>
-        ```
-- **Create Resource Group:**
-    - After creating the subscription, create a [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
-    ```
-        # cmd to create a RG
-        az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
-    ```
-- Create Azure Storage Account in the same Resource Group 
-    - Create a [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) with AutoKind value as "BlobStorage"
-    ```
-        # cmd to create a Storage account
-        
-    ```
-    - Give the storage account name must be in combination of lowercase and numericals, click on create button as shown above.
-    - Storage Account is created, can be used to store the onprem data.
-- Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
-- Moodle and Moodledata
-    - Moodle folder consists of site HTML content and Moodledata contains Moodle site data
-- Configurations
-    - Copy the php configurations files such as php-fpm.conf, php.ini, pool.d and conf.d folder to phpconfig folder under the configuration folder.
-    - copy the ngnix or apache configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig folder under the configuration folder
-- create a backup of database 
-    - Before taking backup of database onprem should have mysql-server to be installed.
-        ```
-            sudo -s
-            sudo apt install mysql-server
-            mysql -u dbUserName -p
-            # After the above command user will prompted for database password
-            mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
-            # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
-        ```
-- Create an archive tar.gz file of backup folder
-    ```
-        tar -zcvf storage.tar.gz <source/folder/name>
-    ```
-- Copy the onprem archive file to blob storage by following command.
-    - To copy use AzCopy user should generate SAS Token.
-    - Go to the created Storage Account Resource and navigate to Shared access signature in the left pannel.
-    - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String". 
-    - copy the SAS token for further use.
-        ```
-            az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-            sudo azcopy copy '/path/to/location/storage.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
-        ```
-    - With the above steps onprem data is compressed and exported to Azure blob storage.
-    - Import the data from Azure blob storage to VM to migrate.
-
 
 ### Option 1: Migrating Moodle with Azure ARM Templates 
 * Moodle can be installed in two ways.
     - Moodle installation on Azure with 4 predefined templates. 
-    - [Fully Configurable](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json) deployment provides various options to select with when the requirement does not match with the predefined ARM templates. [Click here](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json)
+    - Fully Configurable deployment provides various options to select with when the requirement does not match with the predefined ARM templates. [Click here](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json)
 * The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/moodle).
     - [Minimal](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-minimal.json): This deployment will use NFS, MySQL, and smaller auto scale web frontend VM sku (1 core) that will give faster deployment time (less than 30 minutes) and requires only 2 VM cores currently that will fit even in a free trial Azure subscription.  
     - [Small to Mid](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-small2mid-noha.json): Supporting up to 1000 concurrent users. This deployment will use NFS (no high availability) and MySQL (8 vCores), without other options like elastic search or Redis cache.  
@@ -132,6 +179,7 @@ Moodle Migration involves following steps,
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More information on Load balancer  [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
     - **App Gateway:** Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More information on App Gateway [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. [click here](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
+
 * **Storage Template:** 
     - An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     - storage account will have specific type, replication, Performance, Size.Below are some examples. [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
@@ -336,5 +384,70 @@ Moodle Migration involves following steps,
     
     - Any other extensions that is needed for the php that is not installed as part of the ARM template installion must be done manually 
     - Hit the load balancer DNS name to get the Moodle page. 
+
+## Post Migration
+
+```
+- Post migration of Moodle application user need to update the certs and log paths as follows
+```
+
+-   **Virtual Machine:**
+    
+    -   **Log Paths**
+        
+        -   On-prem might be having different log path location and those paths need to be updated with Azure log paths.
+        -   Log path are defaulted to /var/log/nginx.
+            -   access.log and error.log are created.
+    -   **Certs:**
+        
+        -   _SSL Certs_: The certificates for your Moodle application reside in /moodle/certs/
+            
+        -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility scp or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
+            
+        -   You can also generate a self-signed certificate, useful for testing only:
+            
+            ```
+                openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout /moodle/certs/nginx.key \
+                -out /moodle/certs/nginx.crt \
+                -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+            
+            ```
+            
+        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
+            
+            ```
+                chown www-data:www-data /moodle/certs/nginx.*
+                chmod 400 /moodle/certs/nginx.*
+            
+            ```
+            
+    -   **Restart servers**
+        
+        -   Update the time stap to update the local copy in VMSS instance.
+        -   Restart the nginx and php-fpm servers
+            
+            ```
+                sudo systemctl restart nginx
+                sudo systemctl restart php<phpVersion>-fpm
+            
+            ```
+            
+-   **Virtual Machine Scale Set:**
+    
+    -   **Log Paths**
+        
+        -   On-prem might be having different log path location and those paths need to be updated with Azure log paths.
+        -   Log path are defaulted to /var/log/nginx.
+            -   access.log and error.log are created
+    -   **Restart servers**
+        
+        -   Update the time stap to update the local copy in VMSS instance.
+        -   Restart the nginx and php-fpm servers
+            
+            ```
+                sudo systemctl restart nginx
+                sudo systemctl restart php<phpVersion>-fpm
+            ```
 
     
