@@ -99,7 +99,7 @@ Following operations are performed in the process of Migration.
         - Configurations
             - Copy the php configurations files such as php-fpm.conf, php.ini, pool.d and conf.d folder to phpconfig folder under the configuration folder.
             - copy the ngnix or apache configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig folder under the configuration folder
-        - create a backup of database 
+        - **Database Backup** 
             - Before taking backup of database onprem should have mysql-server to be installed.
                 ```
                     sudo -s
@@ -109,10 +109,10 @@ Following operations are performed in the process of Migration.
                     mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
                     # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
                 ```
-        - Create an archive tar.gz file of backup folder
-            ```
-                tar -zcvf moodle.tar.gz <source/folder/name>
-            ```
+            - Create an archive tar.gz file of backup folder
+                ```
+                    tar -zcvf storage.tar.gz <source/folder/name>
+                ```
     - **Copy Archive file to Blob storage**
         - Copy the onprem archive file to blob storage by following command.
             - To copy use AzCopy user should generate SAS Token.
@@ -131,7 +131,7 @@ Following operations are performed in the process of Migration.
 - **Migration of Moodle**
     - **Resources Creation**
         - Import the data from Azure blob storage to VM to migrate.
-        - For installing the infrastructure for Moodle navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
+        - For installing the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
         - Create the infrastructure by adding the resources.
 
 - ##### Creating Resources to host the Moodle application 
@@ -342,47 +342,58 @@ Following operations are performed in the process of Migration.
                 mkdir -p /moodle/html
                 mkdir -p /moodle/certs
             ```
+        -   Mount shared moodle folder with storage account, [click here]() for more information. 
                 
     - **Download on-prem archive file** 
         - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
-        - Download moodle.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
+        - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
             ```
                 cd /home/azureadmin 
                 azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
             ```
-        - Extract archive moodle.tar.gz file  
+        - Extract archive storage.tar.gz file  
             ```
                 tar -zxvf yourfile.tar.gz
-                ex: tar -zxvf moodle.tar.gz
+                ex: tar -zxvf storage.tar.gz
             ``` 
     - **Download and run the migrate_moodle.sh script**
         - migrate_moodle.sh script will be downloaded from GitHub. It will downloaded to /home/azureadmin/ path.
-        - copying the Moodle site, Moodledata folders and configuring of php, webserver will be processed while executing migrate_moodle.sh
+        - Download the compressed backup file to Controller VM at /home/azureadmin/ location.
+            ```
+                cd /home/azuredamin/
+                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+            ```
+        - Extract the compressed content to a folder.
+            ```
+                tar -zxvf yourfile.tar.gz
+            ```
+        - A backup folder is extracted as storage/ at /home/azureadmin/.
+        - Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied while executing migrate_moodle.sh
             ```
                 cd /home/azureadmin/
                 wget <git raw link for migrate_moodle.sh>
                 bash migrate_moodle.sh
             ```
+        - Create a backup folder
+            ```
+                cd /home/azureadmin/
+                mkdir -p backup
+            ```
         - This script will install empty moodle instance.
         - Copy and replace moodle folder with onprem moodle folder 
             ```
-                cp /home/azureadmin/moodle /moodle/html
+                cd /home/azureadmin/
+                mv /moodle/html/moodle backup/moodle_html_backup
+                cp -rf storage/moodle /moodle/html/moodle
             ```
         - Replace the moodledata folder  
-            - Download moodledata.tar.gz file from the blob storage.
-            - Navigate to the path 
-                ```
-                    cd /home/azureadmin
-                    azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-                ``` 
-            - Extract this moodledata.tar.gz file
-                ``` 
-                    tar -zxvf yourfile.tar.gz
-                ``` 
-            - Then copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
+            
+            - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
             - Copy the moodledata folder existing path 
                 ```
-                    cp /home/azureadmin/moodledata /moodle/
+                    cd /home/azureadmin/
+                    mv /moodle/moodledata backup/moodledata_backup
+                    cp -rf storage/moodledata /moodle/moodledata
                 ``` 
     
     -   **Configuring permissions**
@@ -392,24 +403,14 @@ Following operations are performed in the process of Migration.
                 sudo chmod 755 /moodle
                 sudo chown -R www-data:www-data /moodle 
             ```
-        -   Set 770 and www-data owner:group permissions to MoodleData folder
+        -   Set 770 and www-data owner:group permissions to Moodledata folder
             ```
                 sudo chmod 755 /moodle/moodledata
                 sudo chown -R www-data:www-data /moodle/moodledata
             ```
     -  **Importing Database**  
-        -   Download the database.tar.gz from the blob storage
-        -   The path to download will be /home/azureadmin so navigate to this path
-            ```
-                cd /home/azureadmin 
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
-            ```
-        - Extract this database.tar.gz file
-            ```
-                tar -zxvf yourfile.tar.gz
-            ```
-        - The database folder will be extracted which contains the .sql file. 
-        - Navigate to database folder and import the .sql file. - For importing database need to create a database.
+        - Import the database from a backup file to a new database created in Azure Database for MySQL.
+        - A database needs to be created prior to the import.
             ```
                 mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
             ```
@@ -420,36 +421,35 @@ Following operations are performed in the process of Migration.
             ```
         - Import the database.
             ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql file 
+                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
             ```
+        - Change the database details in moodle configuration file (/moodle/config.php).
+            - Update the following parameters in config.php
+                - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+            ```
+                cd /moodle/html/moodle/
+                vi config.php
+                # update the database details and save the file.
+            ```
+
     
     - **Configuring Php & WebServer**
-        - Download the configuration.tar.gz from the blob storage.
-        - The path to download will be /home/azureadmin
-            ```
-                cd /home/azureadmin 
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
-            ```
-        - Extract configuration.tar.gz file
-            ```
-                tar -zxvf yourfile.tar.gz
-            ```
-        - The configuration folder will be extracted with nginx and php configuration files.
         
-        - First change the database details in moodle configuration file (/moodle/config.php)
+        - Update the nginx conf file
             ```
-                mkdir  -p /home/azureadmin/backup/
                 sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
                 cd /home/azureadmin/storage/configuration/
-                sudo cp <dns>.conf  /etc/nginx/sites-enabled/ 
+                sudo cp <dns>.conf  /etc/nginx/sites-enabled/
             ```
-            Note: Update the following parameters in config.php
-                - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot.
-                
-        - copy the php config file from blob storage to the php config folder. 
+            
+        - Update the php config file
             ```
                 sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
                 sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+                
+            ```
+        - Restart the web servers
+            ```
                 sudo systemctl restart nginx 
                 sudo systemctl restart php(phpVersion)-fpm  
                 ex: sudo systemctl restart php7.4-fpm  
@@ -501,16 +501,17 @@ Following operations are performed in the process of Migration.
                 ```
                     bash install_prerequisites.sh <webserverType> <WebserverVersion> <phpVersion>
                 ```
-            Note: If on-prem has any additional php extensions those will be installed by the user.
-
-                ```
-                    sudo apt-get install -y php-<extensionName>
-                ```
+            
             - Above script will perform following task
                 -   Install web server (nginx/apache) with the given version
                 -   Install PHP with its extensions
                     - List of Extensions are below 
                         - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+                Note: If on-prem has any additional php extensions those will be installed by the user.
+
+                    ```
+                        sudo apt-get install -y php-<extensionName>
+                    ```
         - **Create Moode Shared Folder**
             -   Create a moodle shared folder (/moodle)
                 ```
@@ -524,28 +525,29 @@ Following operations are performed in the process of Migration.
                 - Follow the [documentation](GitHub document link for mounting AF Share) to set the Azure File Share on VMSS
                 - If user want to set the File Server as NFS follow the [docs](link for mounting nfs).
        
-        - **Configuring Php & WebServer**
-            - Download the configuration.tar.gz from the blob storage.
-            - The path to download will be /home/azureadmin
+        - **Download on-prem archive file** 
+            - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+            - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
                 ```
                     cd /home/azureadmin 
                     azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
                 ```
-            - Extract configuration.tar.gz file
+            - Extract archive storage.tar.gz file  
                 ```
                     tar -zxvf yourfile.tar.gz
-                ```
-            - The configuration folder will be extracted with nginx and php configuration files.
-            - First change the database details in moodle configuration file (/moodle/config.php)
+                    ex: tar -zxvf storage.tar.gz
+                ``` 
+        
+        - **Configuring Php & WebServer**
+            
+            - Update nginx configuration file (/moodle/config.php)
                 ```
                     mkdir  -p /home/azureadmin/backup/
                     sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
                     cd /home/azureadmin/storage/configuration/
                     sudo cp <dns>.conf  /etc/nginx/sites-enabled/ 
                 ```
-                Note: Update the following parameters in config.php
-                    - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot.
-            - copy the php config file from blob storage to the php config folder. 
+            - Update the php config file  
                 ```
                     sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
                     sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
@@ -569,6 +571,7 @@ Following operations are performed in the process of Migration.
                     bash setup_cron.sh
                 ```
         Note: nginx configuration will point root directory as /var/www/html/ in the instance
+    
     - **Restart Servers**
         - Restart nginx server & php-fpm server
             ```
@@ -627,5 +630,3 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
             ```
-        
-    
