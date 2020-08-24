@@ -583,7 +583,7 @@ Following operations are performed in the process of Migration.
     
 ## Post Migration
     
-    - Post migration of Moodle application user need to update the certs and log paths as follows
+        - Post migration of Moodle application user need to update the certs and log paths as follows
     
 - **Virtual Machine:**
     - **Log Paths**               
@@ -646,7 +646,7 @@ Following operations are performed in the process of Migration.
             - Go to the Virtual Machine Scale Set Resource in Azure portal.
             - In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
                 ```
-                    # rules can be created with scaling count or scaling precentage
+                    # Auto scaling rules can be created by scaling precentage or by the scaling count.
 
                     az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
                         --scale to 5 --condition "Percentage CPU > 75 avg 10m"
