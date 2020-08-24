@@ -11,11 +11,11 @@ This document explains how to migrate Moodle from OnPrem servers to Azure cloud.
 - Must have access to the OnPrem servers to take backup of Moodle and database/configurations.
 - Should have a Azure subscription and the Azure Blob storage created before migration.
 - Azure cli should be installed in onprem to use AZCOPY
-- This migration activity supports with the following Softwares.
+- This migration activity installs the following Softwares with supported versions.
     - Ubuntu 16.04 LTS
     - Nginx web server 1.10.3
     - Apache2 2.4
-    - MySQL PaaS 5.6, 5.7 or 8.0 database server
+    - MySQL PaaS 5.6, 5.7 database server
     - PHP 7.2, 7.3, or 7.4
     - Moodle 3.8 & 3.9
 
@@ -187,7 +187,8 @@ Following operations are performed in the process of Migration.
     - **Azure Application GateWay** - An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more information [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
         - To deploy the Application gate way from Azure Portal [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
         - To deploy the Application gate way from Azure CLI [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
-    *Note:* Azure Application Gateway is optional, this migration document supports only Azure Load Balancer.
+    
+        *Note:* Azure Application Gateway is optional, this migration document supports only Azure Load Balancer.
     
 - **Storage Resources**
     * An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
