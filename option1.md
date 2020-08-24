@@ -34,7 +34,7 @@ Following operations are performed in the process of Migration.
         -   Create Subscription
         -   Install Azure CLI
         -   Create Resource Group
-        - Create Storage Account
+        -   Create Storage Account
         -   Backup of on-prem data
         -   Copy Archive file to Blob storage
 
@@ -59,7 +59,7 @@ Following operations are performed in the process of Migration.
 -   **Data Export from OnPrem to Azure Cloud:**
     -   **Create Subscription:**
         -   User must have Azure subscription to create a blob storage.
-        -   Select existing subscription or user can add a subscription  [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select  [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
+        -   Select existing subscription or user can add a subscription  [Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select  [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
     -   **Install Azure CLI**
         -   Install Azure CLI to copy the onprem data to cloud.
             -   Install Azure CLI
@@ -152,8 +152,8 @@ Following operations are performed in the process of Migration.
 
 ### Option 1: Migrating Moodle with Azure ARM Templates 
 * Moodle can be installed in two ways.
-    - Moodle installation on Azure with 4 predefined templates. 
-    - Fully Configurable deployment provides various options to select with when the requirement does not match with the predefined ARM templates. [Click here](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json)
+    - Moodle installation on Azure with 4 predefined template. 
+    - Fully Configurable deployment provides various options to select with when the requirement does not match with the predefined ARM templates. [Portal-Link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json)
 * The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/moodle).
     - [Minimal](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-minimal.json): This deployment will use NFS, MySQL, and smaller auto scale web frontend VM sku (1 core) that will give faster deployment time (less than 30 minutes) and requires only 2 VM cores currently that will fit even in a free trial Azure subscription.  
     - [Small to Mid](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-small2mid-noha.json): Supporting up to 1000 concurrent users. This deployment will use NFS (no high availability) and MySQL (8 vCores), without other options like elastic search or Redis cache.  
@@ -163,7 +163,7 @@ Following operations are performed in the process of Migration.
 * It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
 * Click on purchase to start the deployment of Moodle on Azure. Link for pricing [calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
-* The deployment will install Infrastructure and Moodle 
+* The deployment will install  supported Infrastructure and Moodle
     - Moodle version: 3.8, 3.9 and 3.5  
     - Webserver: nginx or apache2 
     - Nginx version: 1.10.0
@@ -173,7 +173,7 @@ Following operations are performed in the process of Migration.
     - Ubuntu version: 16.04-LTS  
 * The infrastructure will create the following resources by using the predefined ARM template: 
 * **Network Template:** It will create virtual network, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
-    - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
+    - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the VNET. More information on Subnet [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More information on Public IP [click here](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More information on Load balancer  [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
@@ -183,19 +183,9 @@ Following operations are performed in the process of Migration.
 * **Storage Template:** 
     - An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     - storage account will have specific type, replication, Performance, Size.Below are some examples. [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
-    - The types of storage accounts are:
-        - General-purpose V2- It is Basic storage account type for blobs, files, queues, and tables and recommended for most scenarios using Azure Storage
-        - General-purpose V1- It is Legacy account type for blobs, files, queues, and tables somecan can use  general-purpose v2 accounts instead when possible.
-        - BlockBlobStorage- Storage accounts with premium performance characteristics for block blobs and append blobs. Recommended for scenarios with high transactions rates, or scenarios that use smaller objects or require consistently low storage latency.
-        - File Storage- Files-only storage accounts with premium performance characteristics. Recommended for enterprise or high performance scale applications.
-        - BlobStorage accounts- Legacy Blob-only storage accounts. Use general-purpose v2 accounts instead when possible.
-    - Replication:
-        - Locally-redundant storage (LRS)- A simple, low-cost redundancy strategy. Data is copied synchronously three times within the primary region.
-        - Zone-redundant storage (ZRS)-  Redundancy for scenarios requiring high availability. Data is copied synchronously across three Azure availability zones in the primary region.
-        - Geo redundant storage (GRS)- Cross-regional redundancy to protect against regional outages. Data is copied synchronously three times in the primary region, then copied asynchronously to the secondary region. For read access to data in the secondary region, enable read-access geo-redundant storage (RA-GRS).
-    - Performance: 
-        - Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
-        - Premium- A premium performance tier for storing unmanaged virtual machine disks.
+    - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
+    - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS)
+    - Types of  Performance are Standard, Premium
     - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
     - Below are types of storage account types ARM templates support 
         * NFS: A Network File System (NFS) allows remote hosts to mount file systems over a network and interact with those file systems as though they are mounted locally. This enables system administrators to consolidate resources onto centralized servers on the network. More information on NFS [click here](https://docs.microsoft.com/en-us/windows-server/storage/nfs/nfs-overview). 
@@ -213,7 +203,7 @@ Following operations are performed in the process of Migration.
     - To access the containers and file share etc. navigate to storage account in resource       group in the portal. 
     ![storage_account](images/storage-account.png)
 * **Database Template:** 
-    - Creates an Azure Database for MySQL server. [click here](https://docs.microsoft.com/en-in/azure/mysql/) 
+    - Creates an Azure Database for MySQL server. [Click-here](https://docs.microsoft.com/en-in/azure/mysql/) 
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration 
