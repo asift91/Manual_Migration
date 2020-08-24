@@ -110,51 +110,40 @@ Following operations are performed in the process of Migration.
                     # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
                 ```
             - Create an archive tar.gz file of backup folder
+                - It will take the backup of the storage folder, this folder contains backup of Moodle html data, Moodledata, Configuration and database backup file as per the folder structure.
                 ```
                     tar -zcvf storage.tar.gz <source/folder/name>
                 ```
     - **Copy Archive file to Blob storage**
         - Copy the onprem archive file to blob storage by following command.
-            - To copy use AzCopy user should generate SAS Token.
+            - AZCopy requires SAS Token to copy on-prem archived file to blob storage 
             - Go to the created Storage Account Resource and navigate to Shared access signature in the left pannel.
             - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String". 
+            - Generate SAS Token from Azure CLI
+                ```
+                    az storage container generate-sas --account-name <storage-account> --name <container> --permissions acdlrw --expiry <date-time> --auth-mode login --as-user
+                ```
             - copy the SAS token for further use.
                 ```
                     az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                    sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+                    sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>'
                 ```
             - With the above steps onprem compressed data is exported to Azure blob storage.
             
-
 ## Migration
     
 - **Migration of Moodle**
     - **Resources Creation**
-        - Import the data from Azure blob storage to VM to migrate.
-        - For installing the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
+        - To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
         - Create the infrastructure by adding the resources.
 
 - ##### Creating Resources to host the Moodle application 
 - **Network Resources**
-    * **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
-        ```
-            az network lb create -g MyResourceGroup -n MyLb --sku Basic
-        ```
-    *  In the Basics tab, Select the same subscription and same resource created in above step, give the instance details such as name for load balancer, and default region. 
-    *  Select the type as public and sku as standard. 
-       -  A public load balancer can provide outbound connections for virtual machines (VMs) inside your virtual network. These connections are accomplished by translating their private IP addresses to public IP addresses. Public Load Balancers are used to load balance internet traffic to your VMs.
-       - Standard tier can scale out to 1000 instances and Standard tier can scale out to 1000 instances 
-    *  For Public IP address section ,Create a new IP address and give the IP address name and keep other parameters as default.
-    *  Click next to tag section, if required give the tag value for more clarification. 
-    *  After giving the mandatory values click on review and create. 
 
     - **Virtual Network** - An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
         ```
             #command to create virtual network
-            az network vnet create \
-                --name myVirtualNetwork \
-                --resource-group myResourceGroup \
-                --subnet-name default
+            az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
         ```
     - Navigate to the resource group, select Create a resource. From the Azure Marketplace, select Networking > Virtual network.
     - In Create virtual network, for Basics section provide this information: 
@@ -166,96 +155,71 @@ Following operations are performed in the process of Migration.
     - Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
         ```
             #command to create subnet
-            az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet \
-                --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
+            az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
         ```
 
     - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
     - For more Details [click here](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-portal)
 
+    **Network Security Group:**
+    - A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+
+        Create a network security group using Azure CLI
+        ```
+            az network nsg create --resource-group myResourceGroup --name myNSG
+        ```
+    **Network Interface:**
+    -   A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
+    -   Create Network Interface with Azure CLI command
+        ```
+            az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
+        ```
+
+    * **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
+        ```
+            #Create a public IP
+            az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
+            
+            #Create Load balancer
+            az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
+        ```  
+
     - **Azure Application GateWay** - An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more information [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
         - To deploy the Application gate way from Azure Portal [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
         - To deploy the Application gate way from Azure CLI [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
+    *Note:* Azure Application Gateway is optional, this migration document supports only Azure Load Balancer.
     
 - **Storage Resources**
     * An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     * Storage account will have specific type, replication, Performance, Size.Below are some examples. [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
-     *  The types of storage accounts are:
-        - General-purpose V2- It is Basic storage account type for blobs, files, queues, and tables and recommended for most scenarios using Azure Storage
-        - General-purpose V1- It is Legacy account type for blobs, files, queues, and tables somecan can use  general-purpose v2 accounts instead when possible.
-        - BlockBlobStorage- Storage accounts with premium performance characteristics for block blobs and append blobs. Recommended for scenarios with high transactions rates, or scenarios that use smaller objects or require consistently low storage latency.
-        - File Storage- Files-only storage accounts with premium performance characteristics. Recommended for enterprise or high performance scale applications.
-        - BlobStorage accounts- Legacy Blob-only storage accounts. Use general-purpose v2 accounts instead when possible.
-    - Replication:
-        - Locally-redundant storage (LRS)- A simple, low-cost redundancy strategy. Data is copied synchronously three times within the primary region.
-        - Zone-redundant storage (ZRS)-  Redundancy for scenarios requiring high availability. Data is copied synchronously across three Azure availability zones in the primary region.
-        - Geo redundant storage (GRS)- Cross-regional redundancy to protect against regional outages. Data is copied synchronously three times in the primary region, then copied asynchronously to the secondary region. For read access to data in the secondary region, enable read-access geo-redundant storage (RA-GRS).
+     *  The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
+    - Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
     - Performance: 
         - Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
         - Premium- A premium performance tier for storing unmanaged virtual machine disks.
-    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
-    - For creating a storage account navigate to the resource group and search resource storage account.
-    - On the Storage Accounts window that appears, choose Add. 
-    - Select the default subscription in which to create the storage account. 
-    - Under the Resource group field, select the default resource group 
-    - Next, give the name for  storage account. The name you choose must be unique across Azure. The name also must be between 3 and 24 characters in length, can include numbers and lowercase letters only. 
-    - Select a default region for storage account.
-    - Keep the Deployment model default as Resource Manager 
-    - Choose the performance as standard or premium 
-    - Choose the Acount kind as per choice such as General-purpose V1 or General-purpose V2 
-    - Choose any of the replication such as LRS,GRS,etc.
-    - Choose the access tier for the same
-    - Azure storage offers different access tiers, which allow you to store blob object data in the most cost-effective manner. The available access tiers include: Hot - Optimized for storing data that is accessed frequently. Cool - Optimized for storing data that is infrequently accessed and stored for at least 30 days
-    - Leave the others tabs as default.
-    - Select Review + Create to review your storage account settings and create the account.Select Create. [Click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal)
-    - For more information about types of storage accounts and other storage account settings, see [Azure storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). For more information on resource groups, see [Azure Resource Manager overview](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview). 
-    - For NFS and glusterFS:  
-        - Replication is standard Locally-redundant storage (LRS)  
-        - Type is Storage (general purpose v1) 
-    - Azure Files: 
-        - Replication is Premium Locally-redundant storage (LRS)  
-        - Type is File Storage  
-    - These storage mechanisms will differ according to storage type such as 
-        <!-- - NFS and glusterFS will create a container  -->
-        - Azure files will create a file share. 
-    - To access the containers and file share etc. navigate to storage account in resource group in the portal. 
+    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service. For more information [click here](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
     
+    - Creating storage account with Azure Files Premium below should be the mandatory parameters.
+        - Replication is Premium Locally-redundant storage (LRS)
+        - Type is File Storage
+    - Azure CLI command to create storage account
         ```
             #command to deploy storage account
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
         ```
+    - To access the containers and file share etc. navigate to storage account in resource group in the portal.
 
-  
 - **Database Resources** - 
     - Creates an Azure Database for MySQL server. [click here](https://docs.microsoft.com/en-in/azure/mysql/).
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
-    
         ```
             #command to create Azure database for MySQL
             az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
         ```
-    - Select the Create a resource button (+) in the upper left corner of the portal in resource group
-    - Select Databases > Azure Database for MySQL. If you cannot find MySQL Server under the Databases category, click See all to show all available database services. You can also type Azure Database for MySQL in the search box to quickly find the service. 
-    - Click Azure Database for MySQL. Fill out the Azure Database for MySQL form. 
-        - Server name: Choose a unique name that identifies your Azure Database for MySQL server. For example, mydemoserver. The domain name.mysql.database.azure.com is appended to the server name you provide. The server name can contain only lowercase letters, numbers, and the hyphen (-) character. It must contain from 3 to 63 characters. 
-        - Subscription: Select the default subscription.
-        - Resource group: The resource group will be auto selected. 
-        - Select source: Select Blank to create a new server from scratch. (You select Backup if you are creating a server from a geo-backup of an existing Azure Database for MySQL server). 
-        - Server admin login: Give a sign in name to use when you're connecting to the server. The admin sign-in name cannot be azure_superuser, admin, administrator, root, guest, or public. 
-        - Password: Provide a new password for the server admin account. It must contain from 8 to 128 characters. Your password must contain characters from three of the following categories: English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, and so on). 
-        - Confirm password: Confirm the admin account password. 
-        - Location: Select the default region.
-        - Version: Select the latest version (unless you have specific requirements that require another version). 
-        - Pricing tire: General Purpose, Gen 5, 2 vCores, 5 GB, 7 days, Geographically Redundant. 
-        - The compute, storage, and backup configurations for your new server. Select Pricing tier
-        - Next, select the General-Purpose tab. Gen 5, 2 vCores, 5 GB, and 7 days are the default values for Compute Generation, vCore, Storage, and Backup Retention Period. You can leave those sliders as is. To enable your server backups in geo-redundant storage, select Geographically Redundant from the Backup Redundancy Options. To save this pricing tier selection, select OK. The next screenshot captures these selections.
-        - Click on review and create for creating a storage account
     - **Configure firewall:**
     -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
         ```
-            # Configure a server-level firewall rule
             az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
-
         ```
     -  Click your newly created  MySQL server, and then click Connection security.
     -  ![connectionSecurity SS](images/connection security.png)
@@ -583,7 +547,7 @@ Following operations are performed in the process of Migration.
     
 ## Post Migration
     
-        - Post migration of Moodle application user need to update the certs and log paths as follows
+        Post migration of Moodle application user need to update the certs and log paths as follows
     
 - **Virtual Machine:**
     - **Log Paths**               
@@ -638,9 +602,17 @@ Following operations are performed in the process of Migration.
             - Go to the Load Balancer Resource in Azure portal.
             - Set the http (TCP/80) and https (TCP/443) rules.
                 ```
-                    az network lb rule create -g MyResourceGroup --lb-name MyLb -n MyLbRule --protocol Tcp \
-                        --frontend-ip-name MyFrontEndIp --frontend-port 80 \
-                        --backend-pool-name MyAddressPool --backend-port 80
+                    az network lb rule create \
+                        --resource-group myResourceGroupLB \
+                        --lb-name myLoadBalancer \
+                        --name myHTTPRule \
+                        --protocol tcp \
+                        --frontend-port 80 \
+                        --backend-port 80 \
+                        --frontend-ip-name myFrontEnd \
+                        --backend-pool-name myBackEndPool \
+                        --probe-name myHealthProbe \
+                        --disable-outbound-snat true
                 ```
         - **Auto Scaling Rules**
             - Go to the Virtual Machine Scale Set Resource in Azure portal.
