@@ -1,3 +1,4 @@
+
 ## Moodle Manual  Migration
 This document explains how to migrate Moodle from OnPrem servers to Azure cloud.
 
@@ -42,17 +43,17 @@ Following operations are performed in the process of Migration.
 -   **Migration**
     
     -   Migration of Moodle
-        -   Deploy the Azure template of any pre-defined type or custom deployment to install moodle
-        - Copy the onprem data to Virtual Machine.
+        -   Install Moodle with any pre-defined template or  Fully configurable deployment.
+        - Copy the onprem data to Virtual Machine
         - Replace the on-prem data.
         
        
 -   **Post Migration**
     
     -   Update log paths
-    -   Updating Cron Job
+    -   Update Cron Job
     -   Configuring certs
-    -   Restarting servers
+    -   Restart servers
 
 ## Pre Migration
 
@@ -84,7 +85,7 @@ Following operations are performed in the process of Migration.
             ```
             
     -   **Create Resource Group:**
-        -   After creating the subscription, create a  [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
+        -   After creating the subscription, create a  [Portal-Link](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
             
             ```
                 # cmd to create a RG
@@ -106,6 +107,7 @@ Following operations are performed in the process of Migration.
     
     -   The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
     -   Storage Account is created, can be used to store the onprem data.
+    
     -   **Backup of on-prem data:**
         -   Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
         -  - Here is the folder structure 
@@ -153,7 +155,7 @@ Following operations are performed in the process of Migration.
 ## Migration
 
 ### Option 1: Migrating Moodle with Azure ARM Templates 
-* Moodle can be installed in two ways.
+* Moodle installation on Azure can be done two ways.
     - Moodle installation on Azure with 4 predefined template. 
     - Fully Configurable deployment provides various options to select with when the requirement does not match with the predefined ARM templates. [Portal-Link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy.json)
 * The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/moodle).
@@ -174,24 +176,28 @@ Following operations are performed in the process of Migration.
     - MySQL version: 5.6, 5.7 and 8.0 
     - Ubuntu version: 16.04-LTS  
 * The infrastructure will create the following resources by using the predefined ARM template: 
-* **Network Template:** It will create virtual network, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
+* **Network Template:** Network Template will create virtual network,Network Security Group, Network Interface, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
+     * Creates a virtual network with string as name , apiVersion, Location and DNS server name.
+     * The AddressSpace that contains an array of IP address ranges that can be used by subnets
+   
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
     -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.[click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface)
     - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the VNET. More information on Subnet [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More information on Public IP [click here](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More information on Load balancer  [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
-    - **App Gateway:** Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More information on App Gateway [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
+    - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer,only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer,
+    -  **Azure Application Gateway**: It is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More information on App Gateway [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. [click here](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 
-* **Storage Template:** 
-    - An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
-    - storage account will have specific type, replication, Performance, Size.Below are some examples. [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
+* **Storage Template:**  
+-  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more example[click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
+    -   - An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
     - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS)
     - Types of  Performance are Standard, Premium
     - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
-    - Below are types of storage account types ARM templates support 
+    - Below are types of storage account types ARM template support. 
         * NFS: A Network File System (NFS) allows remote hosts to mount file systems over a network and interact with those file systems as though they are mounted locally. This enables system administrators to consolidate resources onto centralized servers on the network. More information on NFS [click here](https://docs.microsoft.com/en-us/windows-server/storage/nfs/nfs-overview). 
         * GluserFS: It is an open source distributed file system that can scale out in building-block fashion to store multiple petabytes of data. More information on Gluster FS [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-rhel-glusterfs). 
         * Azure Files: is the only public cloud file storage that delivers secure, Server Message Block (SMB) based, fully managed cloud file shares that can also be cached on-premises for performance and compatibility. More information on Azure Files [click here](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction). 
@@ -204,10 +210,11 @@ Following operations are performed in the process of Migration.
         * These storage mechanisms will differ according to storage type such as  
             - NFS and glusterFS will create a container  
             - Azure files will create a file share. 
+    -  For Minimal and short2mid the template will support nfs and for Large and Maximal the template will support AzureFiles
     - To access the containers and file share etc. navigate to storage account in resource       group in the portal. 
     ![storage_account](images/storage-account.png)
 * **Database Template:** 
-    - Creates an Azure Database for MySQL server. [Click-here](https://docs.microsoft.com/en-in/azure/mysql/) 
+    - This Database template will creates an Azure Database for MySQL server. [Click-here](https://docs.microsoft.com/en-in/azure/mysql/) 
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration 
@@ -216,7 +223,8 @@ Following operations are performed in the process of Migration.
         - For workbench give the connection name, hostname (server name), username (server admin login name) 
     ![mysqlworkbench](images/mysql-workbench.png)
         - After giving the details test connection. If the connection is successful it will prompt for password .Provide the password to get connected. 
-* **Virtual Machine Template:** Creates a Virtual Machine
+        
+* **Virtual Machine Template:** This template will create a  Virtual Machine
     * Controller VM: 
         - Ubuntu OS defaulted to 16.04 
         - A virtual machine is a computer file, typically called an image, which behaves like an actual compute [Click here](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/) 
@@ -226,7 +234,7 @@ Following operations are performed in the process of Migration.
         - Log files stderr and stdout are created at the /var/lib/waagent/custom-script/download/0/  
         - User can view the log files as a root user. 
 
-- Scale Set Template: Creates a Virtual Machine Scale Set (VMSS) with the VM instance. [Click here](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview) 
+- **Scale Set Template**: This template will create a  Virtual Machine Scale Set (VMSS) with the VM instance. [Click here](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview) 
     * A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
     * Autoscaling of VM Instances depends on the CPU utilization. [Click here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview)  
     * While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
@@ -245,55 +253,36 @@ Following operations are performed in the process of Migration.
     ![puttykey](images/puttykeybrowse.PNG)
 * After the login, run the following set of commands to migrate 
     - Download the onprem compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location. 
+    -   Download the compressed backup file to Controller VM at /home/azureadmin/ location.
+    
+    ```
+        cd /home/azuredamin/
+        azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+    
+    ```
+    
+  -   Extract the compressed content to a folder.
+    
+    ```
+        tar -zxvf yourfile.tar.gz
+    
+    ```
+    
+  -   A backup folder is extracted as storage/ at /home/azureadmin/.
     - Replace the moodle folder  
-        - Download moodle.tar.gz file from the blob storage. The path to download will be /home/azureadmin. Navigate to this path 
-        
-            ```
-                cd /home/azureadmin 
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
-            ```
-        - After downloading the moodle.tar.gz ,extract moodle.tar.gz file  
-            ```
-                tar -zxvf yourfile.tar.gz
-            ``` 
-        
-        - Then copy and replace this moodle folder with existing folder 
+        - Copy and replace this moodle folder with existing folder 
         - Before accessing the moodle folder switch to root user and copy the moodle folder to existing path 
             ```
                 cp /home/azureadmin/moodle /moodle/html
             ```
-    - Replace the moodledata folder  
-        - Download moodledata.tar.gz file from the blob storage.
-        - Navigate to the path 
-            
-            ```
-                cd /home/azureadmin
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-            ``` 
-        - After downloading the moodledata.tar.gz ,extract this moodledata.tar.gz file
-            ``` 
-                tar -zxvf yourfile.tar.gz
-            ``` 
-        
-        - Then copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
-        - Go as a root user and copy the moodledata folder existing path 
+    - Replace the moodledata folder 
+        - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
+        - As a root user and copy the moodledata folder existing path 
             ```
                 cp /home/azureadmin/moodledata /moodle/
             ``` 
-    - Importing the .sql file 
-        - Download the database.tar.gz from the blob storage 
-        - The path to download will be /home/azureadmin so navigate to this path  
-            ```
-                cd /home/azureadmin
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-            ``` 
-        - After downloading the database.tar.gz file will be present  
-        - Extract this database.tar.gz file  
-            ```
-                tar -zxvf yourfile.tar.gz
-            ``` 
-        - The database folder will be extracted which contains the .sql file 
-        - Go as a root user and navigate to database folder and import the .sql file 
+    - Importing the .sql file     
+        - As a root user navigate to database folder and import the .sql file 
     - For database import first create a database 
         ```
             mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
@@ -318,16 +307,6 @@ Following operations are performed in the process of Migration.
             sudo chown -R www-data:www-data /moodle/moodledata
         ``` 
         - Modify the Moodle configuration 
-            - Download the configuration.tar.gz from the blob storage 
-            - The path to download will be /home/azureadmin so navigate to this path  
-                ```
-                    cd /home/azureadmin
-                    azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-                ``` 
-            - After downloading the configuration.tar.gz file ,extract the configuration.tar.gz file
-                ```
-                    tar -zxvf yourfile.tar.gz
-                ``` 
             - The configuration folder will be extracted with nginx and php configuration files 
             - For changing nginx configuration 
             - First change the database details in moodle configuration file (/moodle/config.php) 
