@@ -1,3 +1,4 @@
+
 ## Moodle Manual  Migration
 This document explains how to migrate Moodle from OnPrem servers to Azure cloud.
 
@@ -42,7 +43,7 @@ Following operations are performed in the process of Migration.
 -   **Migration**
     
     -   Migration of Moodle
-        -   Installing Moodle with any pre-defined template or  Fully configurable deployment.
+        -   Install Moodle with any pre-defined template or  Fully configurable deployment.
         - Copy the onprem data to Virtual Machine
         - Replace the on-prem data.
         
@@ -50,9 +51,9 @@ Following operations are performed in the process of Migration.
 -   **Post Migration**
     
     -   Update log paths
-    -   Updating Cron Job
+    -   Update Cron Job
     -   Configuring certs
-    -   Restarting servers
+    -   Restart servers
 
 ## Pre Migration
 
