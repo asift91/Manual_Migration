@@ -560,19 +560,14 @@ Following operations are performed in the process of Migration.
             ```
     - **Restart servers**
         - Update the time stap to update the local copy in VMSS instance.
+            ```
+                /usr/local/bin/update_last_modified_time.azlamp.sh
+            ```
         - Restart the nginx and php-fpm servers
             ```
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
             ```
-    - **Update Cron Job:**
-        -   Update the cron job by updating time stamp.
-            ```
-                sudo -s
-                /usr/local/bin/update_last_modified_time.azlamp.sh
-            ```
-        -   Updating cron job will update the local copy of VMSS html folder.
-
 
 - **Virtual Machine Scale Set:**
     - **Log Paths**               
@@ -582,7 +577,7 @@ Following operations are performed in the process of Migration.
     - **Restart servers**
         - Update the time stamp to update the local copy in VMSS instance.
             ```
-                # command to update the timestamp
+                /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
         - Restart the nginx and php-fpm servers
             ```
