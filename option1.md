@@ -189,7 +189,7 @@ Following operations are performed in the process of Migration.
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. [click here](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 
 * **Storage Template:**  
--  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more example[click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
+    -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more example[click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   - An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
     - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS)
