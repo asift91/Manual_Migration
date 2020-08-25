@@ -91,9 +91,8 @@ Following operations are performed in the process of Migration.
             - The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
             - Storage Account is created, can be used to store the onprem data.
     - **Backup of on-prem data:**
-        - Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder.
-        - Here is the folder structure 
-            ![folderStructure](images/folderstructure.png)
+        - Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder. For pictorial representation [click here](https://github.com/asift91/Manual_Migration/blob/master/images/folderstructure.png).
+        
         - Moodle and Moodledata
             - Moodle folder consists of site HTML content and Moodledata contains Moodle site data
         - Configurations
@@ -297,7 +296,7 @@ Following operations are performed in the process of Migration.
                 mkdir -p /moodle/html
                 mkdir -p /moodle/certs
             ```
-        -   Mount shared moodle folder with storage account, [click here]() for more information. 
+        -   Mount shared moodle folder with storage account, [click here](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information. 
                 
     - **Download on-prem archive file** 
         - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
@@ -438,7 +437,7 @@ Following operations are performed in the process of Migration.
             az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
         ```
     - VMSS will create a VM instance with an internal IP. User need to have a VPN gateway to access the VM. 
-    - To setup the Virtual Network Gateway please read the [document](GitHub Link to be provided).
+    - To setup the Virtual Network Gateway access the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md).
 
     - **Configuring VMSS**   
 
@@ -476,8 +475,8 @@ Following operations are performed in the process of Migration.
                 ```
         - **Mounting File Share**
             - Mount Azure File share in VM instance 
-                - Follow the [documentation](GitHub document link for mounting AF Share) to set the Azure File Share on VMSS
-                - If user want to set the File Server as NFS follow the [docs](link for mounting nfs).
+                - Follow the [documentation](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) to set the Azure File Share on VMSS
+                - If user want to set the File Server as NFS follow the [docs](https://docs.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to?tabs=windows).
        
         - **Download on-prem archive file** 
             - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
@@ -566,6 +565,13 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
             ```
+    - **Update Cron Job:**
+        -   Update the cron job by updating time stamp.
+            ```
+                sudo -s
+                /usr/local/bin/update_last_modified_time.azlamp.sh
+            ```
+        -   Updating cron job will update the local copy of VMSS html folder.
 
 
 - **Virtual Machine Scale Set:**

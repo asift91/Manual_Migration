@@ -4,8 +4,6 @@
 -   Azure Storage account to be created.
 -   A File Share to be created under the same Storage account.
 
-
-
 -   **Create Storage Account from Azure Portal:**
     -   Now create the file storage with the following parameters in Azure portal 
     -   1.	Login to your Azure subscription and go the respective Resource Group

@@ -109,9 +109,7 @@ Following operations are performed in the process of Migration.
     -   Storage Account is created, can be used to store the onprem data.
     
     -   **Backup of on-prem data:**
-        -   Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
-        -  - Here is the folder structure 
-            ![folderStructure](images/folderstructure.png)
+        -   Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder. For pictorial representation [click here](https://github.com/asift91/Manual_Migration/blob/master/images/folderstructure.png).
         -   Moodle and Moodledata
             -   Moodle folder consists of site HTML content and Moodledata contains Moodle site data
         -   Configurations
@@ -239,7 +237,7 @@ Following operations are performed in the process of Migration.
     * Autoscaling of VM Instances depends on the CPU utilization. [Click here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview)  
     * While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
     * VM instances have Private IP. 
-    * For connecting to VM’s on Scale Set with private IP, follow the steps written in the [document](https://italentcorporation1-my.sharepoint.com/:w:/g/personal/skumbhar_italentdigital_com/EWEpBXgy-D5GmWIcVPgbsq8BhLCMHKxlbZ2rILRsJ2gUOA?e=FcGgIS). 
+    * For connecting to VM’s on Scale Set with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
     
 
 ### Manual Moodle migration follow the below steps 
@@ -369,14 +367,9 @@ Following operations are performed in the process of Migration.
     -   **Log Paths**
         
         -   On-prem might be having different log path location and those paths need to be updated with Azure log paths.
-        -   Log path are defaulted to /var/log/nginx.
-            -   access.log and error.log are created.
     -   **Certs:**
-        
         -   _SSL Certs_: The certificates for your Moodle application reside in /moodle/certs/
-            
         -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility scp or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
-            
         -   You can also generate a self-signed certificate, useful for testing only:
             
             ```
@@ -386,17 +379,13 @@ Following operations are performed in the process of Migration.
                 -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             
             ```
-            
         -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
-            
             ```
                 chown www-data:www-data /moodle/certs/nginx.*
                 chmod 400 /moodle/certs/nginx.*
-            
             ```
             
     -   **Restart servers**
-        
         -   Update the time stap to update the local copy in VMSS instance.
         -   Restart the nginx and php-fpm servers
             
@@ -405,6 +394,13 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart php<phpVersion>-fpm
             
             ```
+    - **Update Cron Job:**
+        -   Update the cron job by updating time stamp.
+            ```
+                sudo -s
+                /usr/local/bin/update_last_modified_time.azlamp.sh
+            ```
+        -   Updating cron job will update the local copy of VMSS html folder.
             
 -   **Virtual Machine Scale Set:**
     
