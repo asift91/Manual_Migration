@@ -108,6 +108,8 @@ Following operations are performed in the process of Migration.
     -   Storage Account is created, can be used to store the onprem data.
     -   **Backup of on-prem data:**
         -   Take backup of onprem data such as moodle, moodledata, configurations and database backup file to a folder
+        -  - Here is the folder structure 
+            ![folderStructure](images/folderstructure.png)
         -   Moodle and Moodledata
             -   Moodle folder consists of site HTML content and Moodledata contains Moodle site data
         -   Configurations
@@ -174,6 +176,8 @@ Following operations are performed in the process of Migration.
 * The infrastructure will create the following resources by using the predefined ARM template: 
 * **Network Template:** It will create virtual network, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
+    - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+    -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.[click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface)
     - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the VNET. More information on Subnet [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More information on Public IP [click here](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More information on Load balancer  [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
