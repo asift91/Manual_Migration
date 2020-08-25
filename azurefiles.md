@@ -1,5 +1,5 @@
 ## Azure Premium Files Manual Mounting
-    This document explains how to mount a file share. 
+    -   This document explains how to mount a file share. 
 ## Prerequisites
 -   Azure Storage account to be created.
 -   A File Share to be created under the same Storage account.
@@ -51,12 +51,11 @@
             sudo apt-get -y --force-yes install cifs-utils
             # Rename moodle directory to something else
             mv /moodle /moodle_old_delete_me
-            # Set up and mount Azure Files share.
         ```
     -   Get the storageAccountName and storageAccountKey from Azure Portal
-            -   storageAccountName : Storage account name 
-            -   storageAccountKey : key1
-
+        -   storageAccountName : Storage account name 
+        -   storageAccountKey : key1
+-   **Set up and Mount Azure Files Share:**
     -   Create a credentials file with the moodle_azure_files.credential name
     -   Run the following commands
         ```
@@ -86,11 +85,13 @@
         ```
             cp -a /moodle_old_delete_me/* /moodle || true
             rm -rf /moodle_old_delete_me
-            check in /moodle
         ```
-    -   Check the df -h to check the list of mounted systems.
+    -   Check the list of mounted systems.
+        ```
+            df -h
+        ```
     -   Check the cron job status 
-            ```
-                sudo systemctl status cron
-            ```
+        ```
+            sudo systemctl status cron
+        ```
     -   Disable the site maintenance mode.
