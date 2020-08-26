@@ -606,4 +606,6 @@ Following operations are performed in the process of Migration.
                         --scale in 50% --condition "Percentage CPU < 25 avg 15m"
                     # Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
                 ```
-        
+    -   **Mapping IP:**
+        -   Map the load balancer IP with the DNS name.
+            
