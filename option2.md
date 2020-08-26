@@ -113,6 +113,14 @@ Following operations are performed in the process of Migration.
                 ```
                     tar -zcvf storage.tar.gz <source/folder/name>
                 ```
+    -   **Download and Install AzCopy:**
+        -   Install AzCopy to copy data from onpremise to blob storage.
+            ```
+                curl -s -D- https://aka.ms/downloadazcopy-v10-linux | grep ^Location
+                # If above link does not work then download from below link
+                wget -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1
+            ```
+
     - **Copy Archive file to Blob storage**
         - Copy the onprem archive file to blob storage by following command.
             - AZCopy requires SAS Token to copy on-prem archived file to blob storage 
@@ -232,6 +240,8 @@ Following operations are performed in the process of Migration.
 -  **Virtual Machine** 
     -  A virtual machine is a computer file, typically called an image, which behaves like an actual compute [click here](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/). 
     -  Before creating Virtual machine create an SSH key pair.
+        -   To generate SSH keys, [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
+
         -  If you already have an SSH key pair, you can skip this step. 
         -  Go to the PuTTY installation folder (the default location is C:\Program Files\PuTTY) and run: puttygen.exe 
         -  In the PuTTY Key Generator window, set Type of key to generate to RSA, and set Number of bits in a generated key to 2048. 
