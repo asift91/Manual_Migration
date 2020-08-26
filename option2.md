@@ -264,30 +264,51 @@ Following operations are performed in the process of Migration.
     
      ![putty ss1](images/puttyloginpage.PNG)   ![putty ss1](images/puttykeybrowse.PNG)
 
-    ##### Download and execute a moodle scripts
+    ##### Install Moodle
 
     - **Install prerequisites for Moodle**.
-        - install_prerequisites.sh script will be downloaded from GitHub. It will downloaded to /home/azureadmin/ path.
-        - install_prerequisites.sh will install the prerequisites for Moodle such as webservers, php and extensions.
-        Note: All the scripts should be executed as a root user.
+        
+        -   Install prerequisites for Moodle. Run the following commands
+            -   Update and install rsyslog, unzip
             ```
                 sudo -s
-                cd /home/azureadmin/
-                wget <git raw link for install_prerequisites.sh>
+                sudo apt-get -y update
+                sudo apt-get -y install unattended-upgrades fail2ban
+                sudo apt-get -y update
+                sudo apt-get -y --force-yes install rsyslog git
+                sudo apt-get -y update
+                sudo apt-get install -y --fix-missing python-software-properties unzip
             ```
-        -   Run the install_prerequisites.sh script
-            ```
-                bash install_prerequisites.sh <webserverType> <WebserverVersion> <phpVersion>
-            ```
-        -   Above script will perform following task
-            -   Install web server (nginx/apache) with the given version
-            -   Install PHP with its extensions
-                - List of Extensions are below 
+            -   Install Php and extensions
+                -   If you are installing PHP greater than 7.2 then upgrade ppa package
+                ```
+                    sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+                ```
+                -   List of Extensions are below 
                     - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-            Note: If on-prem has any additional php extensions those will be installed by the user.
+            
                 ```
-                    sudo apt-get install -y php-<extensionName>
+                    sudo apt-get -y  --force-yes install php$phpVersion-fpm
+                    sudo apt-get -y  --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
+                    sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis > /tmp/apt6.log
+                    sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt >> /tmp/apt6.log
                 ```
+            -   *Note:*
+                -   If on-prem has any additional php extensions those will be installed by the user.
+                    ```
+                        sudo apt-get install -y php-<extensionName>
+                    ```
+                -   phpVersion indicates version of php to be installed.
+            -   Install nginx webserver
+                ```
+                    sudo apt-get -y  --force-yes install nginx
+                ```
+            -   Install apache webserver if you are not going with nginx.
+                ```
+                    sudo apt-get install -y libapache2-mod-php
+                ```
+                *Note:* This documentation will support nginx by default and apache as optional.
+
     - **Create Moodle Shared folder**
         -   Create a moodle shared folder to install Moodle (/moodle)
             ```
@@ -310,46 +331,26 @@ Following operations are performed in the process of Migration.
                 tar -zxvf yourfile.tar.gz
                 ex: tar -zxvf storage.tar.gz
             ``` 
-    - **Download and run the migrate_moodle.sh script**
-        - migrate_moodle.sh script will be downloaded from GitHub. It will downloaded to /home/azureadmin/ path.
-        - Download the compressed backup file to Controller VM at /home/azureadmin/ location.
-            ```
-                cd /home/azuredamin/
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-            ```
-        - Extract the compressed content to a folder.
-            ```
-                tar -zxvf yourfile.tar.gz
-            ```
-        - A backup folder is extracted as storage/ at /home/azureadmin/.
-        - Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied while executing migrate_moodle.sh
-            ```
-                cd /home/azureadmin/
-                wget <git raw link for migrate_moodle.sh>
-                bash migrate_moodle.sh
-            ```
+        - Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
+    - **Migrate Onpremise Moodle:**
+        
         - Create a backup folder
             ```
                 cd /home/azureadmin/
                 mkdir -p backup
             ```
-        - This script will install empty moodle instance.
         - Copy and replace moodle folder with onprem moodle folder 
             ```
                 cd /home/azureadmin/
-                mv /moodle/html/moodle backup/moodle_html_backup
                 cp -rf storage/moodle /moodle/html/moodle
             ```
         - Replace the moodledata folder  
-            
             - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
             - Copy the moodledata folder existing path 
                 ```
                     cd /home/azureadmin/
-                    mv /moodle/moodledata backup/moodledata_backup
                     cp -rf storage/moodledata /moodle/moodledata
                 ``` 
-    
     -   **Configuring permissions**
         -   Set the Moodle and Moodledata folder permissions.
         -   Set 755 and www-data owner:group permissions to Moodle folder
@@ -364,6 +365,10 @@ Following operations are performed in the process of Migration.
             ```
     -  **Importing Database**  
         - Import the database from a backup file to a new database created in Azure Database for MySQL.
+        - Before creating database install mysql-clinet on controller VM.
+                ```
+                    sudo apt install mysql-client
+                ```
         - A database needs to be created prior to the import.
             ```
                 mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
@@ -390,10 +395,16 @@ Following operations are performed in the process of Migration.
         - Update the nginx conf file
             ```
                 sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
-                cd /home/azureadmin/storage/configuration/
+                cd /home/azureadmin/storage/configuration/nginx
                 sudo cp <dns>.conf  /etc/nginx/sites-enabled/
             ```
-            
+        - Update the apache conf file
+            ```
+                sudo mv /etc/apache/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
+                cd /home/azureadmin/storage/configuration/apache
+                sudo cp <dns>.conf  /etc/apache/sites-enabled/
+            ```
+             
         - Update the php config file
             ```
                 sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
@@ -440,29 +451,13 @@ Following operations are performed in the process of Migration.
     - **Configuring VMSS**   
 
         - **Download install_prerequisites.sh script**.
-            - install_prerequisites.sh script will be downloaded from GitHub. It will downloaded to /home/azureadmin/ path.
-            - install_prerequisites.sh will install the prerequisites for Moodle such as webservers, php and extensions.
-            Note: All the scripts should be executed as a root user.
-                ```
-                    sudo -s
-                    cd /home/azureadmin/
-                    wget <git raw link for install_prerequisites.sh>
-                ```
-            - Run the install_prerequisites.sh script
-                ```
-                    bash install_prerequisites.sh <webserverType> <WebserverVersion> <phpVersion>
-                ```
             
-            - Above script will perform following task
+            - Install Moodle prerequistes in VMSS instance same as controller VM.
                 -   Install web server (nginx/apache) with the given version
-                -   Install PHP with its extensions
-                    - List of Extensions are below 
-                        - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-                Note: If on-prem has any additional php extensions those will be installed by the user.
+                -   Install PHP with its extensions.
 
-                    ```
-                        sudo apt-get install -y php-<extensionName>
-                    ```
+            - *Note:* Use same commands as controller VM to install PHP and Webserver.
+
         - **Create Moode Shared Folder**
             -   Create a moodle shared folder (/moodle)
                 ```
@@ -479,6 +474,7 @@ Following operations are performed in the process of Migration.
             - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
             - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
                 ```
+                    sudo -s
                     cd /home/azureadmin 
                     azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
                 ```
@@ -507,20 +503,64 @@ Following operations are performed in the process of Migration.
                 ```
 
     - **Set a cron job** 
-        - VMSS will have a local copy of the moodle shared content to /var/www/html/
-        - Whenever there is a change in shared folder a file with time stamp will get updated.
-        - Cron job will look for the change in time stamp for every minute. 
-        - If the change is identified by the Cron job, It will copy the shared folder to /var/www/html/
+        -   A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
+        -   Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
+        
+        
+        - *Setup Cron Job:*
+```
 
-        - *Download and run setup_cron.sh:*
-            - setup_cron.sh has set of commands which will set the cron job to create a local copy of shared folder in VMSS.
-                ```
-                    sudo -s
-                    cd /home/azureadmin/
-                    wget <git raw link for setup_cron.sh>
-                    bash setup_cron.sh
-                ```
-        Note: nginx configuration will point root directory as /var/www/html/ in the instance
+local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+  mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
+
+  local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+
+  cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+#!/bin/bash
+sleep \$((\$RANDOM%30))
+if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
+  SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
+  if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
+    LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
+  else
+    logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
+    mkdir -p /var/www/html
+  fi
+  if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
+    logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
+    if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
+      truncate -s 0 $SYNC_LOG_FULLPATH
+    fi
+    echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
+    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+  fi
+else
+  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+  exit 1
+fi
+EOF
+  chmod 500 ${SYNC_SCRIPT_FULLPATH}
+
+  local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
+  cat <<EOF > ${CRON_DESC_FULLPATH}
+* * * * * root ${SYNC_SCRIPT_FULLPATH}
+EOF
+  chmod 644 ${CRON_DESC_FULLPATH}
+
+  # Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
+  local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
+  cat <<EOF > ${CRON_DESC_FULLPATH2}
+* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+EOF
+  chmod 644 ${CRON_DESC_FULLPATH2}
+
+
+```
+
+        - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
+            ```
+                echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+            ```
     
     - **Restart Servers**
         - Restart nginx server & php-fpm server
@@ -528,17 +568,32 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart nginx 
                 sudo systemctl restart php(phpVersion)-fpm  
             ```
-        - With the above steps Moodle infrastructure is ready 
+        - With the above steps Moodle infrastructure is ready.
+
+- **Log Paths**               
+        - On-prem might be having different log path location and those paths need to be updated with Azure log paths. 
+        - TBD Need to be check how to configure log paths in Azure.
         
+- **Restart servers**
+        - Update the time stamp to update the local copy in VMSS instance.
+            ```
+                /usr/local/bin/update_last_modified_time.azlamp.sh
+            ```
+        - Restart the nginx and php-fpm servers
+            ```
+                sudo systemctl restart nginx
+                sudo systemctl restart php<phpVersion>-fpm
+            ```
     
 ## Post Migration
     
         Post migration of Moodle application user need to update the certs and log paths as follows
     
 - **Virtual Machine:**
+    -   Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
     - **Log Paths**               
         - On-prem might be having different log path location and those paths need to be updated with Azure log paths.
-        - Log path are defaulted to /var/log/nginx.
+        - nginx log path are defaulted to /var/log/nginx.
              - access.log and error.log are created.
         
     - **Certs:**
@@ -555,38 +610,17 @@ Following operations are performed in the process of Migration.
                 chown www-data:www-data /moodle/certs/nginx.*
                 chmod 400 /moodle/certs/nginx.*
             ```
-    - **Restart servers**
-        - Update the time stap to update the local copy in VMSS instance.
-            ```
-                /usr/local/bin/update_last_modified_time.azlamp.sh
-            ```
+    - **Restart servers:**
         - Restart the nginx and php-fpm servers
             ```
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
             ```
     -   **Update Time Stamp:**
-        -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
-        -   In Virtual Machine scaleset a local copy of Moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
+        -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS (/var/www/html/moodle) is updated from shared folder (/moodle/html/moodle).
         -   Update the time stamp to update the local copy in VMSS instance.
             ```
                 /usr/local/bin/update_last_modified_time.azlamp.sh
-            ```
-
-- **Virtual Machine Scale Set:**
-    - **Log Paths**               
-        - On-prem might be having different log path location and those paths need to be updated with Azure log paths. 
-        - TBD Need to be check how to configure log paths in Azure.
-        
-    - **Restart servers**
-        - Update the time stamp to update the local copy in VMSS instance.
-            ```
-                /usr/local/bin/update_last_modified_time.azlamp.sh
-            ```
-        - Restart the nginx and php-fpm servers
-            ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php<phpVersion>-fpm
             ```
     - **Set Rules**
         - Set the Load Balancing rules and Auto Scaling rules.
