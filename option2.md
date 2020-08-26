@@ -99,10 +99,10 @@ Following operations are performed in the process of Migration.
             - Copy the php configurations files such as php-fpm.conf, php.ini, pool.d and conf.d folder to phpconfig folder under the configuration folder.
             - copy the ngnix or apache configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig folder under the configuration folder
         - **Database Backup** 
-            - Before taking backup of database onprem should have mysql-server to be installed.
+            - Before taking backup of database onprem should have mysql-client to be installed.
                 ```
                     sudo -s
-                    sudo apt install mysql-server
+                    sudo apt install mysql-client
                     mysql -u dbUserName -p
                     # After the above command user will prompted for database password
                     mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
@@ -385,8 +385,6 @@ Following operations are performed in the process of Migration.
                 vi config.php
                 # update the database details and save the file.
             ```
-
-    
     - **Configuring Php & WebServer**
         
         - Update the nginx conf file
@@ -476,7 +474,6 @@ Following operations are performed in the process of Migration.
         - **Mounting File Share**
             - Mount Azure File share in VM instance 
                 - Follow the [documentation](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) to set the Azure File Share on VMSS
-                - If user want to set the File Server as NFS follow the [docs](https://docs.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to?tabs=windows).
        
         - **Download on-prem archive file** 
             - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
@@ -532,7 +529,7 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart php(phpVersion)-fpm  
             ```
         - With the above steps Moodle infrastructure is ready 
-        - User now hit the load balancer DNS name to get the migrated moodle web page. 
+        
     
 ## Post Migration
     
@@ -567,6 +564,13 @@ Following operations are performed in the process of Migration.
             ```
                 sudo systemctl restart nginx
                 sudo systemctl restart php<phpVersion>-fpm
+            ```
+    -   **Update Time Stamp:**
+        -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
+        -   In Virtual Machine scaleset a local copy of Moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
+        -   Update the time stamp to update the local copy in VMSS instance.
+            ```
+                /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
 
 - **Virtual Machine Scale Set:**
@@ -608,4 +612,5 @@ Following operations are performed in the process of Migration.
                 ```
     -   **Mapping IP:**
         -   Map the load balancer IP with the DNS name.
-            
+    
+    - Hit the load balancer DNS name to get the migrated moodle web page. 
