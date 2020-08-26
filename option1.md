@@ -133,7 +133,6 @@ Following operations are performed in the process of Migration.
             
             ```
                 tar -zcvf moodle.tar.gz <source/folder/name>
-            
             ```
             
     -   **Copy Archive file to Blob storage**
@@ -146,7 +145,6 @@ Following operations are performed in the process of Migration.
                 ```
                     az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
                     sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
-                
                 ```
                 
             -   With the above steps onprem compressed data is exported to Azure blob storage.
@@ -261,9 +259,9 @@ Following operations are performed in the process of Migration.
                 azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
             ```
     - Extract the compressed content to a folder.
-            ```
-                tar -zxvf yourfile.tar.gz
-            ```
+        ```
+            tar -zxvf yourfile.tar.gz
+        ```
     -   A backup folder is extracted as storage/ at /home/azureadmin/.
     -   Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied to desired locations.
     - Create a backup folder
@@ -337,9 +335,9 @@ Following operations are performed in the process of Migration.
                 - ARM template install the following PHP extensions.
                     - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
             Note: If on-prem has any additional php extensions those will be installed by the user.
-                ```
-                    sudo apt-get install -y php-<extensionName>
-                ```
+            ```
+                sudo apt-get install -y php-<extensionName>
+            ```
         - Restart the web servers
             ```
                 sudo systemctl restart nginx 
@@ -417,9 +415,9 @@ Following operations are performed in the process of Migration.
                     - ARM template install the following PHP extensions.
                         - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
                 Note: If on-prem has any additional php extensions those will be installed by the user.
-                    ```
-                        sudo apt-get install -y php-<extensionName>
-                    ```
+                ```
+                    sudo apt-get install -y php-<extensionName>
+                ```
             - Restart the web servers
                 ```
                     sudo systemctl restart nginx 
