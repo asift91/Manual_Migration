@@ -116,9 +116,11 @@ Following operations are performed in the process of Migration.
     -   **Download and Install AzCopy:**
         -   Install AzCopy to copy data from onpremise to blob storage.
             ```
-                curl -s -D- https://aka.ms/downloadazcopy-v10-linux | grep ^Location
-                # If above link does not work then download from below link
-                wget -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1
+                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                sudo cp ./azure.list /etc/apt/sources.list.d/
+                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                sudo apt-get update
+                sudo apt-get install azcopy
             ```
 
     - **Copy Archive file to Blob storage**
@@ -331,7 +333,17 @@ Following operations are performed in the process of Migration.
                 
     - **Download on-prem archive file** 
         - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+        -   **Download and Install AzCopy:**
+            -   Install AzCopy to copy data from onpremise to blob storage.
+                ```
+                    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                    sudo cp ./azure.list /etc/apt/sources.list.d/
+                    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                    sudo apt-get update
+                    sudo apt-get install azcopy
+                ```
         - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
+        
             ```
                 cd /home/azureadmin 
                 azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
@@ -566,11 +578,11 @@ EOF
 
 
 ```
-
-        - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
-            ```
-                echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
-            ```
+       
+    - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
+        ```
+            echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+        ```
     
     - **Restart Servers**
         - Restart nginx server & php-fpm server

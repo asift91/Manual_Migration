@@ -75,6 +75,16 @@ Following operations are performed in the process of Migration.
             ```
                 az login -u <username> -p <password>
             ```
+    -   **Download and Install AzCopy:**
+        -   Install AzCopy to copy data from onpremise to blob storage.
+            ```
+                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                sudo cp ./azure.list /etc/apt/sources.list.d/
+                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                sudo apt-get update
+                sudo apt-get install azcopy
+            ```
+
     -   **Create Subscription:**
         -   User must have Azure subscription.
         -   Select existing subscription or user can add a subscription  [Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select  [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
@@ -240,7 +250,18 @@ Following operations are performed in the process of Migration.
         ![puttykey](images/puttykeybrowse.PNG)
     - After the login, run the following set of commands to migrate 
         - Download the onpremise compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location. 
-        -   Download the compressed backup file to Controller VM at /home/azureadmin/ location.
+        
+        -   **Download and Install AzCopy:**
+            -   Install AzCopy to copy data from onpremise to blob storage.
+                ```
+                    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                    sudo cp ./azure.list /etc/apt/sources.list.d/
+                    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                    sudo apt-get update
+                    sudo apt-get install azcopy
+                ```
+
+        -   Download the compressed backup file from blob storage to Controller VM at /home/azureadmin/ location.
             ```
                 sudo -s
                 cd /home/azuredamin/
@@ -441,4 +462,4 @@ Following operations are performed in the process of Migration.
             ```
     -   **Mapping IP:**
         -   Map the load balancer IP with the DNS name.
-            
+    - Hit the load balancer DNS name to get the migrated moodle web page.         
