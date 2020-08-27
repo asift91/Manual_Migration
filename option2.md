@@ -67,26 +67,26 @@ Following operations are performed in the process of Migration.
                 ```
         - Now login into your Azure account
             ```
-                az login
+            az login
             ```
         - If the CLI can open your default browser, it will do so and load an Azure sign-in page.
         - Otherwise, open a browser page at https://aka.ms/devicelogin and enter the authorization code displayed in your terminal.
         - Sign in with your account credentials in the browser.
         - Sign in with credentials on the command line
             ```
-                az login -u <username> -p <password>
+            az login -u <username> -p <password>
             ```
     - **Create Resource Group:**
         - After creating the subscription, create a [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
             ```
-                # cmd to create a RG
-                az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
+            # cmd to create a RG
+            az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
             ```
     - **Create Storage Account:**
         - Create Azure Storage Account in the same Resource Group 
             - Create a [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) with AutoKind value as "BlobStorage"
             ```
-                az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
+            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
             - The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
             - Storage Account is created, can be used to store the onprem data.
@@ -101,26 +101,26 @@ Following operations are performed in the process of Migration.
         - **Database Backup** 
             - Before taking backup of database onprem should have mysql-client to be installed.
                 ```
-                    sudo -s
-                    sudo apt install mysql-client
-                    mysql -u dbUserName -p
-                    # After the above command user will prompted for database password
-                    mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
-                    # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
+                sudo -s
+                sudo apt install mysql-client
+                mysql -u dbUserName -p
+                # After the above command user will prompted for database password
+                mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
+                # Replace dbServerName, dbUserId, dbPassword and bdName with onPrem database details
                 ```
             - Create an archive tar.gz file of backup folder
                 - It will take the backup of the storage folder, this folder contains backup of Moodle html data, Moodledata, Configuration and database backup file as per the folder structure.
                 ```
-                    tar -zcvf storage.tar.gz <source/folder/name>
+                tar -zcvf storage.tar.gz <source/folder/name>
                 ```
     -   **Download and Install AzCopy:**
         -   Install AzCopy to copy data from onpremise to blob storage.
             ```
-                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-                sudo cp ./azure.list /etc/apt/sources.list.d/
-                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-                sudo apt-get update
-                sudo apt-get install azcopy
+            echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+            sudo cp ./azure.list /etc/apt/sources.list.d/
+            sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+            sudo apt-get update
+            sudo apt-get install azcopy
             ```
 
     - **Copy Archive file to Blob storage**
@@ -130,12 +130,12 @@ Following operations are performed in the process of Migration.
             - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String". 
             - Generate SAS Token from Azure CLI
                 ```
-                    az storage container generate-sas --account-name <storage-account> --name <container> --permissions acdlrw --expiry <date-time> --auth-mode login --as-user
+                az storage container generate-sas --account-name <storage-account> --name <container> --permissions acdlrw --expiry <date-time> --auth-mode login --as-user
                 ```
             - copy the SAS token for further use.
                 ```
-                    az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                    sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>'
+                az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
+                sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>'
                 ```
             - With the above steps onprem compressed data is exported to Azure blob storage.
             
@@ -151,8 +151,8 @@ Following operations are performed in the process of Migration.
 
     - **Virtual Network** - An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
         ```
-            #command to create virtual network
-            az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
+        #command to create virtual network
+        az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
         ```
     - Navigate to the resource group, select Create a resource. From the Azure Marketplace, select Networking > Virtual network.
     - In Create virtual network, for Basics section provide this information: 
@@ -163,8 +163,8 @@ Following operations are performed in the process of Migration.
     - Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16. 
     - Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
         ```
-            #command to create subnet
-            az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
+        #command to create subnet
+        az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
         ```
 
     - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
@@ -175,22 +175,22 @@ Following operations are performed in the process of Migration.
 
         Create a network security group using Azure CLI
         ```
-            az network nsg create --resource-group myResourceGroup --name myNSG
+        az network nsg create --resource-group myResourceGroup --name myNSG
         ```
     -   **Network Interface:**
     -   A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
     -   Create Network Interface with Azure CLI command
         ```
-            az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
+        az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
         ```
 
     - **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
         ```
-            #Create a public IP
-            az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
-            
-            #Create Load balancer
-            az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
+        #Create a public IP
+        az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
+        
+        #Create Load balancer
+        az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
         ```  
 
     - **Azure Application GateWay** - An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more information [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
@@ -214,8 +214,8 @@ Following operations are performed in the process of Migration.
         - Type is File Storage
     - Azure CLI command to create storage account
         ```
-            #command to deploy storage account
-            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
+        #command to deploy storage account
+        az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
         ```
     - To access the containers and file share etc. navigate to storage account in resource group in the portal.
 
@@ -223,13 +223,13 @@ Following operations are performed in the process of Migration.
     - Creates an Azure Database for MySQL server. [click here](https://docs.microsoft.com/en-in/azure/mysql/).
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
         ```
-            #command to create Azure database for MySQL
-            az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
+        #command to create Azure database for MySQL
+        az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
         ```
     - **Configure firewall:**
     -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
         ```
-            az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
+        az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
         ```
     -  Click your newly created  MySQL server, and then click Connection security.
     -  ![connectionSecurity SS](images/connection security.png)
@@ -268,8 +268,8 @@ Following operations are performed in the process of Migration.
     -  Click on next for management and keep the parameters as default. 
     -   Keeping the other parameters as default Click on review and create.
         ```
-            #command to create Virtual machine
-            az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
+        #command to create Virtual machine
+        az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
         ```
     -   Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
     -   Copy the public IP of controller VM and paste as host name and expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. Click on Open and it will prompt to give the username as azureadmin same as given while deployment that is azureadmin 
@@ -283,51 +283,51 @@ Following operations are performed in the process of Migration.
         -   Install prerequisites for Moodle. Run the following commands
             -   Update and install rsyslog, unzip
             ```
-                sudo -s
-                sudo apt-get -y update
-                sudo apt-get -y install unattended-upgrades fail2ban
-                sudo apt-get -y update
-                sudo apt-get -y --force-yes install rsyslog git
-                sudo apt-get -y update
-                sudo apt-get install -y --fix-missing python-software-properties unzip
+            sudo -s
+            sudo apt-get -y update
+            sudo apt-get -y install unattended-upgrades fail2ban
+            sudo apt-get -y update
+            sudo apt-get -y --force-yes install rsyslog git
+            sudo apt-get -y update
+            sudo apt-get install -y --fix-missing python-software-properties unzip
             ```
             -   Install Php and extensions
                 -   If you are installing PHP greater than 7.2 then upgrade ppa package
                 ```
-                    sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+                sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
                 ```
                 -   List of Extensions are below 
                     - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
             
                 ```
-                    sudo apt-get -y  --force-yes install php$phpVersion-fpm
-                    sudo apt-get -y  --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
-                    sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis > /tmp/apt6.log
-                    sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt >> /tmp/apt6.log
+                sudo apt-get -y  --force-yes install php$phpVersion-fpm
+                sudo apt-get -y  --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
+                sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
+                sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt 
                 ```
             -   *Note:*
                 -   If on-prem has any additional php extensions those will be installed by the user.
                     ```
-                        sudo apt-get install -y php-<extensionName>
+                    sudo apt-get install -y php-<extensionName>
                     ```
                 -   phpVersion indicates version of php to be installed.
             -   Install nginx webserver
                 ```
-                    sudo apt-get -y  --force-yes install nginx
+                sudo apt-get -y  --force-yes install nginx
                 ```
             -   Install apache webserver if you are not going with nginx.
                 ```
-                    sudo apt-get install -y libapache2-mod-php
+                sudo apt-get install -y libapache2-mod-php
                 ```
                 *Note:* This documentation will support nginx by default and apache as optional.
 
     - **Create Moodle Shared folder**
         -   Create a moodle shared folder to install Moodle (/moodle)
             ```
-                mkdir -p /moodle
-                mkdir -p /moodle/moodledata
-                mkdir -p /moodle/html
-                mkdir -p /moodle/certs
+            mkdir -p /moodle
+            mkdir -p /moodle/moodledata
+            mkdir -p /moodle/html
+            mkdir -p /moodle/certs
             ```
         -   Mount shared moodle folder with storage account, [click here](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information. 
                 
@@ -336,108 +336,107 @@ Following operations are performed in the process of Migration.
         -   **Download and Install AzCopy:**
             -   Install AzCopy to copy data from onpremise to blob storage.
                 ```
-                    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-                    sudo cp ./azure.list /etc/apt/sources.list.d/
-                    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-                    sudo apt-get update
-                    sudo apt-get install azcopy
+                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                sudo cp ./azure.list /etc/apt/sources.list.d/
+                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                sudo apt-get update
+                sudo apt-get install azcopy
                 ```
         - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
         
             ```
-                cd /home/azureadmin 
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
+            cd /home/azureadmin 
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
             ```
         - Extract archive storage.tar.gz file  
             ```
-                tar -zxvf yourfile.tar.gz
-                ex: tar -zxvf storage.tar.gz
+            tar -zxvf yourfile.tar.gz
+            ex: tar -zxvf storage.tar.gz
             ``` 
         - Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
     - **Migrate Onpremise Moodle:**
         
         - Create a backup folder
             ```
-                cd /home/azureadmin/
-                mkdir -p backup
+            cd /home/azureadmin/
+            mkdir -p backup
             ```
         - Copy and replace moodle folder with onprem moodle folder 
             ```
-                cd /home/azureadmin/
-                cp -rf storage/moodle /moodle/html/moodle
+            cd /home/azureadmin/
+            cp -rf storage/moodle /moodle/html/moodle
             ```
         - Replace the moodledata folder  
             - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
             - Copy the moodledata folder existing path 
                 ```
-                    cd /home/azureadmin/
-                    cp -rf storage/moodledata /moodle/moodledata
+                cd /home/azureadmin/
+                cp -rf storage/moodledata /moodle/moodledata
                 ``` 
     -   **Configuring permissions**
         -   Set the Moodle and Moodledata folder permissions.
         -   Set 755 and www-data owner:group permissions to Moodle folder
             ```
-                sudo chmod 755 /moodle
-                sudo chown -R www-data:www-data /moodle 
+            sudo chmod 755 /moodle
+            sudo chown -R www-data:www-data /moodle 
             ```
         -   Set 770 and www-data owner:group permissions to Moodledata folder
             ```
-                sudo chmod 755 /moodle/moodledata
-                sudo chown -R www-data:www-data /moodle/moodledata
+            sudo chmod 755 /moodle/moodledata
+            sudo chown -R www-data:www-data /moodle/moodledata
             ```
     -  **Importing Database**  
         - Import the database from a backup file to a new database created in Azure Database for MySQL.
         - Before creating database install mysql-clinet on controller VM.
                 ```
-                    sudo apt install mysql-client
+                sudo apt install mysql-client
                 ```
         - A database needs to be created prior to the import.
             ```
-                mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+            mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
             ```
         Note: User can get the Database servername, admin login, password from the azure portal, select the created Azure Database for MySQL.
         - Change the permissions.
             ```
-                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}. * TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';" 
+            mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}. * TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';" 
             ```
         - Import the database.
             ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
+            mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
             ```
         - Change the database details in moodle configuration file (/moodle/config.php).
             - Update the following parameters in config.php
                 - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
             ```
-                cd /moodle/html/moodle/
-                vi config.php
-                # update the database details and save the file.
+            cd /moodle/html/moodle/
+            vi config.php
+            # update the database details and save the file.
             ```
     - **Configuring Php & WebServer**
         
         - Update the nginx conf file
             ```
-                sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
-                cd /home/azureadmin/storage/configuration/nginx
-                sudo cp <dns>.conf  /etc/nginx/sites-enabled/
+            sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
+            cd /home/azureadmin/storage/configuration/nginx
+            sudo cp <dns>.conf  /etc/nginx/sites-enabled/
             ```
         - Update the apache conf file
             ```
-                sudo mv /etc/apache/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
-                cd /home/azureadmin/storage/configuration/apache
-                sudo cp <dns>.conf  /etc/apache/sites-enabled/
+            sudo mv /etc/apache/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
+            cd /home/azureadmin/storage/configuration/apache
+            sudo cp <dns>.conf  /etc/apache/sites-enabled/
             ```
              
         - Update the php config file
             ```
-                sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
-                sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
-                
+            sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
+            sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
             ```
         - Restart the web servers
             ```
-                sudo systemctl restart nginx 
-                sudo systemctl restart php(phpVersion)-fpm  
-                ex: sudo systemctl restart php7.4-fpm  
+            sudo systemctl restart nginx 
+            sudo systemctl restart php(phpVersion)-fpm  
+            ex: sudo systemctl restart php7.4-fpm  
             ```
  
 - **Scale Set:** 
@@ -465,7 +464,7 @@ Following operations are performed in the process of Migration.
 
     - Scale set can be created from Azure CLI
         ```
-            az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
+        az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
         ```
     - VMSS will create a VM instance with an internal IP. User need to have a VPN gateway to access the VM. 
     - To setup the Virtual Network Gateway access the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md).
@@ -483,10 +482,10 @@ Following operations are performed in the process of Migration.
         - **Create Moode Shared Folder**
             -   Create a moodle shared folder (/moodle)
                 ```
-                    mkdir -p /moodle
-                    mkdir -p /moodle/moodledata
-                    mkdir -p /moodle/html
-                    mkdir -p /moodle/certs
+                mkdir -p /moodle
+                mkdir -p /moodle/moodledata
+                mkdir -p /moodle/html
+                mkdir -p /moodle/certs
                 ```
         - **Mounting File Share**
             - Mount Azure File share in VM instance 
@@ -496,32 +495,32 @@ Following operations are performed in the process of Migration.
             - Download the onprem archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
             - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
                 ```
-                    sudo -s
-                    cd /home/azureadmin 
-                    azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
+                sudo -s
+                cd /home/azureadmin 
+                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder' 
                 ```
             - Extract archive storage.tar.gz file  
                 ```
-                    tar -zxvf yourfile.tar.gz
-                    ex: tar -zxvf storage.tar.gz
+                tar -zxvf yourfile.tar.gz
+                ex: tar -zxvf storage.tar.gz
                 ``` 
         
         - **Configuring Php & WebServer**
             
             - Update nginx configuration file (/moodle/config.php)
                 ```
-                    mkdir  -p /home/azureadmin/backup/
-                    sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
-                    cd /home/azureadmin/storage/configuration/
-                    sudo cp <dns>.conf  /etc/nginx/sites-enabled/ 
+                mkdir  -p /home/azureadmin/backup/
+                sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/ 
+                cd /home/azureadmin/storage/configuration/
+                sudo cp <dns>.conf  /etc/nginx/sites-enabled/ 
                 ```
             - Update the php config file  
                 ```
-                    sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
-                    sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
-                    sudo systemctl restart nginx 
-                    sudo systemctl restart php(phpVersion)-fpm  
-                    ex: sudo systemctl restart php7.4-fpm  
+                sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup 
+                sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+                sudo systemctl restart nginx 
+                sudo systemctl restart php(phpVersion)-fpm  
+                ex: sudo systemctl restart php7.4-fpm  
                 ```
 
     - **Set a cron job** 
@@ -531,7 +530,6 @@ Following operations are performed in the process of Migration.
         
         - *Setup Cron Job:*
             ```
-
             local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
             mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
 
@@ -575,20 +573,18 @@ Following operations are performed in the process of Migration.
             * * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
             EOF
             chmod 644 ${CRON_DESC_FULLPATH2}
-
-
             ```
        
         - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
             ```
-                echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+            echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
             ```
     
     - **Restart Servers**
         - Restart nginx server & php-fpm server
             ```
-                sudo systemctl restart nginx 
-                sudo systemctl restart php(phpVersion)-fpm  
+            sudo systemctl restart nginx 
+            sudo systemctl restart php(phpVersion)-fpm  
             ```
         - With the above steps Moodle infrastructure is ready.
 
@@ -599,12 +595,12 @@ Following operations are performed in the process of Migration.
 - **Restart servers**
         - Update the time stamp to update the local copy in VMSS instance.
             ```
-                /usr/local/bin/update_last_modified_time.azlamp.sh
+            /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
         - Restart the nginx and php-fpm servers
             ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php<phpVersion>-fpm
+            sudo systemctl restart nginx
+            sudo systemctl restart php<phpVersion>-fpm
             ```
     
 ## Post Migration
@@ -625,24 +621,24 @@ Following operations are performed in the process of Migration.
 
         - You can also generate a self-signed certificate, useful for testing only:
             ```
-                openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             ```
         - It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
             ```
-                chown www-data:www-data /moodle/certs/nginx.*
-                chmod 400 /moodle/certs/nginx.*
+            chown www-data:www-data /moodle/certs/nginx.*
+            chmod 400 /moodle/certs/nginx.*
             ```
     - **Restart servers:**
         - Restart the nginx and php-fpm servers
             ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php<phpVersion>-fpm
+            sudo systemctl restart nginx
+            sudo systemctl restart php<phpVersion>-fpm
             ```
     -   **Update Time Stamp:**
         -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS (/var/www/html/moodle) is updated from shared folder (/moodle/html/moodle).
         -   Update the time stamp to update the local copy in VMSS instance.
             ```
-                /usr/local/bin/update_last_modified_time.azlamp.sh
+            /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
     - **Set Rules**
         - Set the Load Balancing rules and Auto Scaling rules.
@@ -650,21 +646,21 @@ Following operations are performed in the process of Migration.
             - Go to the Load Balancer Resource in Azure portal.
             - Set the http (TCP/80) and https (TCP/443) rules.
                 ```
-                    az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
+                az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
                 ```
         - **Auto Scaling Rules**
             - Go to the Virtual Machine Scale Set Resource in Azure portal.
             - In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
                 ```
-                    # Auto scaling rules can be created by scaling precentage or by the scaling count.
+                # Auto scaling rules can be created by scaling precentage or by the scaling count.
 
-                    az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-                        --scale to 5 --condition "Percentage CPU > 75 avg 10m"
-                    # Scale to 5 instances when the CPU Percentage across instances is greater than 75 averaged over 10 minutes.
+                az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
+                    --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+                # Scale to 5 instances when the CPU Percentage across instances is greater than 75 averaged over 10 minutes.
 
-                    az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-                        --scale in 50% --condition "Percentage CPU < 25 avg 15m"
-                    # Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
+                az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
+                    --scale in 50% --condition "Percentage CPU < 25 avg 15m"
+                # Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
                 ```
     -   **Mapping IP:**
         -   Map the load balancer IP with the DNS name.
