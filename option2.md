@@ -530,59 +530,59 @@ Following operations are performed in the process of Migration.
         
         
         - *Setup Cron Job:*
-```
+            ```
 
-local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
-  mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
+            local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+            mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
 
-  local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+            local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
 
-  cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
-#!/bin/bash
-sleep \$((\$RANDOM%30))
-if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
-  SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
-  if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
-    LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
-  else
-    logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
-    mkdir -p /var/www/html
-  fi
-  if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
-    logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
-    if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
-      truncate -s 0 $SYNC_LOG_FULLPATH
-    fi
-    echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
-    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
-  fi
-else
-  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
-  exit 1
-fi
-EOF
-  chmod 500 ${SYNC_SCRIPT_FULLPATH}
+            cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+            #!/bin/bash
+            sleep \$((\$RANDOM%30))
+            if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
+            SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
+            if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
+                LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
+            else
+                logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
+                mkdir -p /var/www/html
+            fi
+            if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
+                logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
+                if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
+                truncate -s 0 $SYNC_LOG_FULLPATH
+                fi
+                echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
+                rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+            fi
+            else
+            logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+            exit 1
+            fi
+            EOF
+            chmod 500 ${SYNC_SCRIPT_FULLPATH}
 
-  local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
-  cat <<EOF > ${CRON_DESC_FULLPATH}
-* * * * * root ${SYNC_SCRIPT_FULLPATH}
-EOF
-  chmod 644 ${CRON_DESC_FULLPATH}
+            local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
+            cat <<EOF > ${CRON_DESC_FULLPATH}
+            * * * * * root ${SYNC_SCRIPT_FULLPATH}
+            EOF
+            chmod 644 ${CRON_DESC_FULLPATH}
 
-  # Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
-  local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
-  cat <<EOF > ${CRON_DESC_FULLPATH2}
-* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
-EOF
-  chmod 644 ${CRON_DESC_FULLPATH2}
+            # Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
+            local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
+            cat <<EOF > ${CRON_DESC_FULLPATH2}
+            * * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+            EOF
+            chmod 644 ${CRON_DESC_FULLPATH2}
 
 
-```
+            ```
        
-    - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
-        ```
-            echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
-        ```
+        - Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
+            ```
+                echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+            ```
     
     - **Restart Servers**
         - Restart nginx server & php-fpm server

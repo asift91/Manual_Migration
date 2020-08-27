@@ -267,10 +267,10 @@ Following operations are performed in the process of Migration.
                 cd /home/azuredamin/
                 azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
             ```
-    - Extract the compressed content to a folder.
-        ```
-            tar -zxvf yourfile.tar.gz
-        ```
+        - Extract the compressed content to a folder.
+            ```
+                tar -zxvf yourfile.tar.gz
+            ```
     -   A backup folder is extracted as storage/ at /home/azureadmin/.
     -   Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied to desired locations.
     - Create a backup folder
