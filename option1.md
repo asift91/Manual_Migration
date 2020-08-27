@@ -240,9 +240,9 @@ Following operations are performed in the process of Migration.
 
 -   ### Manual Moodle migration follow the below steps 
 
-    -   After completion of deployment go to the resource group.  
+    -   After completion of deployment, go to the resource group.  
     -   Update the Moodle folders and configuration in both the controller virtual machine and virtual machine scale set instance.
-    -   **Virtual Machine**
+    -   **Controller VM**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools 
         - Copy the public IP of controller VM and paste as host name 
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. 
@@ -280,12 +280,13 @@ Following operations are performed in the process of Migration.
             mkdir -p backup
             mkdir -p backup/moodle
         ```
-    - Replace the moodle folder  
-        - Copy and replace this moodle folder with existing folder 
-        - Before accessing the moodle folder switch to root user and copy the moodle folder to existing path 
+    - Replace the moodle html folder  
+        - Moodle and moodledata fodlers are created at /moodle shared folder while installing Moodle.
+
+        - Copy and replace moodle folder with existing folder (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
             ```
-                mv /moodle/html /home/azureadmin/backup/moodle/html
-                cp /home/azureadmin/moodle /moodle/html
+                mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
+                cp -rf /home/azureadmin/moodle /moodle/html/moodle
             ```
     - Replace the moodledata folder 
         - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
@@ -296,10 +297,7 @@ Following operations are performed in the process of Migration.
             ``` 
     - Importing the .sql file     
         -   Import the onpremise database to Azure Database for MySQL.
-        - Create a database to import onpremise database
-            ```
-                mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
-            ```
+        -   Database is created at the time of ARM Template deployment. Name of the database created is "moodle".
         - Give the permissions to database
             ```
                 mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
@@ -308,6 +306,21 @@ Following operations are performed in the process of Migration.
             ```
                 mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql file
             ```
+        - *Note:* MySQL connection details are available in Azure Portal. 
+            - Go to the Azure Portal and select the Resource Group.
+            - Select the Azure Database for MySQL server resource and get the details from the overview.
+            -   Server name and Server admin login name, password can be changed in the portal.
+
+        - Change the database details in moodle configuration file (/moodle/config.php).
+            - Update the following parameters in config.php
+                - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot.
+                - Above details are available in Azure portal except the dataroot and wwwrooot.
+            ```
+                cd /moodle/html/moodle/
+                vi config.php
+                # update the database details and save the file.
+            ```
+
     - Configure folder premissions
         - Set 755 and www-data owner:group permissions to Moodle folder 
             ```
@@ -319,14 +332,7 @@ Following operations are performed in the process of Migration.
                 sudo chmod 755 /moodle/moodledata
                 sudo chown -R www-data:www-data /moodle/moodledata
             ``` 
-        - Change the database details in moodle configuration file (/moodle/config.php).
-            - Update the following parameters in config.php
-                - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
-            ```
-                cd /moodle/html/moodle/
-                vi config.php
-                # update the database details and save the file.
-            ```
+        
     - Configuring Php & WebServer
         - Update the nginx conf file
             ```
@@ -353,10 +359,22 @@ Following operations are performed in the process of Migration.
                 sudo systemctl restart php(phpVersion)-fpm  
                 ex: sudo systemctl restart php7.4-fpm  
             ``` 
+            -   If apache is installed as a webserver then restart apache server
+                ```
+                    sudo systemctl restart apache
+                ```
+        - Stop the webservers
+            ```
+                sudo systemctl stop nginx 
+                sudo systemctl stop php(phpVersion)-fpm  
+                ex: sudo systemctl stop php7.4-fpm  
+            ``` 
     -   **Virtual Machine Scaleset**
         -   Login to Scale Set VM instance and execute the following sequence of steps
         - Download the onpremise compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location. 
         -   Download the compressed backup file to Controller VM at /home/azureadmin/ location.
+        -   Switch to root user and perform all actions with root user only
+
             ```
                 sudo -s
                 cd /home/azuredamin/
@@ -397,15 +415,12 @@ Following operations are performed in the process of Migration.
                 ```
             
         -   **Log Paths**
-            -   onpremise might be having different log path location and those paths need to be updated with Azure log paths.
-            -   Log path are defaulted to /var/log/nginx.
+            -   Syslogs are confiured at the time of deployments. 
+            -   Go to the /etc/nginx/sites-enabled/ edit the configuration file to set the logs paths to /var/log/nginx.
                 -   access.log and error.log are created
+            - Configure Azure Insights for syslogs.
+
         -   **Restart servers**
-        
-            -   Update the time stap to update the local copy in VMSS instance.
-                ```
-                    /usr/local/bin/update_last_modified_time.azlamp.sh
-                ```
             -   Restart the nginx and php-fpm servers
                 ```
                     sudo systemctl restart nginx
@@ -419,7 +434,7 @@ Following operations are performed in the process of Migration.
 
 ## Post Migration
 
--   Post migration of Moodle application user need to update the certs and log paths as follows
+- Post migration of Moodle application user need to update the certs and log paths as follows
 
 -   **Virtual Machine:**
     
@@ -446,8 +461,10 @@ Following operations are performed in the process of Migration.
     -   **Update Time Stamp:**
         -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of Moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
-        -   Update the time stamp to update the local copy in VMSS instance.
+        -   Update the timestamp to update the local copy in VMSS instance.
+        -   Run the below command in Controller VM as a root user
             ```
+                sudo -s
                 /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
     -   **Restart servers**
