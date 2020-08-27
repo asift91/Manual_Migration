@@ -219,6 +219,7 @@ Following operations are performed in the process of Migration.
         - After giving the details test connection. If the connection is successful it will prompt for password .Provide the password to get connected. 
         
 - **Virtual Machine Template:** This template will create a  Virtual Machine
+    -   To generate SSH keys, [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
     - Controller VM: 
         - Ubuntu OS defaulted to 16.04 
         - A virtual machine is a computer file, typically called an image, which behaves like an actual compute [Click here](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/) 
@@ -341,11 +342,11 @@ Following operations are performed in the process of Migration.
             ```
         -   Install Missing PHP extensions
                 - ARM template install the following PHP extensions.
-                    - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-            Note: If onpremise has any additional php extensions those will be installed by the user.
-            ```
-                sudo apt-get install -y php-<extensionName>
-            ```
+            - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+            - Note: If onpremise has any additional php extensions those will be installed by the user.
+                ```
+                    sudo apt-get install -y php-<extensionName>
+                ```
         - Restart the web servers
             ```
                 sudo systemctl restart nginx 
