@@ -66,23 +66,23 @@ Following operations are performed in the process of Migration.
             ```
         -   Now login into your Azure account
             ```
-                az login
+            az login
             ```
         -   If the CLI can open your default browser, it will do so and load an Azure sign-in page.
         -   Otherwise, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin)  and enter the authorization code displayed in your terminal.
         -   Sign in with your account credentials in the browser.
         -   Sign in with credentials on the command line
             ```
-                az login -u <username> -p <password>
+            az login -u <username> -p <password>
             ```
     -   **Download and Install AzCopy:**
         -   Install AzCopy to copy data from onpremise to blob storage.
             ```
-                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-                sudo cp ./azure.list /etc/apt/sources.list.d/
-                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-                sudo apt-get update
-                sudo apt-get install azcopy
+            echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+            sudo cp ./azure.list /etc/apt/sources.list.d/
+            sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+            sudo apt-get update
+            sudo apt-get install azcopy
             ```
 
     -   **Create Subscription:**
@@ -92,9 +92,8 @@ Following operations are performed in the process of Migration.
     -   **Create Resource Group:**
         -   After creating the subscription, create a  [Portal-Link](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
             ```
-                # cmd to create a RG
-                az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
-            
+            # cmd to create a RG
+            az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
             ```
    
     -   **Create Storage Account:**
@@ -102,7 +101,7 @@ Following operations are performed in the process of Migration.
         -   Create Azure Storage Account in the same Resource Group
         -   Create a  [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount)  with AutoKind value as "BlobStorage"
             ```
-                az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
+            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
         -   The storage account name must be in the combination of lowercase and numericals, click on create button as shown above.
         -   Storage Account is created, can be used to store the onpremise data.
@@ -119,17 +118,19 @@ Following operations are performed in the process of Migration.
             -   Before taking backup of database onpremise should have mysql-client to be installed.
                 
                 ```
-                    sudo -s
-                    sudo apt install mysql-client
-                    mysql -u dbUserName -p
-                    # After the above command user will prompted for database password
-                    mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
-                    # Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
+                sudo -s
+                sudo apt install mysql-client
+                mysql -u dbUserName -p
                 
+                # After the above command user will prompted for database password
+                
+                mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
+                
+                # Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
                 ```
         -   Create an archive tar.gz file of backup folder
             ```
-                tar -zcvf moodle.tar.gz <source/folder/name>
+            tar -zcvf moodle.tar.gz <source/folder/name>
             ```
             
     -   **Copy Archive file to Blob storage**
@@ -139,8 +140,8 @@ Following operations are performed in the process of Migration.
             -   Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
             -   copy the SAS token for further use.
                 ```
-                    az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                    sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+                az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
+                sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
                 ```
             -   With the above steps, onpremise compressed data is exported to Azure blob storage.
 
@@ -255,56 +256,56 @@ Following operations are performed in the process of Migration.
         -   **Download and Install AzCopy:**
             -   Install AzCopy to copy data from onpremise to blob storage.
                 ```
-                    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-                    sudo cp ./azure.list /etc/apt/sources.list.d/
-                    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-                    sudo apt-get update
-                    sudo apt-get install azcopy
+                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
+                sudo cp ./azure.list /etc/apt/sources.list.d/
+                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
+                sudo apt-get update
+                sudo apt-get install azcopy
                 ```
 
         -   Download the compressed backup file from blob storage to Controller VM at /home/azureadmin/ location.
             ```
-                sudo -s
-                cd /home/azuredamin/
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+            sudo -s
+            cd /home/azuredamin/
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
             ```
         - Extract the compressed content to a folder.
             ```
-                tar -zxvf yourfile.tar.gz
+            tar -zxvf yourfile.tar.gz
             ```
     -   A backup folder is extracted as storage/ at /home/azureadmin/.
     -   Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied to desired locations.
     - Create a backup folder
         ```
-            cd /home/azureadmin/
-            mkdir -p backup
-            mkdir -p backup/moodle
+        cd /home/azureadmin/
+        mkdir -p backup
+        mkdir -p backup/moodle
         ```
     - Replace the moodle html folder  
         - Moodle and moodledata fodlers are created at /moodle shared folder while installing Moodle.
 
         - Copy and replace moodle folder with existing folder (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
             ```
-                mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
-                cp -rf /home/azureadmin/moodle /moodle/html/moodle
+            mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
+            cp -rf /home/azureadmin/moodle /moodle/html/moodle
             ```
     - Replace the moodledata folder 
         - Copy and replace this moodledata (/moodle/moodledata) folder with existing folder 
         - As a root user and copy the moodledata folder existing path 
             ```
-                mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
-                cp /home/azureadmin/moodledata /moodle/moodledata
+            mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
+            cp /home/azureadmin/moodledata /moodle/moodledata
             ``` 
     - Importing the .sql file     
         -   Import the onpremise database to Azure Database for MySQL.
         -   Database is created at the time of ARM Template deployment. Name of the database created is "moodle".
         - Give the permissions to database
             ```
-                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
+            mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
             ``` 
         - Import the database
             ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql file
+            mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql file
             ```
         - *Note:* MySQL connection details are available in Azure Portal. 
             - Go to the Azure Portal and select the Resource Group.
@@ -316,58 +317,57 @@ Following operations are performed in the process of Migration.
                 - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot.
                 - Above details are available in Azure portal except the dataroot and wwwrooot.
             ```
-                cd /moodle/html/moodle/
-                vi config.php
-                # update the database details and save the file.
+            cd /moodle/html/moodle/
+            vi config.php
+            # update the database details and save the file.
             ```
 
     - Configure folder premissions
         - Set 755 and www-data owner:group permissions to Moodle folder 
             ```
-                sudo chmod 755 /moodle
-                sudo chown -R www-data:www-data /moodle
+            sudo chmod 755 /moodle
+            sudo chown -R www-data:www-data /moodle
             ```
         - Set 770 and www-data owner:group permissions to MoodleData folder 
             ```
-                sudo chmod 755 /moodle/moodledata
-                sudo chown -R www-data:www-data /moodle/moodledata
+            sudo chmod 755 /moodle/moodledata
+            sudo chown -R www-data:www-data /moodle/moodledata
             ``` 
         
     - Configuring Php & WebServer
         - Update the nginx conf file
             ```
-                sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
-                cd /home/azureadmin/storage/configuration/
-                sudo cp <dns>.conf  /etc/nginx/sites-enabled/
+            sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
+            cd /home/azureadmin/storage/configuration/
+            sudo cp <dns>.conf  /etc/nginx/sites-enabled/
             ```
         - Update the php config file
             ```
-                sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-                sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
-                
+            sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+            sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
             ```
         -   Install Missing PHP extensions
                 - ARM template install the following PHP extensions.
             - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
             - Note: If onpremise has any additional php extensions those will be installed by the user.
                 ```
-                    sudo apt-get install -y php-<extensionName>
+                sudo apt-get install -y php-<extensionName>
                 ```
         - Restart the web servers
             ```
-                sudo systemctl restart nginx 
-                sudo systemctl restart php(phpVersion)-fpm  
-                ex: sudo systemctl restart php7.4-fpm  
+            sudo systemctl restart nginx 
+            sudo systemctl restart php(phpVersion)-fpm  
+            ex: sudo systemctl restart php7.4-fpm  
             ``` 
             -   If apache is installed as a webserver then restart apache server
                 ```
-                    sudo systemctl restart apache
+                sudo systemctl restart apache
                 ```
         - Stop the webservers
             ```
-                sudo systemctl stop nginx 
-                sudo systemctl stop php(phpVersion)-fpm  
-                ex: sudo systemctl stop php7.4-fpm  
+            sudo systemctl stop nginx 
+            sudo systemctl stop php(phpVersion)-fpm  
+            ex: sudo systemctl stop php7.4-fpm  
             ``` 
     -   **Virtual Machine Scaleset**
         -   Login to Scale Set VM instance and execute the following sequence of steps
@@ -376,42 +376,41 @@ Following operations are performed in the process of Migration.
         -   Switch to root user and perform all actions with root user only
 
             ```
-                sudo -s
-                cd /home/azuredamin/
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+            sudo -s
+            cd /home/azuredamin/
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
             ```
         - Extract the compressed content to a folder.
             ```
-                tar -zxvf yourfile.tar.gz
+            tar -zxvf yourfile.tar.gz
             ```
     -   A backup folder is extracted as storage/ at /home/azureadmin/.
         -   Storage folder contains Moodle, Moodledata and configuration folders along with database backup file. These will be copied to desired locations.
         - Create a backup folder
             ```
-                cd /home/azureadmin/
-                mkdir -p backup
-                mkdir -p backup/moodle
+            cd /home/azureadmin/
+            mkdir -p backup
+            mkdir -p backup/moodle
             ```
         
         - **Configuring Php & WebServer**
             - Update the nginx conf file
                 ```
-                    sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
-                    cd /home/azureadmin/storage/configuration/
-                    sudo cp <dns>.conf  /etc/nginx/sites-enabled/
+                sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
+                cd /home/azureadmin/storage/configuration/
+                sudo cp <dns>.conf  /etc/nginx/sites-enabled/
                 ```
             - Update the php config file
                 ```
-                    sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-                    sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
-                    
+                sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+                sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
                 ```
             -   Install Missing PHP extensions
                     - ARM template install the following PHP extensions.
                         - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
                 Note: If onpremise has any additional php extensions those will be installed by the user.
                 ```
-                    sudo apt-get install -y php-<extensionName>
+                sudo apt-get install -y php-<extensionName>
                 ```
             
         -   **Log Paths**
@@ -423,12 +422,12 @@ Following operations are performed in the process of Migration.
         -   **Restart servers**
             -   Restart the nginx and php-fpm servers
                 ```
-                    sudo systemctl restart nginx
-                    sudo systemctl restart php<phpVersion>-fpm
+                sudo systemctl restart nginx
+                sudo systemctl restart php<phpVersion>-fpm
                 ```
             -   If apache is installed as a webserver then restart apache server
                 ```
-                    sudo systemctl restart apache
+                sudo systemctl restart apache
                 ```
          
 
@@ -447,16 +446,15 @@ Following operations are performed in the process of Migration.
         -   You can also generate a self-signed certificate, useful for testing only:
             
             ```
-                openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-                -keyout /moodle/certs/nginx.key \
-                -out /moodle/certs/nginx.crt \
-                -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
-            
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /moodle/certs/nginx.key \
+            -out /moodle/certs/nginx.crt \
+            -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             ```
         -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
             ```
-                chown www-data:www-data /moodle/certs/nginx.*
-                chmod 400 /moodle/certs/nginx.*
+            chown www-data:www-data /moodle/certs/nginx.*
+            chmod 400 /moodle/certs/nginx.*
             ```
     -   **Update Time Stamp:**
         -   A cron job is running in the VMSS which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
@@ -464,19 +462,19 @@ Following operations are performed in the process of Migration.
         -   Update the timestamp to update the local copy in VMSS instance.
         -   Run the below command in Controller VM as a root user
             ```
-                sudo -s
-                /usr/local/bin/update_last_modified_time.azlamp.sh
+            sudo -s
+            /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
     -   **Restart servers**
         
         -   Restart the nginx and php-fpm servers
             ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php<phpVersion>-fpm
+            sudo systemctl restart nginx
+            sudo systemctl restart php<phpVersion>-fpm
             ```
         -   If apache is installed as a webserver then restart apache server
             ```
-                sudo systemctl restart apache
+            sudo systemctl restart apache
             ```
     -   **Mapping IP:**
         -   Map the load balancer IP with the DNS name.
