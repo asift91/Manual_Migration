@@ -170,22 +170,22 @@ Following operations are performed in the process of Migration.
     - MySQL version: 5.6, 5.7 and 8.0 
     - Ubuntu version: 16.04-LTS  
 - The infrastructure will create the following resources by using the predefined ARM template: 
-- **Network Template:** Network Template will create virtual network,Network Security Group, Network Interface, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
+- **Network Template:** Network Template will create virtual network, Network Security Group, Network Interface, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
      - Creates a virtual network with string as name , apiVersion, Location and DNS server name.
      - The AddressSpace that contains an array of IP address ranges that can be used by subnets
    
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
-    -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure and onpremise resources.[click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface)
+    -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure and onpremise resources. [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface) for more information.
     - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the VNET. More information on Subnet [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More information on Public IP [click here](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More information on Load balancer  [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
-    - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer,only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer,
+    - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer, only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer,
     -  **Azure Application Gateway**: It is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More information on App Gateway [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. [click here](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 
 - **Storage Template:**  
-    -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more example[click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
+    -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   As per the predefined template storage account with Azure files creates File Share.
     -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
@@ -210,14 +210,14 @@ Following operations are performed in the process of Migration.
     ![storage_account](images/storage-account.png)
 - **Database Template:** 
     - This Database template will creates an Azure Database for MySQL server. [Click-here](https://docs.microsoft.com/en-in/azure/mysql/) 
-    - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
+    - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates, backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration 
     - Ways to connect to database server 
         - Use MySQL client or tools such as MySQL Workbench. 
         - For workbench give the connection name, hostname (server name), username (server admin login name) 
     ![mysqlworkbench](images/mysql-workbench.png)
-        - After giving the details test connection. If the connection is successful it will prompt for password .Provide the password to get connected. 
+        - After giving the details test connection. If the connection is successful it will prompt for password. Provide the password to get connected. 
         
 - **Virtual Machine Template:** This template will create a  Virtual Machine
     -   To generate SSH keys, [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
@@ -225,7 +225,7 @@ Following operations are performed in the process of Migration.
         - Ubuntu OS defaulted to 16.04 
         - A virtual machine is a computer file, typically called an image, which behaves like an actual compute [Click here](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/) 
     - VM extension: 
-        - Extension can be small applications that provide post-deployment configuration and automation tasks on Azure VMs.[Click here](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) 
+        - Extension can be small applications that provide post-deployment configuration and automation tasks on Azure VMs. [Click here](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) 
         - VM extension will executes a shell script file which installs Moodle on the Virtual Machine and captures the log files. 
         - Log files stderr and stdout are created at the /var/lib/waagent/custom-script/download/0/  
         - User can view the log files as a root user. 
@@ -282,7 +282,7 @@ Following operations are performed in the process of Migration.
         mkdir -p backup/moodle
         ```
     - Replace the moodle html folder  
-        - Moodle and moodledata fodlers are created at /moodle shared folder while installing Moodle.
+        - Moodle and moodledata folders are created at /moodle shared folder while installing Moodle.
 
         - Copy and replace moodle folder with existing folder (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
             ```
@@ -322,7 +322,7 @@ Following operations are performed in the process of Migration.
             # update the database details and save the file.
             ```
 
-    - Configure folder premissions
+    - Configure folder permissions
         - Set 755 and www-data owner:group permissions to Moodle folder 
             ```
             sudo chmod 755 /moodle
@@ -334,7 +334,7 @@ Following operations are performed in the process of Migration.
             sudo chown -R www-data:www-data /moodle/moodledata
             ``` 
         
-    - Configuring Php & WebServer
+    - Configuring Php & Webserver
         - Update the nginx conf file
             ```
             sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
@@ -369,7 +369,7 @@ Following operations are performed in the process of Migration.
             sudo systemctl stop php(phpVersion)-fpm  
             ex: sudo systemctl stop php7.4-fpm  
             ``` 
-    -   **Virtual Machine Scaleset**
+    -   **Virtual Machine Scale set**
         -   Login to Scale Set VM instance and execute the following sequence of steps
         - Download the onpremise compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location. 
         -   Download the compressed backup file to Controller VM at /home/azureadmin/ location.
