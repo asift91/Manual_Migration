@@ -90,7 +90,7 @@
    
     -   **Create Storage Account:**
 
-        -  The next step would be to [create a Storage Account]((https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created
+        -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created
         - Create a storage account and set the Account
 
             ```
