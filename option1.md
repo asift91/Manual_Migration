@@ -262,7 +262,7 @@
         ```
         - Extract the compressed content to a directory.
         ```
-            tar -zxvf yourfile.tar.gz
+            tar -zxvf moodle.tar.gz
         ```
     -   A backup directory is extracted as storage/ at /home/azureadmin/
     -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
