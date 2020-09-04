@@ -30,39 +30,38 @@
 -   **Pre Migration**
     
     -   Data Export from on-premises to Azure involves the following tasks:
-        -   Install Azure CLI
-        -   Have an Azure subscription handy
-        -   Create a Resource Group inside Azure
-        -   Create a Storage Account inside Azure
-        -   Backup all relevant data from on-premises    infrastructure.
-        -  Ensure the on-premises database instance has mysql-client installed
-        - Copy backup archive to Blob storage on Azure
+        -   Install Azure CLI.
+        -   Have an Azure subscription handy.
+        -   Create a Resource Group inside Azure.
+        -   Create a Storage Account inside Azure.
+        -   Backup all relevant data from on-premises.    infrastructure.
+        -  Ensure the on-premises database instance has mysql-client installed.
+        - Copy backup archive to Blob storage on Azure.
 
 
 -   **Migration**
     
-    - Actual migration tasks that involve the application and all data
-    - Deploy infrastructure on Azure using moodle ARM template
-    - Copy over the backup archive (moodle data) to the moodle controller instance from the ARM deployment
-    - Setup moodle controller instance and worker nodes 
-    - Data migration tasks
+    - Actual migration tasks that involve the application and all data.
+    - Deploy infrastructure on Azure using moodle ARM template.
+    - Copy over the backup archive (moodle data) to the moodle controller instance from the ARM deployment.
+    - Setup moodle controller instance and worker nodes. 
+    - Data migration tasks.
        
 -   **Post Migration**
     
     - Post migration tasks that include application configuration.
-    - Update general configuration (e.g. log file destinations)
-    - Configuring certs
-    - Update any cron jobs / scheduled tasks
-    - Restart servers
-    - Configuring certificates
-    - Restarting servers
+    - Update general configuration (e.g. log file destinations).
+    - Update any cron jobs / scheduled tasks.
+    - Restart servers.
+    - Configuring certificates.
+    - Restarting servers.
 
 
 ## Pre Migration
 
 -   **Data Export from on-premises to Azure Cloud::**
     -   **Install Azure CLI**
-        -   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks
+        -   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
             ```
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
             ```
@@ -82,7 +81,7 @@
         - If you do not have a subscription already present, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
 
     -   **Create Resource Group:**
-        -  Once you have a subscription handy, you will need to create a Resource Group.Alternatively you can use the Azure CLI command to create a resource group
+        -  Once you have a subscription handy, you will need to create a Resource Group.Alternatively you can use the Azure CLI command to create a resource group.
         ```
                 az group create -l location -n name
                 # az group create -l westus -n migration
@@ -91,7 +90,7 @@
    
     -   **Create Storage Account:**
 
-        -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created
+        -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
         - Create a storage account and set the Account
 
             ```
@@ -128,26 +127,26 @@
             tar -zcvf moodle.tar.gz <source/directory/name>
             ```
     -   **Copy Archive file to Blob storage**
-        - 	Copy the on-premises archive file to blob storage using AzCopy
-To use AzCopy user should a generate SAS Token first.
-Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
-        -   Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
-        -   copy the SAS token for further use.
-        - Command to genarate SAS token
+        - 	Copy the on-premises archive file to blob storage using AzCopy.
+        - To use AzCopy user should a generate SAS Token first.
+        - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
+        - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
+        - Copy the SAS token for further use.
+        - Command to genarate SAS token.
 
             ```
                 az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
                 sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
             ```
-        -  Now, you should have a copy of your archive inside the Azure blob storage account
+        -  Now, you should have a copy of your archive inside the Azure blob storage account.
 
 ## Migration
 
 ### Migrating moodle with Azure ARM Templates 
 - Deploying Azure infrastructure using ARM template.
-- When using an ARM template to deploy infrastructure on Azure, you have a couple of available options
+- When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
-- A fully configurable deployment that provides gives more flexibility and choice around deployments
+- A fully configurable deployment that provides gives more flexibility and choice around deployments.
 - The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/moodle).
     - [Minimal](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fmoodle%2Fmaster%2Fazuredeploy-minimal.json): This deployment will use NFS, MySQL, and smaller auto scale web frontend VM sku (1 core) that will give faster deployment time (less than 30 minutes) and requires only 2 VM cores currently that will fit even in a free trial Azure subscription.  
     - [Small to Mid](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fmoodle%2Fmaster%2Fazuredeploy-small2mid-noha.json): Supporting up to 1000 concurrent users. This deployment will use NFS (no high availability) and MySQL (8 vCores), without other options like elastic search or Redis cache.  
@@ -158,7 +157,7 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
 - Click on purchase to start the deployment of moodle on Azure. Link for pricing [calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
-- The deployment will install  supported Infrastructure and moodle
+- The deployment will install  supported Infrastructure and moodle.
     - moodle version: 3.8, 3.9 and 3.5  
     - Webserver: nginx or apache2 
     - Nginx version: 1.10.0
@@ -173,7 +172,7 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
 
 - **Network Template:** Network Template will create virtual network,Network Security Group, Network Interface, subnet, Public IP, Load Balancer/App gateway and Redis cache etc. 
      - Creates a virtual network with string as name , apiVersion, Location and DNS server name.
-     - The AddressSpace that contains an array of IP address ranges that can be used by subnets
+     - The AddressSpace that contains an array of IP address ranges that can be used by subnets.
    
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More details [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more details [network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
@@ -188,39 +187,39 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
 - **Storage Template:**  
     -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more details[storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   As per the predefined template storage account with Azure files creates File Share.
-    -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
+    -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS.
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
-    - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS)
-    - Types of  Performance are Standard, Premium
+    - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS).
+    - Types of  Performance are Standard, Premium.
     - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
     - Below are types of storage account types ARM template support. 
         - NFS: A Network File System (NFS) allows remote hosts to mount file systems over a network and interact with those file systems as though they are mounted locally. This enables system administrators to consolidate resources onto centralized servers on the network. More details on [NFS](https://docs.microsoft.com/en-us/windows-server/storage/nfs/nfs-overview). 
         - GluserFS: It is an open source distributed file system that can scale out in building-block fashion to store multiple petabytes of data. More details [Gluster FS](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-rhel-glusterfs). 
         - Azure Files: It is the only public cloud file storage that delivers secure, Server Message Block (SMB) based, fully managed cloud file shares that can also be cached on-premises for performance and compatibility. More details on [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction). 
             - NFS and glusterFS:  
-                - Replication is standard Locally-redundant storage (LRS)  
+                - Replication is standard Locally-redundant storage (LRS).  
                 - Type is Storage (general purpose v1) 
             - Azure Files:  
-                - Replication is Premium Locally-redundant storage (LRS)  
+                - Replication is Premium Locally-redundant storage (LRS).  
                 - Type is File Storage  
             - These storage mechanisms will differ according to deployment selected such as  
-                - NFS and glusterFS will create a container  
+                - NFS and glusterFS will create a container.  
                 - Azure files will create a file share. 
-    -  For Minimal and short2mid the template will support nfs and for Large and Maximal the template will support AzureFiles
+    -  For Minimal and short2mid the template will support nfs and for Large and Maximal the template will support AzureFiles.
     - To access the containers and file share etc. navigate to storage account in resource group in the portal. 
     ![storage_account](images/storage-account.png)
 - **Database Template:** 
     - This Database template will creates an [Azure Database for MySQL server](https://docs.microsoft.com/en-in/azure/mysql/) 
-    - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 
-    - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server  
-    - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration 
-    - Ways to connect to database server 
+    - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server,including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0 .
+    - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server.  
+    - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration. 
+    - Ways to connect to database server. 
         - Use MySQL client or tools such as MySQL Workbench. 
         - For workbench give the connection name, hostname (server name), username (server admin login name) 
     ![mysqlworkbench](images/mysql-workbench.png)
         - After giving the details test connection. If the connection is successful it will prompt for password .Provide the password to get connected. 
         
-- **Virtual Machine Template:** This template will create a  Virtual Machine
+- **Virtual Machine Template:** This template will create a  Virtual Machine.
     - Controller VM: 
         - The OS used at this time is Uubntu 16.04
     - VM extension: 
@@ -230,9 +229,9 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
         - User can view the log files as a root user. 
 
 - **Scale Set Template**: 
-    -   This template will create a [Virtual Machine Scale Set.](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview) 
+    -   This template will create a [Virtual Machine Scale Set.](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview). 
     - A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
-    - Autoscaling of VM Instances depends on [CPU utilization.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview)  
+    - Autoscaling of VM Instances depends on [CPU utilization.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview).  
     - While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
     - VM instances have Private IP. 
     - For connecting to VMs on Scale Set with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
@@ -243,16 +242,17 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
 
 -   ### Manual moodle migration follow the below steps 
 
-    -   After completion of deployment, go to the resource group.  
-    -   Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
-    -   **Virtual Machine**
-    - Login into this controller machine using any of the free open-source terminal emulator or serial console tools 
-        - Copy the public IP of controller VM to use as the hostname
-        - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template
-        - Click on Open and it will prompt to give the username. Give it as azureadmin as it is hard coded in template
+    - After completion of deployment, go to the resource group.  
+    - Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
+    
+    -  **Virtual Machine**
+    - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
+        - Copy the public IP of controller VM to use as the hostname.
+        - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
+        - Click on Open and it will prompt to give the username. Give it as azureadmin as it is hard coded in template.
         ![puttyloginpage](images/puttyloginpage.PNG)
         ![puttykey](images/puttykeybrowse.PNG)
-    - After the login, run the following set of commands to migrate 
+    - After the login, run the following set of commands to migrate. 
         - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata,configuration directory with database backup file to /home/azureadmin location. 
          -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
         ```
@@ -264,7 +264,7 @@ Go to the created Storage Account Resource and navigate to Shared access signatu
         ```
             tar -zxvf yourfile.tar.gz
         ```
-    -   A backup directory is extracted as storage/ at /home/azureadmin/.
+    -   A backup directory is extracted as storage/ at /home/azureadmin/
     -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
     - Create a backup directory
         ```
@@ -322,31 +322,31 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
         vi config.php
         # update the database details and save the file.
         ```
-    - Update the nginx conf file
+    - Update the nginx conf file.
         ```
             sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
             cd /home/azureadmin/storage/configuration/
             sudo cp <dns>.conf  /etc/nginx/sites-enabled/
         ```
-    - Update the php config file
+    - Update the php config file.
         ```
         sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
         sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
         ```
-    -   Install Missing PHP extensions
+    -   Install Missing PHP extensions.
             - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
         - Note: If on-premise has any additional PHP extensions those will be installed by the user.
             ```
             sudo apt-get install -y php-<extensionName>
             ```
-    - Restart the web servers
+    - Restart the web servers.
         ```
         sudo systemctl restart nginx 
         sudo systemctl restart php(phpVersion)-fpm  
         ``` 
            
 -   **Virtual Machine Scaleset**
-    -   Login to Scale Set VM instance and execute the following sequence of steps
+    -   Login to Scale Set VM instance and execute the following sequence of steps.
     - Download the on-premise compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directorys with database backup file to /home/azureadmin location. 
         -   Download the compressed backup file to Virtual machine at /home/azureadmin/ location.
 
@@ -391,7 +391,7 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
         -   **Log Paths**
             -   The logging destination will need to be standardized.
             - Log path are defaulted to /var/log/nginx. 
-            -   Go to the /etc/nginx/sites-enabled/ edit the configuration file to set the logs paths to /var/log/nginx.
+            - Go to the /etc/nginx/sites-enabled/ edit the configuration file to set the logs paths to /var/log/nginx.
                 -   access.log and error.log are created
 
         -   **Restart servers**
