@@ -34,7 +34,8 @@
         -   Have an Azure subscription handy
         -   Create a Resource Group inside Azure
         -   Create a Storage Account inside Azure
-        -   Backup all relevant data from on-premises infrastructure.Ensure the on-premises database instance has mysql-client installed
+        -   Backup all relevant data from on-premises    infrastructure.
+        -  Ensure the on-premises database instance has mysql-client installed
         - Copy backup archive to Blob storage on Azure
 
 
