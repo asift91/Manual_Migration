@@ -4,7 +4,7 @@
     - One that lets you to use Azure Portal 
     - Other that lets you accomplish the same tasks on a command line using Azure CLI.
 
-### Option 1: Migrating Moodle using ARM template Infrastructure 
+### Option 1: Migrating Moodle using ARM Template Infrastructure 
 - Migration of Moodle with an ARM template creates the infrastructure in Azure.
 - Once the infrastructure is created, the Moodle software stack and associated dependencies are migrated.
 
@@ -81,7 +81,7 @@
 
     -   **Create Subscription:**
         - If you do not have a subscription already present, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
-        - To create the subscription, navigate to Subscription from Home section.
+        - To create the subscription using azure portal, navigate to Subscription from Home section.
         ![image](/images/subscription1.png)
 
     -   **Create Resource Group:**
@@ -92,7 +92,7 @@
         - Alternatively you can use the Azure CLI command to create a resource group.
         ```
                 az group create -l location -n name
-                # az group create -l westus -n migration
+                # example: az group create -l westus -n migration
 
         ```
    
@@ -100,18 +100,18 @@
 
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
         - Storage account can be also be created using  Azure portal or Azure CLI command.
-        - To create using portal, navigate to portal and search for storage account and click on Add.After filling the manditory detials,Click on create.
+        - To create using portal, navigate to portal and search for storage account and click on Add.After filling the manditory detials, Click on create.
         ![image](/images/storageaccountcreate.png)
         - Alternatively you can use Azure CLI command storage account and set the Account
 
             ```
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
-        - Once the storage account is created, this can be used as the destination for the on-premises backup
+        - Once the storage account is created, this is used as the destination to take the on-premises backup
 
     
     -   **Backup of onpremise data:**
-        -   Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a a single directory. The following illustration should give you a good idea:
+        -   Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea:
         ![image](/images/folderstructure.png)
         -   Moodle and Moodledata
             -   The Moodle directory consists of site HTML content and Moodledata contains Moodle site data
@@ -165,11 +165,14 @@
     - [Small to Mid](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-small2mid-noha.json): Supporting up to 1000 concurrent users. This deployment will use NFS (no high availability) and MySQL (8 vCores), without other options like elastic search or Redis cache.  
     - [Large (high availability)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-large-ha.json): Supporting more than 2000 concurrent users. This deployment will use Azure Files, MySQL (16 vCores) and Redis cache, without other options like elastic search.  
     - [Maximum](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-maximal.json): This maximal deployment will use Azure Files, MySQL with highest SKU, Redis cache, elastic search (3 VMs), and pretty large storage sizes (both data disks and DB).
-- To deploy any of the predefined size template click on the launch option.  - The following Moodle architecture diagram will give you a clear idea.
-![images](images/stack_diagram.png)
+
+- To deploy any of the predefined size template click on the launch option.  
+
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
 - Click on purchase to start the deployment of Moodle on Azure. Link for pricing [calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
+- The following Moodle architecture diagram will give you a clear idea.
+![images](images/stack_diagram.png)
 - The deployment will install  supported Infrastructure and Moodle.
     - Moodle version: 3.8, 3.9 and 3.5  
     - Webserver: nginx or apache2 
