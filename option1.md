@@ -1,6 +1,8 @@
 ## Moodle Manual  Migration
-- This document explains how to migrate Moodle from an on-premises to Azure. 
-- For each of the steps, you have two approaches provided:One that lets you to use Azure Portal and other that lets you accomplish the same tasks on a command line using Azure CLI.
+- This document explains how to migrate Moodle application from an on-premises environment to Azure. 
+- For each of the steps, you have two approaches provided
+    - One that lets you to use Azure Portal 
+    - Other that lets you accomplish the same tasks on a command line using Azure CLI.
 
 ### Option 1: Migrating Moodle using ARM template Infrastructure 
 - Migration of Moodle with an ARM template creates the infrastructure in Azure.
@@ -10,8 +12,8 @@
 
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
 - Must have access to the on-premise infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
-- Need an Azure subscription and the Azure Blob storage created before migration.
-- Have Azure CLI and AzCopy handy.
+- Azure subscription and Azure Blob storage should be created prior to migration.
+- Make sure to have Azure CLI and AzCopy handy.
 - This migration guide supports the following software versions:   
      - Ubuntu 16.04 LTS
      - Nginx 1.10.3 or Apache 2.4
@@ -36,7 +38,7 @@
         -   Create a Storage Account inside Azure.
         -   Backup all relevant data from on-premises   infrastructure.
         -  Ensure the on-premises database instance has mysql-client installed.
-        - Copy backup archive to Blob storage on Azure.
+        - Copy backup archive file to Blob storage on Azure.
 
 
 -   **Migration**
@@ -196,7 +198,7 @@
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly.For more details [redis cache](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 
 - **Storage Template:**  
-    -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more details[storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
+    -  storage account  template will create a storage account  with FileStorage Kind and Premium LRS replication, Size of 1TB. For more details on[storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   As per the predefined template storage account with Azure files creates File Share.
     -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS.
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
@@ -205,7 +207,7 @@
     - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
     - Below are types of storage account types ARM template support. 
         - NFS: A Network File System (NFS) allows remote hosts to mount file systems over a network and interact with those file systems as though they are mounted locally. This enables system administrators to consolidate resources onto centralized servers on the network. More details on [NFS](https://docs.microsoft.com/en-us/windows-server/storage/nfs/nfs-overview). 
-        - GluserFS: It is an open source distributed file system that can scale out in building-block fashion to store multiple petabytes of data. More details [Gluster FS](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-rhel-glusterfs). 
+        - GluserFS: It is an open source distributed file system that can scale out in building-block fashion to store multiple petabytes of data. More details on [Gluster FS](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-rhel-glusterfs). 
         - Azure Files: It is the only public cloud file storage that delivers secure, Server Message Block (SMB) based, fully managed cloud file shares that can also be cached on-premises for performance and compatibility. More details on [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction). 
             - NFS and glusterFS:  
                 - Replication is standard Locally-redundant storage (LRS).  
