@@ -84,7 +84,8 @@
 
     -   **Create Resource Group:**
         - Once you have a subscription handy, you will need to create a Resource Group.
-        - One option is to create resource group in azure portal. Navigate to home section and search for resource group,after clicking on add fill the manditory fields and click on create.
+        - One option is to create resource group using Azure portal.  
+        - Navigate to home section and search for resource group,after clicking on add fill the manditory fields and click on create.
         ![image](/images/resourcegroup.png)
         - Alternatively you can use the Azure CLI command to create a resource group.
         ```
