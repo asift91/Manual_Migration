@@ -34,14 +34,14 @@
         -   Have an Azure subscription handy.
         -   Create a Resource Group inside Azure.
         -   Create a Storage Account inside Azure.
-        -   Backup all relevant data from on-premises.    infrastructure.
+        -   Backup all relevant data from on-premises   infrastructure.
         -  Ensure the on-premises database instance has mysql-client installed.
         - Copy backup archive to Blob storage on Azure.
 
 
 -   **Migration**
     
-    - Actual migration tasks that involve the application and all data.
+    - Actual migration tasks involves the migration of application and all data.
     - Deploy infrastructure on Azure using Moodle ARM template.
     - Copy over the backup archive (moodle data) to the Moodle controller instance from the ARM deployment.
     - Setup Moodle controller instance and worker nodes. 
