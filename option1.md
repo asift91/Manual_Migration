@@ -79,6 +79,7 @@
 
     -   **Create Subscription:**
         - If you do not have a subscription already present, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
+        ![image](/images/subscription1.png)
 
     -   **Create Resource Group:**
         -  Once you have a subscription handy, you will need to create a Resource Group.Alternatively you can use the Azure CLI command to create a resource group.
