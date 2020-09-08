@@ -1,22 +1,22 @@
 ## Moodle Manual Migration
 - This document explains how to migrate Moodle application from an on-premises environment to Azure. 
 - For each of the steps, you have two approaches provided
-    - One that lets you to use Azure Portal 
+    - One that lets you to use Azure Portal. 
     - Other that lets you accomplish the same tasks on a command line using Azure CLI.
 
-### Option 1: Migrating Moodle using ARM Template Infrastructure 
+### Option 1: Migrating Moodle using ARM Template  
 - Migration of Moodle with an ARM template creates the infrastructure in Azure.
 - Once the infrastructure is created, the Moodle software stack and associated dependencies are migrated.
 
 ## Prerequisites
 
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
-- Must have access to the on-premise infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
+- Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
 - Azure subscription and Azure Blob storage should be created prior to migration.
 - Make sure to have Azure CLI and AzCopy handy.
 - This migration guide supports the following software versions:   
      - Ubuntu 16.04 LTS
-     - Nginx 1.10.3 or Apache 2.4
+     - Nginx 1.10.3
      - MySQL 5.6, 5.7 or 8.0 database server (This guide uses Azure Database for MYSQL)
      - PHP 7.2, 7.3, or 7.4
      - Moodle 3.8 & 3.9
@@ -38,14 +38,14 @@
         -   Create a Storage Account inside Azure.
         -   Backup all relevant data from on-premises infrastructure.
         -   Ensure the on-premises database instance has mysql-client installed.
-        -   Copy backup archive file to Blob storage on Azure.
+        -   Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
 
 
 -   **Migration**
     
     - Actual migration tasks involve the migration of application and all data.
     - Deploy infrastructure on Azure using Moodle ARM template.
-    - Copy over the backup archive (moodledata) to the Moodle controller instance from the ARM deployment.
+    - Copy over the backup archive (moodledata) to the moodle controller instance from the ARM deployment.
     - Setup Moodle controller instance and worker nodes. 
     - Data migration tasks.
        
@@ -54,9 +54,8 @@
     - Post migration tasks that include application configuration.
     - Update general configuration (e.g. log file destinations).
     - Update any cron jobs / scheduled tasks.
-    - Restart servers.
     - Configuring certificates.
-    - Restarting servers.
+    - Restarting PHP and nginx servers.
 
 
 ## Pre-Migration
@@ -84,24 +83,43 @@
         - To create the subscription using azure portal, navigate to Subscription from Home section.
         ![image](/images/subscription1.png)
 
+
+        - Alternatively, you can create a subscription using Azure CLI command.
+
+
+            ```
+            # command to create subscription
+
+            az account subscription create --billing-account-name --billing-profile-name --display-name --invoice-section-name --sku-id [--cost-center] [--management-group-id] [--no-wait] [--owner]
+            
+            # example for the same.
+            az account subscription create --billing-account-name \
+            "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_XXXX-XX-XX" \
+            --billing-profile-name "27VR-HDWX-BG7-TGB" --cost-center "135366376" --display-name \
+            "Contoso MCA subscription" --owner xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+            --sku-id "0001" --invoice-section-name "JGF7-NSBG-PJA-TGB"
+            ```
+
     -   **Create Resource Group:**
         - Once you have a subscription handy, you will need to create a Resource Group.
-        - One option is to create resource group using Azure portal.  
-        - Navigate to home section and search for resource group, after clicking on add fill the manditory fields and click on create.
-        ![image](/images/resourcegroup.png)
+        - One option is to create resource group using Azure portal.
+        - Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
+        ![image](/images/resource-group.PNG)
         - Alternatively, you can use the Azure CLI command to create a resource group.
-        ```
-                az group create -l location -n name
-                # example: az group create -l westus -n migration
+        - Provide the same default Location provided in previous steps.
+        - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/)
 
-        ```
-   
+            ```
+            az group create -l location -n name
+            # example: az group create -l westus -n migration
+            ```
+         - In above step resource group is created as "migration". Use the same resource group in further steps.
     -   **Create Storage Account:**
 
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
         - Storage account can be also be created using Azure portal or Azure CLI command.
-        - To create using portal, navigate to portal and search for storage account and click on Add.
-        - After filling the manditory detials, click on create.
+        - To create using portal, navigate to portal and search for storage account and click on Add button.
+        - After filling the mandatory details, click on create.
         ![image](/images/storageaccountcreate.png)
         - Alternatively, you can use Azure CLI command storage account and set the Account
 
@@ -111,15 +129,15 @@
         - Once the storage account is created, this is used as the destination to take the on-premises backup
 
     
-    -   **Backup of onpremise data:**
-        -   Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea:
+    -   **Backup of on-premises data:**
+        -   Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should gives a good idea:
         ![image](/images/folderstructure.png)
-        -   Moodle and Moodledata
-            -   The Moodle directory consists of site HTML content and Moodledata contains Moodle site data
+        -   moodle and moodledata
+            -   The moodle directory consists of site HTML content and moodledata contains moodle site data
         - configuration
             -   Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
             - Copy the ngnix configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig directory under the configuration directory.
-            - If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
+            - If the webserver used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
         -   create a backup of database
             -  If you do not have mysql-client installed on the database instance, now would be a good time to do that.
                 
@@ -132,25 +150,25 @@
                 
                 mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
                 
-                # Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
+                # Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details
                 ```
-        -   Create an archive tar.gz file of backup directory
+        -   Create an archive storage.tar.gz file of backup directory
             ```
-            tar -zcvf moodle.tar.gz <source/directory/name>
+            tar -zcvf storage.tar.gz <source/directory/name>
             ```
     -   **Copy Archive file to Blob storage**
         - Copy the on-premises archive file to blob storage using AzCopy.
-        - To use AzCopy user should a generate SAS Token first.
+        - To use AzCopy, user should a generate SAS Token first.
         - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
         ![image](images/storage-account.png)
         - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
         ![image](images/storageaccountSAS.PNG)
         - Copy and save the SAS token for further use.
-        - Command to genarate SAS token.
+        - Command to generate SAS token.
 
             ```
                 az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                sudo azcopy copy '/path/to/location/moodle.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+                sudo azcopy copy '/path/to/location/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
             ```
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 
@@ -172,12 +190,11 @@
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
-- The following Moodle architecture diagram will give you a clear idea.
+- The following diagram will gives an idea about Moodle architecture.
 ![images](images/stack_diagram.png)
 - The deployment will install supported Infrastructure and Moodle.
-    - Moodle version: 3.8, 3.9 and 3.5  
-    - Webserver: nginx or apache2 
-    - Nginx version: 1.10.0
+    - Moodle version: 3.8 and 3.9.
+    - Webserver: nginx 1.10.0
     - PHP version: 7.4, 7.3 or 7.2 
     - Database server type: MySQL  
     - MySQL version: 5.6, 5.7 and 8.0 
@@ -260,7 +277,7 @@
 -   ### Manual Moodle migration follow the below steps 
 
     - After completion of deployment, go to the resource group.  
-    - Update the Moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
+    - Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
     
     -  **Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
@@ -271,7 +288,7 @@
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html)
     - After the login, run the following set of commands to migrate. 
-        - Download the on-premise backup data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location. 
+        - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
          -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
         ```
             sudo -s
@@ -280,26 +297,26 @@
         ```
         - Extract the compressed content to a directory.
         ```
-            tar -zxvf moodle.tar.gz
+            tar -zxvf storage.tar.gz
         ```
     -   A backup directory is extracted as storage/ at /home/azureadmin/
-    - This storage directory contains Moodle, Moodledata and configuration directory along with database backup file. These will be copied to desired locations.
+    - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
     - Create a backup directory
         ```
         cd /home/azureadmin/
         mkdir -p backup
         mkdir -p backup/moodle
         ```
-    - Replace the Moodle directory  
-        - Copy and replace this Moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
-        - Before accessing Moodle directory switch as root user and copy the Moodle directory to existing path
+    - Replace the moodle directory  
+        - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
+        - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/)
             ```
             mv /moodle/html/ /home/azureadmin/backup/moodle/html/
             cp  /home/azureadmin/moodle /moodle/html/
             ```
-    - Replace the Moodledata directory 
-        - Copy and replace this moodledata (/moodle/moodledata) directory with existing directory
-        - Copy the moodledata directory to existing path 
+    - Replace the moodledata directory 
+        - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory
+        - Copy the moodledata directory to existing path (/moodle/moodledata)
 
             ```
             mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
@@ -322,19 +339,19 @@
         - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
     
     - Configure directory permissions
-        - Set 755 and www-data owner:group permissions to Moodle directory 
+        - Set 755 and www-data owner:group permissions to moodle directory 
             ```
             sudo chmod 755 /moodle
             sudo chown -R www-data:www-data /moodle
             ```
-        - Set 770 and www-data owner:group permissions to moodleData directory 
+        - Set 770 and www-data owner:group permissions to moodledata directory 
             ```
             sudo chmod 770 /moodle/moodledata
             sudo chown -R www-data:www-data /moodle/moodledata
             ``` 
     - Change the database details in Moodle configuration file (/moodle/config.php).
     - Update the following parameters in config.php
-dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+        - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
         ```
         cd /moodle/html/moodle/
         vi config.php
@@ -353,11 +370,11 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
         ```
     -   Install Missing PHP extensions.
             - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-        - Note: If on-premise has any additional PHP extensions those will be installed by the user.
+        - Note: If on-premises has any additional PHP extensions those will be installed manually.
             ```
             sudo apt-get install -y php-<extensionName>
             ```
-    - Restart the web servers.
+    - Restart the webservers.
         ```
         sudo systemctl restart nginx 
         sudo systemctl restart php(phpVersion)-fpm  
@@ -365,7 +382,7 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
            
 -   **Virtual Machine Scaleset**
     -   Login to Scaleset VM instance and execute the following sequence of steps.
-    - Download the on-premise compressed data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directories with database backup file to /home/azureadmin location. 
+    - Download the on-premises compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directories with database backup file to /home/azureadmin location. 
         -   Download the compressed backup file to Virtual machine at /home/azureadmin/ location.
 
             ```
@@ -375,10 +392,10 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
             ```
         - Extract the compressed content to a directory.
             ```
-            tar -zxvf moodle.tar.gz
+            tar -zxvf stoarge.tar.gz
             ```
     -   A backup directory is extracted as storage/ at /home/azureadmin/.
-        -   This storage directory contains Moodle, Moodledata and configuration directory along with database backup file. These will be copied to desired locations.
+        -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
         - Create a backup directory
             ```
             cd /home/azureadmin/
@@ -386,7 +403,7 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
             mkdir -p backup/moodle
             ```
         
-        - **Configuring PHP & web server**
+        - **Configuring PHP & webserver**
             - Update the nginx conf file
                 ```
                 sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
@@ -431,7 +448,9 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
     
     -   **Log Paths**
         
-        -   onpremise might be having different log path location and those paths need to be updated with Azure log paths.
+        -   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
+            -   Ex: /var/log/syslogs/moodle/access.log
+            -   Ex: /var/log/syslogs/moodle/error.log 
     -   **Certs:**
         -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs/
         -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
@@ -449,8 +468,8 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
             chmod 400 /moodle/certs/nginx.*
             ```
     -   **Update Time-Stamp:**
-        -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time stamp then local copy of VMSS is updated in web root directory.
-        -   In Virtual Machine scaleset a local copy of Moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
+        -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
+        -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
         -   Update the time-stamp to update the local copy in VMSS instance.
         -   
             ```
@@ -469,5 +488,6 @@ dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
             sudo systemctl restart apache
             ```
     -   **Mapping IP:**
-        -   Map the load balancer IP with the DNS name.
-    - Hit the load balancer DNS name to get the migrated Moodle web page.         
+        -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
+        
+        -   Hit the load balancer DNS name to get the migrated Moodle web page.         
