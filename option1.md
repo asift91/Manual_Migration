@@ -276,7 +276,9 @@
 
 -   ### Manual Moodle migration follow the below steps 
 
-    - After completion of deployment, go to the resource group.  
+    - After completion of deployment, go to the resource group. 
+    - The following image will give some idea on how the resources will be created.
+    ![resourcesoverview](images/resourcesoverview.PNG)
     - Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
     
     -  **Virtual Machine**
