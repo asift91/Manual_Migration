@@ -73,7 +73,7 @@
             ```
          - az login: Azure CLI will quite likely launch an instance or a tab inside your default web-browser and prompt you to login to Azure using your Microsoft Account.
           - If the above browser launch does not happen, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin) and enter the authorization code displayed in your terminal.
-        -  To use command line use bellow command.
+        -  To use command line use below command.
             ```
             az login -u <username> -p <password>
             ```
