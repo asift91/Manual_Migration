@@ -100,7 +100,8 @@
 
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
         - Storage account can be also be created using Azure portal or Azure CLI command.
-        - To create using portal, navigate to portal and search for storage account and click on Add.After filling the manditory detials, click on create.
+        - To create using portal, navigate to portal and search for storage account and click on Add.
+        - After filling the manditory detials, click on create.
         ![image](/images/storageaccountcreate.png)
         - Alternatively, you can use Azure CLI command storage account and set the Account
 
@@ -170,7 +171,7 @@
 
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
-- Click on purchase to start the deployment of Moodle on Azure. Link for pricing [calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
+- Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
 - The following Moodle architecture diagram will give you a clear idea.
 ![images](images/stack_diagram.png)
 - The deployment will install supported Infrastructure and Moodle.
