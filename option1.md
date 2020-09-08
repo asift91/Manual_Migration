@@ -79,7 +79,8 @@
 
 
     -   **Create Subscription:**
-        - If you do not have a subscription already present, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
+        - If you have a subscription handy skip this step.
+        - And if you do not have a subscription, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
         - To create the subscription using azure portal, navigate to Subscription from Home section.
         ![image](/images/subscription1.png)
 
