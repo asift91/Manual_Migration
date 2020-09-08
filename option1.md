@@ -106,14 +106,14 @@
         - Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
         ![image](/images/resource-group.PNG)
         - Alternatively, you can use the Azure CLI command to create a resource group.
-        - Provide the same default region provided in previous steps.
+        - Provide the same default Location provided in previous steps.
         - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/)
 
             ```
             az group create -l location -n name
             # example: az group create -l westus -n migration
             ```
-   
+         - In above step resource group is created as "migration". Use the same resource group in further steps.
     -   **Create Storage Account:**
 
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
