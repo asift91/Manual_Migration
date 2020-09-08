@@ -1,7 +1,7 @@
 ## Moodle Manual Migration
 - This document explains how to migrate Moodle application from an on-premises environment to Azure. 
 - For each of the steps, you have two approaches provided
-    - One that lets you to use Azure Portal 
+    - One that lets you to use Azure Portal. 
     - Other that lets you accomplish the same tasks on a command line using Azure CLI.
 
 ### Option 1: Migrating Moodle using ARM Template  
@@ -11,7 +11,7 @@
 ## Prerequisites
 
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
-- Must have access to the on-premise infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
+- Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
 - Azure subscription and Azure Blob storage should be created prior to migration.
 - Make sure to have Azure CLI and AzCopy handy.
 - This migration guide supports the following software versions:   
@@ -45,7 +45,7 @@
     
     - Actual migration tasks involve the migration of application and all data.
     - Deploy infrastructure on Azure using Moodle ARM template.
-    - Copy over the backup archive (moodledata) to the Moodle controller instance from the ARM deployment.
+    - Copy over the backup archive (moodledata) to the moodle controller instance from the ARM deployment.
     - Setup Moodle controller instance and worker nodes. 
     - Data migration tasks.
        
@@ -119,7 +119,7 @@
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
         - Storage account can be also be created using Azure portal or Azure CLI command.
         - To create using portal, navigate to portal and search for storage account and click on Add button.
-        - After filling the mandatory detials, click on create.
+        - After filling the mandatory details, click on create.
         ![image](/images/storageaccountcreate.png)
         - Alternatively, you can use Azure CLI command storage account and set the Account
 
@@ -129,7 +129,7 @@
         - Once the storage account is created, this is used as the destination to take the on-premises backup
 
     
-    -   **Backup of on-premise data:**
+    -   **Backup of on-premises data:**
         -   Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should gives a good idea:
         ![image](/images/folderstructure.png)
         -   moodle and moodledata
@@ -168,7 +168,7 @@
 
             ```
                 az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                sudo azcopy copy '/path/to/location/moodle.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+                sudo azcopy copy '/path/to/location/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
             ```
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 
@@ -297,7 +297,7 @@
         ```
         - Extract the compressed content to a directory.
         ```
-            tar -zxvf moodle.tar.gz
+            tar -zxvf storage.tar.gz
         ```
     -   A backup directory is extracted as storage/ at /home/azureadmin/
     - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -344,7 +344,7 @@
             sudo chmod 755 /moodle
             sudo chown -R www-data:www-data /moodle
             ```
-        - Set 770 and www-data owner:group permissions to moodleData directory 
+        - Set 770 and www-data owner:group permissions to moodledata directory 
             ```
             sudo chmod 770 /moodle/moodledata
             sudo chown -R www-data:www-data /moodle/moodledata
@@ -392,7 +392,7 @@
             ```
         - Extract the compressed content to a directory.
             ```
-            tar -zxvf moodle.tar.gz
+            tar -zxvf stoarge.tar.gz
             ```
     -   A backup directory is extracted as storage/ at /home/azureadmin/.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -468,7 +468,7 @@
             chmod 400 /moodle/certs/nginx.*
             ```
     -   **Update Time-Stamp:**
-        -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time stamp then local copy of VMSS is updated in web root directory.
+        -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
         -   Update the time-stamp to update the local copy in VMSS instance.
         -   
