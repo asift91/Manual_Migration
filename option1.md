@@ -279,13 +279,13 @@
     - For connecting to VMs on Scale Set with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
     
 </details>
+
 -   ### Manual Moodle migration follow the below steps 
     - After completion of deployment, go to the resource group. 
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images/resourcesoverview.PNG)
     - Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
-    
-    -  **Virtual Machine**
+-  **Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
         - Copy the public IP of controller VM to use as the hostname.
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
@@ -293,97 +293,97 @@
         ![puttyloginpage](images/puttyloginpage.PNG)
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html)
-    - After the login, run the following set of commands to migrate. 
-        - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
-         -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
-        ```
+        - After the login, run the following set of commands to migrate. 
+            - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
+            -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
+            ```
             sudo -s
             cd /home/azureadmin/
             azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
-        ```
-        - Extract the compressed content to a directory.
-        ```
+            ```
+            - Extract the compressed content to a directory.
+            ```
             tar -zxvf storage.tar.gz
-        ```
-    -   A backup directory is extracted as storage/ at /home/azureadmin/
-    - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
-    - Create a backup directory
-        ```
-        cd /home/azureadmin/
-        mkdir -p backup
-        mkdir -p backup/moodle
-        ```
-    - Replace the moodle directory  
-        - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
-        - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/)
             ```
-            mv /moodle/html/ /home/azureadmin/backup/moodle/html/
-            cp  /home/azureadmin/moodle /moodle/html/
+        -   A backup directory is extracted as storage/ at /home/azureadmin/
+        - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
+        - Create a backup directory
             ```
-    - Replace the moodledata directory 
-        - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory
-        - Copy the moodledata directory to existing path (/moodle/moodledata)
+            cd /home/azureadmin/
+            mkdir -p backup
+            mkdir -p backup/moodle
             ```
-            mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
-            cp /home/azureadmin/moodledata /moodle/moodledata
-            ``` 
-    - Importing the Moodle Database to Azure Moodle DB 
-        -   Import the on-premises database to Azure Database for MySQL.
-      	- Create a database to import on-premises database
-            ```    
-            mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+        - Replace the moodle directory  
+            - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
+            - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/)
+                ```
+                mv /moodle/html/ /home/azureadmin/backup/moodle/html/
+                cp  /home/azureadmin/moodle /moodle/html/
+                ```
+        - Replace the moodledata directory 
+            - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory
+            - Copy the moodledata directory to existing path (/moodle/moodledata)
+                ```
+                mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
+                cp /home/azureadmin/moodledata /moodle/moodledata
+                ``` 
+        - Importing the Moodle Database to Azure Moodle DB 
+            -   Import the on-premises database to Azure Database for MySQL.
+            - Create a database to import on-premises database
+                ```    
+                mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+                ```
+            - Assign right permissions to database
+                ```
+                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${Moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
+                ``` 
+            - Import the database
+                ```
+                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql
+                ```
+            - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
+        
+        - Configure directory permissions
+            - Set 755 and www-data owner:group permissions to moodle directory 
+                ```
+                sudo chmod 755 /moodle
+                sudo chown -R www-data:www-data /moodle
+                ```
+            - Set 770 and www-data owner:group permissions to moodledata directory 
+                ```
+                sudo chmod 770 /moodle/moodledata
+                sudo chown -R www-data:www-data /moodle/moodledata
+                ``` 
+        - Change the database details in Moodle configuration file (/moodle/config.php).
+        - Update the following parameters in config.php
+            - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+                ```
+                cd /moodle/html/moodle/
+                vi config.php
+                # update the database details and save the file.
+                ```
+        - Update the nginx conf file.
             ```
-        - Assign right permissions to database
-            ```
-            mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${Moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
-            ``` 
-        - Import the database
-            ```
-            mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql
-            ```
-        - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
-    
-    - Configure directory permissions
-        - Set 755 and www-data owner:group permissions to moodle directory 
-            ```
-            sudo chmod 755 /moodle
-            sudo chown -R www-data:www-data /moodle
-            ```
-        - Set 770 and www-data owner:group permissions to moodledata directory 
-            ```
-            sudo chmod 770 /moodle/moodledata
-            sudo chown -R www-data:www-data /moodle/moodledata
-            ``` 
-    - Change the database details in Moodle configuration file (/moodle/config.php).
-    - Update the following parameters in config.php
-        - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
-        ```
-        cd /moodle/html/moodle/
-        vi config.php
-        # update the database details and save the file.
-        ```
-    - Update the nginx conf file.
-        ```
             sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
             cd /home/azureadmin/storage/configuration/
             sudo cp <dns>.conf  /etc/nginx/sites-enabled/
-        ```
-    - Update the PHP config file.
-        ```
-        sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-        sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
-        ```
-    -   Install Missing PHP extensions.
-            - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-        - Note: If on-premises has any additional PHP extensions those will be installed manually.
             ```
-            sudo apt-get install -y php-<extensionName>
+        - Update the PHP config file.
             ```
-    - Restart the webservers.
-        ```
-        sudo systemctl restart nginx 
-        sudo systemctl restart php(phpVersion)-fpm  
-        ``` 
+            sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+            sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+            ```
+        -   Install Missing PHP extensions.
+                - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+            - Note: If on-premises has any additional PHP extensions those will be installed manually.
+                ```
+                sudo apt-get install -y php-<extensionName>
+                ```
+        - Restart the webservers.
+            ```
+            sudo systemctl restart nginx 
+            sudo systemctl restart php(phpVersion)-fpm  
+            ``` 
            
 -   **Virtual Machine Scaleset**
     -   Login to Scaleset VM instance and execute the following sequence of steps.
@@ -437,10 +437,10 @@
             /usr/local/bin/update_last_modified_time.azlamp.sh
             - Restart nginx and php-fpm
             ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php<phpVersion>-fpm
-                If apache is installed as a webserver then restart apache
-                sudo systemctl restart apache
+            sudo systemctl restart nginx
+            sudo systemctl restart php<phpVersion>-fpm
+            # If apache is installed as a webserver then restart apache
+            sudo systemctl restart apache
             ```
 ## Post Migration
 - Post migration tasks are around final application configuration that include setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
@@ -491,3 +491,5 @@
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
         
         -   Hit the load balancer DNS name to get the migrated Moodle web page.         
+
+    
