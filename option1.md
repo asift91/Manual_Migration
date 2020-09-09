@@ -128,7 +128,7 @@
         ```
         #commands to copy moodle and moodledata 
         cp -R /var/www/html/moodle /location-to-path/storage/
-        cp -R /var/www/html/moodledata /location-to-path/storage/
+        cp -R /var/moodledata /location-to-path/storage/
         ```
 	- **Backup of PHP and webserver configuration**
 		- Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
