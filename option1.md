@@ -110,44 +110,79 @@
         - Once the storage account is created, this is used as the destination to take the on-premises backup
     
     -   **Backup of on-premises data:**
-        -   Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should gives a good idea:
-        ![image](/images/folderstructure.png)
-        -   moodle and moodledata
-            -   The moodle directory consists of site HTML content and moodledata contains moodle site data
-        - configuration
-            -   Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
-            - Copy the ngnix configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig directory under the configuration directory.
-            - If the webserver used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
-        -   create a backup of database
-            -  If you do not have mysql-client installed on the database instance, now would be a good time to do that.
-                
-                ```
-                sudo -s
-                sudo apt install mysql-client
-                mysql -u dbUserName -p
-                
-                # After the above command user will prompted for database password
-                
-                mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
-                
-                # Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details
-                ```
-        -   Create an archive storage.tar.gz file of backup directory
+        - Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea:
+
+	    ![image](/images/folderstructure.png)
+
+        - First create a empty storage directory in any desired location to copy all the data.
+
             ```
-            tar -zcvf storage.tar.gz <source/directory/name>
+            sudo -s
+            # for example the location is /home/azureadmin
+            cd /home/azureadmin
+            mkdir storage
             ```
+
+    - **Backup of moodle and moodledata**
+        - The Moodle directory consists of site HTML content and Moodledata contains Moodle site data
+
+        ```
+        #commands to copy moodle and moodledata 
+        cp -R /var/www/html/moodle /location-to-path/storage/
+        cp -R /var/www/html/moodledata /location-to-path/storage/
+        ```
+	- **Backup of PHP and webserver configuration**
+		- Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
+		- Copy the ngnix configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig directory under the configuration directory.
+            ```
+            cd storage
+            mkdir configuration
+            mdkdir nginx
+            nmkdir php
+            # command to copy nginx and php configuration
+            cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
+            cp -R /etc/php /home/azureadmin/storage/configuration/php
+            ```
+		- If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
+
+	- **Create a backup of database**
+		- If you already have mysql-client installed ,skip the step to install mysql-client
+		- If you do not have mysql-client installed on the database instance, now would be a good time to do that.
+			```
+			sudo -s
+			# command to check mysql-client is installed or not
+			mysql -V
+			# if the mysql-client is not installed, install the same by following command.
+			sudo apt install mysql-client
+			#following coomand will allow to you to take the backup of database.
+			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/storage/database.sql
+			# Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
+			```
+
+	- Create an archive tar.gz file of backup directory
+        ```
+        tar -zcvf storage.tar.gz <source/directory/name>
+    	```
+
     -   **Copy Archive file to Blob storage**
         - Copy the on-premises archive file to blob storage using AzCopy.
         - To use AzCopy, user should a generate SAS Token first.
         - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
-        ![image](images/storage-account.png)
+
+            ![image](images/storage-account.png)
         - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
+
         ![image](images/storageaccountSAS.PNG)
+        
         - Copy and save the SAS token for further use.
         - Command to generate SAS token.
             ```
-                az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                sudo azcopy copy '/path/to/location/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+            az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
+            ```
+        -   Command to copy archive file to blob storage.
+        
+            ```
+            sudo azcopy copy '/path/to/location/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
             ```
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 ## Migration
