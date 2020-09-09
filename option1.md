@@ -37,7 +37,7 @@
     
     - Actual migration tasks involve the migration of application and all data.
     - Deploy infrastructure on Azure using Moodle ARM template.
-    - Copy over the backup archive (moodledata) to the moodle controller instance from the ARM deployment.
+    - Copy over the backup archive (storage.tar.gz) to the moodle controller instance from the ARM deployment.
     - Setup Moodle controller instance and worker nodes. 
     - Data migration tasks.
        
@@ -48,6 +48,7 @@
     - Update any cron jobs / scheduled tasks.
     - Configuring certificates.
     - Restarting PHP and nginx servers.
+    - Mapping DNS name with the Load Balancer public IP.
 ## Pre-Migration
 -   **Data Export from on-premises to Azure Cloud:**
     -   **Install Azure CLI**
@@ -65,24 +66,14 @@
             ```
             az login -u <username> -p <password>
             ```
+    
     -   **Create Subscription:**
         - If you have a subscription handy skip this step.
         - And if you do not have a subscription, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
         - To create the subscription using azure portal, navigate to Subscription from Home section.
         ![image](/images/subscription1.png)
 
-        - Alternatively, you can create a subscription using Azure CLI command.
-            ```
-            # command to create subscription
-            az account subscription create --billing-account-name --billing-profile-name --display-name --invoice-section-name --sku-id [--cost-center] [--management-group-id] [--no-wait] [--owner]
-            
-            # example for the same.
-            az account subscription create --billing-account-name \
-            "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_XXXX-XX-XX" \
-            --billing-profile-name "27VR-HDWX-BG7-TGB" --cost-center "135366376" --display-name \
-            "Contoso MCA subscription" --owner xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-            --sku-id "0001" --invoice-section-name "JGF7-NSBG-PJA-TGB"
-            ```
+        
     -   **Create Resource Group:**
         - Once you have a subscription handy, you will need to create a Resource Group.
         - One option is to create resource group using Azure portal.
@@ -92,24 +83,28 @@
         - Provide the same default Location provided in previous steps.
         - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/).
             ```
-            az group create -l location -n name
-            # example: az group create -l westus -n migration
+            az group create -l location -n name -s Subscription_NAME_OR_ID
+            # Update the screenshot and subscription name with sample test account
+
+            # example: az group create -l eastus -n manual_migration -s FreeTrail
             ```
-         - In above step resource group is created as "migration". Use the same resource group in further steps.
+         - In above step resource group is created as "manual_migration". Use the same resource group in further steps.
     -   **Create Storage Account:**
         -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
-        - Storage account can be also be created using Azure portal or Azure CLI command.
+        - Storage account can also be created using Azure portal or Azure CLI command.
         - To create using portal, navigate to portal and search for storage account and click on Add button.
         - After filling the mandatory details, click on create.
         ![image](/images/storageaccountcreate.png)
-        - Alternatively, you can use Azure CLI command storage account and set the Account
+        - Alternatively, you can use Azure CLI command 
             ```
-            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
+            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l location
+
+            example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind StorageV2 -l eastus
             ```
-        - Once the storage account is created, this is used as the destination to take the on-premises backup.
+        - Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
     
     -   **Backup of on-premises data:**
-        - Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea.
+        - Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea.
 
 	    ![image](/images/folderstructure.png)
 
@@ -123,18 +118,18 @@
             ```
 
     - **Backup of moodle and moodledata**
-        - The Moodle directory consists of site HTML content and Moodledata contains Moodle site data.
+        - The moodle directory consists of site HTML content and moodledata contains moodle site data.
 
         ```
         #commands to copy moodle and moodledata 
-        cp -R /var/www/html/moodle /location-to-path/storage/
-        cp -R /var/moodledata /location-to-path/storage/
+        cp -R /var/www/html/moodle /home/azureadmin/storage/
+        cp -R /var/moodledata /home/azureadmin/storage/
         ```
 	- **Backup of PHP and webserver configuration**
 		- Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
 		- Copy the ngnix configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig directory under the configuration directory.
             ```
-            cd storage
+            cd /home/azureadmin/storage
             mkdir configuration
             # command to copy nginx and php configuration
             cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
@@ -154,14 +149,24 @@
 			sudo apt-get install mysql-client
 			
             #following command will allow to you to take the backup of database.
-			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/storage/database.sql
+			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /home/azureadmin/storage/database.sql
 			# Replace dbServerName, dbUserId, dbPassword and bdName with on-premises database details
 			```
 
 	- Create an archive tar.gz file of backup directory.
         ```
-        tar -zcvf storage.tar.gz <source/directory/name>
+        tar -zcvf storage.tar.gz /home/azureadmin/storage/
     	```
+
+    -   **Download and install AzCopy**
+        - Execute the below commands to install AzCopy
+        ```
+        sudo -s
+        wget https://aka.ms/downloadazcopy-v10-linux
+        tar -xvf downloadazcopy-v10-linux
+        sudo rm /usr/bin/azcopy
+        sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+        ```
 
     -   **Copy Archive file to Blob storage**
         - Copy the on-premises archive file to blob storage using AzCopy.
@@ -174,14 +179,19 @@
             ![image](images/storageaccountSAS.PNG)
         
         - Copy and save the SAS token for further use.
-        - Command to generate SAS token.
+        
+        - Command to create a container in the storage account.
             ```
-            az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
+            az storage container create --account-name <storageAccontName> --name <containerName> --auth-mode login
+
+            Example: az storage container create --account-name onpremisesstorage --name migration --sas-token --auth-mode login
             ```
         -   Command to copy archive file to blob storage.
         
             ```
-            sudo azcopy copy '/path/to/location/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+            sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
+
+            Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
             ```
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 ## Migration
@@ -304,11 +314,11 @@
             ```
             sudo -s
             cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' '/home/azureadmin/'
             ```
             - Extract the compressed content to a directory.
             ```
-            tar -zxvf storage.tar.gz
+            tar -zxvf /home/azureadmin/storage.tar.gz
             ```
         -   A backup directory is extracted as storage/ at /home/azureadmin.
         - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -317,22 +327,23 @@
             cd /home/azureadmin/
             mkdir -p backup
             mkdir -p backup/moodle
+            mkdir -p backup/moodle/html
             ```
         - Replace the moodle directory.
             - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle).
-            - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/).
+            
                 ```
-                mv /moodle/html/ /home/azureadmin/backup/moodle/html/
-                cp  /home/azureadmin/moodle /moodle/html/
+                mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
+                cp  /home/azureadmin/storage/moodle /moodle/html/
                 ```
         - Replace the moodledata directory.
             - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory.
-            - Copy the moodledata directory to existing path (/moodle/moodledata).
+            
                 ```
                 mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
-                cp /home/azureadmin/moodledata /moodle/moodledata
+                cp /home/azureadmin/storage/moodledata /moodle/moodledata
                 ``` 
-        - Importing the Moodle Database to Azure Moodle DB.
+        - Importing the moodle Database to Azure moodle DB.
             -   Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
                 ```    
@@ -352,14 +363,14 @@
             - Set 755 and www-data owner:group permissions to moodle directory.
                 ```
                 sudo chmod 755 /moodle
-                sudo chown -R www-data:www-data /moodle
+                sudo chown -R www-data:www-data /moodle/html/moodle
                 ```
             - Set 770 and www-data owner:group permissions to moodledata directory.
                 ```
                 sudo chmod 770 /moodle/moodledata
                 sudo chown -R www-data:www-data /moodle/moodledata
                 ``` 
-        - Change the database details in Moodle configuration file (/moodle/config.php).
+        - Change the database details in moodle configuration file (/moodle/config.php).
         - Update the following parameters in config.php.
             - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
                 ```
@@ -371,12 +382,12 @@
             ```
             sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
             cd /home/azureadmin/storage/configuration/
-            sudo cp <dns>.conf  /etc/nginx/sites-enabled/
+            sudo cp nginx/sites-enabled/<dns>.conf  /etc/nginx/sites-enabled/
             ```
         - Update the PHP config file.
             ```
             sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-            sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+            sudo  cp /home/azureadmin/storage/configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
             ```
         -   Install Missing PHP extensions.
                 - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
@@ -397,11 +408,11 @@
             ```
             sudo -s
             cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' '/home/azureadmin/'
             ```
         - Extract the compressed content to a directory.
             ```
-            tar -zxvf stoarge.tar.gz
+            tar -zxvf /home/azureadmin/stoarge.tar.gz
             ```
     -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -417,12 +428,12 @@
                 ```
                 sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
                 cd /home/azureadmin/storage/configuration/
-                sudo cp <dns>.conf  /etc/nginx/sites-enabled/
+                sudo cp nginx/sites-enabled/<dns>.conf  /etc/nginx/sites-enabled/
                 ```
             - Update the php config file.
                 ```
                 sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-                sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+                sudo  cp /home/azureadmin/storage/configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
                 ```
             -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
@@ -493,7 +504,7 @@
             ```
     -   **Mapping IP:**
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
-        -   Disable Moodle website Maintenance mode.
+        -   Disable Moodle website from Maintenance mode.
         -   Hit the load balancer DNS name to get the migrated Moodle web page.         
 
     
