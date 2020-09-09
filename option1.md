@@ -11,6 +11,7 @@
 - Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
 - Azure subscription and Azure Blob storage should be created prior to migration.
 - Make sure to have Azure CLI and AzCopy handy.
+- Make sure Moodle website should be in maintenance mode.
 - This migration guide supports the following software versions:   
      - Ubuntu 16.04 LTS
      - Nginx 1.10.3
@@ -64,8 +65,6 @@
             ```
             az login -u <username> -p <password>
             ```
-
-
     -   **Create Subscription:**
         - If you have a subscription handy skip this step.
         - And if you do not have a subscription, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
@@ -496,7 +495,7 @@
             ```
     -   **Mapping IP:**
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
-        
+        -   Disable Moodle website Maintenance mode.
         -   Hit the load balancer DNS name to get the migrated Moodle web page.         
 
     
