@@ -136,8 +136,6 @@
             ```
             cd storage
             mkdir configuration
-            mdkdir nginx
-            nmkdir php
             # command to copy nginx and php configuration
             cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
             cp -R /etc/php /home/azureadmin/storage/configuration/php
