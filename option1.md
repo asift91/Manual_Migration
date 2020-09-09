@@ -158,7 +158,7 @@
 			
             #following command will allow to you to take the backup of database.
 			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/storage/database.sql
-			# Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
+			# Replace dbServerName, dbUserId, dbPassword and bdName with on-premises database details
 			```
 
 	- Create an archive tar.gz file of backup directory.
@@ -256,6 +256,14 @@
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates, backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server.  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration. 
+    - Configure firewall:
+        -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
+            ```
+            az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
+            ```
+        -  Click your newly created  MySQL server, and then click Connection security.
+        ![connectionSecurity SS](images/connection_security.png)
+        -  You can Add My IP, or configure firewall rules here. Click on save after you have created the rules. You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool. 
     - Ways to connect to database server. 
         - Use MySQL client or tools such as MySQL Workbench. 
         - For workbench give the connection name, hostname (server name), username (server admin login name).
@@ -294,7 +302,7 @@
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - After the login, run the following set of commands to migrate. 
-            - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
+            - Download the on-premises backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
             -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
             ```
             sudo -s
