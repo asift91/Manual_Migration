@@ -152,9 +152,11 @@
 			sudo -s
 			# command to check mysql-client is installed or not
 			mysql -V
-			# if the mysql-client is not installed, install the same by following command.
-			sudo apt install mysql-client
-			#following coomand will allow to you to take the backup of database.
+			
+            # if the mysql-client is not installed, install the same by following command.
+			sudo apt-get install mysql-client
+			
+            #following command will allow to you to take the backup of database.
 			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/storage/database.sql
 			# Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
 			```
@@ -172,7 +174,7 @@
             ![image](images/storage-account.png)
         - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
 
-        ![image](images/storageaccountSAS.PNG)
+            ![image](images/storageaccountSAS.PNG)
         
         - Copy and save the SAS token for further use.
         - Command to generate SAS token.
