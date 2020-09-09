@@ -314,7 +314,9 @@
             ```
             sudo -s
             cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' '/home/azureadmin/'
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
+
+            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/test/storage.tar.gz'
             ```
             - Extract the compressed content to a directory.
             ```
@@ -408,7 +410,9 @@
             ```
             sudo -s
             cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' '/home/azureadmin/'
+            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
+
+            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/test/storage.tar.gz'
             ```
         - Extract the compressed content to a directory.
             ```
