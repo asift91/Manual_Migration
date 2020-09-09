@@ -1,6 +1,6 @@
 ## Moodle Manual Migration
 - This document explains how to migrate Moodle application from an on-premises environment to Azure. 
-- For each of the steps, you have two approaches provided
+- For each of the steps, you have two approaches provided.
     - One that lets you to use Azure Portal. 
     - Other that lets you accomplish the same tasks on a command line using Azure CLI.
 ### Option 1: Migrating Moodle using ARM Template  
@@ -19,12 +19,12 @@
      - Moodle 3.8 & 3.9
 ## Migration Approach
 -   Migration of Moodle application to Azure is broken down in the following three stages:
-    - Pre-migration tasks
-    - Actual migration of the application
-    - Post-migration tasks
+    - Pre-migration tasks.
+    - Actual migration of the application.
+    - Post-migration tasks.
 -   **Pre-Migration**
     
-    - Data Export from on-premises to Azure involves the following tasks:
+    - Data Export from on-premises to Azure involves the following tasks.
         -   Install Azure CLI.
         -   Have an Azure subscription handy.
         -   Create a Resource Group inside Azure.
@@ -91,7 +91,7 @@
         ![image](/images/resource-group.PNG)
         - Alternatively, you can use the Azure CLI command to create a resource group.
         - Provide the same default Location provided in previous steps.
-        - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/)
+        - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/).
             ```
             az group create -l location -n name
             # example: az group create -l westus -n migration
@@ -107,10 +107,10 @@
             ```
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
-        - Once the storage account is created, this is used as the destination to take the on-premises backup
+        - Once the storage account is created, this is used as the destination to take the on-premises backup.
     
     -   **Backup of on-premises data:**
-        - Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea:
+        - Take backup of on-premises data such as Moodle, Moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea.
 
 	    ![image](/images/folderstructure.png)
 
@@ -124,7 +124,7 @@
             ```
 
     - **Backup of moodle and moodledata**
-        - The Moodle directory consists of site HTML content and Moodledata contains Moodle site data
+        - The Moodle directory consists of site HTML content and Moodledata contains Moodle site data.
 
         ```
         #commands to copy moodle and moodledata 
@@ -146,7 +146,7 @@
 		- If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
 
 	- **Create a backup of database**
-		- If you already have mysql-client installed ,skip the step to install mysql-client
+		- If you already have mysql-client installed ,skip the step to install mysql-client.
 		- If you do not have mysql-client installed on the database instance, now would be a good time to do that.
 			```
 			sudo -s
@@ -161,7 +161,7 @@
 			# Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
 			```
 
-	- Create an archive tar.gz file of backup directory
+	- Create an archive tar.gz file of backup directory.
         ```
         tar -zcvf storage.tar.gz <source/directory/name>
     	```
@@ -201,11 +201,11 @@
 - To deploy any of the predefined size template click on the launch option.  
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
-- Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ )
+- Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
 - The following diagram will gives an idea about Moodle architecture.
 ![images](images/stack_diagram.png)
 - The deployment will install supported Infrastructure and Moodle.
-    - Moodle version: 3.8 and 3.9.
+    - Moodle version: 3.8 and 3.9
     - Webserver: nginx 1.10.0
     - PHP version: 7.4, 7.3 or 7.2 
     - Database server type: MySQL  
@@ -220,11 +220,11 @@
    
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a Vnet, your services and VMs within your Vnet can communicate directly and securely with each other in the cloud. More details [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure Vnets. For more details [network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
-    -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure and on-premises resources. For more details [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface)
+    -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure and on-premises resources. For more details [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface).
     - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the Vnet. More details[Subnet](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More details [Public IP](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More details [Load balancer](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
-    - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer, only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer,
+    - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer, only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer.
     -  **Azure Application Gateway**: It is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More details [App Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. For more details [redis cache](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 - **Storage Template:**  
@@ -234,39 +234,39 @@
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
     - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS).
     - Types of Performance are Standard, Premium.
-    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service
+    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service.
     - Below are types of storage account types ARM template support. 
         - NFS: A Network File System (NFS) allows remote hosts to mount file systems over a network and interact with those file systems as though they are mounted locally. This enables system administrators to consolidate resources onto centralized servers on the network. More details on [NFS](https://docs.microsoft.com/en-us/windows-server/storage/nfs/nfs-overview). 
         - GluserFS: It is an open source distributed file system that can scale out in building-block fashion to store multiple petabytes of data. More details on [Gluster FS](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-rhel-glusterfs). 
         - Azure Files: It is the only public cloud file storage that delivers secure, Server Message Block (SMB) based, fully managed cloud file shares that can also be cached on-premises for performance and compatibility. More details on [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction). 
             - NFS and glusterFS:  
                 - Replication is standard Locally-redundant storage (LRS).  
-                - Type is Storage (general purpose v1) 
+                - Type is Storage (general purpose v1).
             - Azure Files:  
                 - Replication is Premium Locally-redundant storage (LRS).  
-                - Type is File Storage  
-            - These storage mechanisms will differ according to deployment selected such as  
+                - Type is File Storage.
+            - These storage mechanisms will differ according to deployment selected such as:
                 - NFS and glusterFS will create a container.  
                 - Azure files will create a file share. 
     -  For Minimal and short2mid the template will support nfs and for Large and Maximal the template will support AzureFiles.
     - To access the containers and file share etc. navigate to storage account in resource group in the portal. 
     ![storage_account](images/storage-account.png)
 - **Database Template:** 
-    - This Database template will create an [Azure Database for MySQL server](https://docs.microsoft.com/en-in/azure/mysql/) 
+    - This Database template will create an [Azure Database for MySQL server](https://docs.microsoft.com/en-in/azure/mysql/).
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates, backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server.  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration. 
     - Ways to connect to database server. 
         - Use MySQL client or tools such as MySQL Workbench. 
-        - For workbench give the connection name, hostname (server name), username (server admin login name) 
+        - For workbench give the connection name, hostname (server name), username (server admin login name).
     ![mysqlworkbench](images/mysql-workbench.png)
         - After giving the details test connection. If the connection is successful it will prompt for password. Provide the password to get connected. 
         
 - **Virtual Machine Template:** This template will create a Virtual Machine.
     - Controller VM: 
-        - The OS used at this time is Ubuntu 16.04
+        - The OS used at this time is Ubuntu 16.04.
     - VM extension: 
-        - Extension can be small applications that provide post-deployment configuration and automation tasks on [Azure VMs](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) 
+        - Extension can be small applications that provide post-deployment configuration and automation tasks on [Azure VMs](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview).
         - VM extension will executes a shell script file which installs Moodle on the Virtual Machine and captures the log files. 
         - Log files stderr and stdout are created at the /var/lib/waagent/custom-script/download/0/  
         - User can view the log files as a root user. 
@@ -292,7 +292,7 @@
         - Click on Open and it will prompt to give the username. Give it as azureadmin as it is hard coded in template.
         ![puttyloginpage](images/puttyloginpage.PNG)
         ![puttykey](images/puttykeybrowse.PNG)
-        - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html)
+        - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - After the login, run the following set of commands to migrate. 
             - Download the on-premise backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
             -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
@@ -305,57 +305,57 @@
             ```
             tar -zxvf storage.tar.gz
             ```
-        -   A backup directory is extracted as storage/ at /home/azureadmin/
+        -   A backup directory is extracted as storage/ at /home/azureadmin.
         - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
-        - Create a backup directory
+        - Create a backup directory.
             ```
             cd /home/azureadmin/
             mkdir -p backup
             mkdir -p backup/moodle
             ```
-        - Replace the moodle directory  
-            - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle) 
-            - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/)
+        - Replace the moodle directory.
+            - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle).
+            - Before accessing moodle directory switch as root user and copy the moodle directory to existing path (/moodle/html/).
                 ```
                 mv /moodle/html/ /home/azureadmin/backup/moodle/html/
                 cp  /home/azureadmin/moodle /moodle/html/
                 ```
-        - Replace the moodledata directory 
-            - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory
-            - Copy the moodledata directory to existing path (/moodle/moodledata)
+        - Replace the moodledata directory.
+            - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory.
+            - Copy the moodledata directory to existing path (/moodle/moodledata).
                 ```
                 mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
                 cp /home/azureadmin/moodledata /moodle/moodledata
                 ``` 
-        - Importing the Moodle Database to Azure Moodle DB 
+        - Importing the Moodle Database to Azure Moodle DB.
             -   Import the on-premises database to Azure Database for MySQL.
-            - Create a database to import on-premises database
+            - Create a database to import on-premises database.
                 ```    
                 mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
                 ```
-            - Assign right permissions to database
+            - Assign right permissions to database.
                 ```
                 mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${Moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
                 ``` 
-            - Import the database
+            - Import the database.
                 ```
                 mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql
                 ```
             - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
         
-        - Configure directory permissions
-            - Set 755 and www-data owner:group permissions to moodle directory 
+        - Configure directory permissions.
+            - Set 755 and www-data owner:group permissions to moodle directory.
                 ```
                 sudo chmod 755 /moodle
                 sudo chown -R www-data:www-data /moodle
                 ```
-            - Set 770 and www-data owner:group permissions to moodledata directory 
+            - Set 770 and www-data owner:group permissions to moodledata directory.
                 ```
                 sudo chmod 770 /moodle/moodledata
                 sudo chown -R www-data:www-data /moodle/moodledata
                 ``` 
         - Change the database details in Moodle configuration file (/moodle/config.php).
-        - Update the following parameters in config.php
+        - Update the following parameters in config.php.
             - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
                 ```
                 cd /moodle/html/moodle/
@@ -374,7 +374,7 @@
             sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
             ```
         -   Install Missing PHP extensions.
-                - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+                - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
             - Note: If on-premises has any additional PHP extensions those will be installed manually.
                 ```
                 sudo apt-get install -y php-<extensionName>
@@ -398,9 +398,9 @@
             ```
             tar -zxvf stoarge.tar.gz
             ```
-    -   A backup directory is extracted as storage/ at /home/azureadmin/.
+    -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
-        - Create a backup directory
+        - Create a backup directory.
             ```
             cd /home/azureadmin/
             mkdir -p backup
@@ -408,20 +408,20 @@
             ```
         
         - **Configuring PHP & webserver**
-            - Update the nginx conf file
+            - Update the nginx conf file.
                 ```
                 sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
                 cd /home/azureadmin/storage/configuration/
                 sudo cp <dns>.conf  /etc/nginx/sites-enabled/
                 ```
-            - Update the php config file
+            - Update the php config file.
                 ```
                 sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
                 sudo  cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
                 ```
-            -   Install Missing PHP extensions
+            -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
-                        - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
+                        - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
                 Note: If on-premises has any additional PHP extensions those will be installed by the user.
                 ```
                 sudo apt-get install -y php-<extensionName>
@@ -431,11 +431,11 @@
             -   The logging destination will need to be standardized.
             - Log path are defaulted to /var/log/nginx. 
             - Go to the /etc/nginx/sites-enabled/ edit the configuration file to set the logs paths to /var/log/nginx.
-                -   access.log and error.log are created
+                -   access.log and error.log are created.
         -   **Restart servers**
             - Update the time-stamp to update the local copy in VMSS instance.
-            /usr/local/bin/update_last_modified_time.azlamp.sh
-            - Restart nginx and php-fpm
+            /usr/local/bin/update_last_modified_time.azlamp.sh.
+            - Restart nginx and php-fpm.
             ```
             sudo systemctl restart nginx
             sudo systemctl restart php<phpVersion>-fpm
@@ -452,9 +452,9 @@
             -   Ex: /var/log/syslogs/moodle/access.log
             -   Ex: /var/log/syslogs/moodle/error.log 
     -   **Certs:**
-        -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs/
+        -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs.
         -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
-        -   You can also generate a self-signed certificate, useful for testing only:
+        -   You can also generate a self-signed certificate, useful for testing only.
             
             ```
             openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -462,7 +462,7 @@
             -out /moodle/certs/nginx.crt \
             -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             ```
-        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
+        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
             ```
             chown www-data:www-data /moodle/certs/nginx.*
             chmod 400 /moodle/certs/nginx.*
@@ -471,19 +471,18 @@
         -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
         -   Update the time-stamp to update the local copy in VMSS instance.
-        -   
             ```
             sudo -s
             /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
     -   **Restart servers**
         
-        -   Restart the nginx and php-fpm servers
+        -   Restart the nginx and php-fpm servers.
             ```
             sudo systemctl restart nginx
             sudo systemctl restart php<phpVersion>-fpm
             ```
-        -   If apache is installed as a webserver then restart apache server
+        -   If apache is installed as a webserver then restart apache server.
             ```
             sudo systemctl restart apache
             ```
