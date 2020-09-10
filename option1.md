@@ -351,17 +351,19 @@
             -   Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
                 ```    
-                mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
                 ```
             - Assign right permissions to database.
                 ```
-                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
+                mysql -h $ server_name -u $server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
                 ``` 
             - Import the database.
                 ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql
+                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/*.sql
                 ```
-            - Note: Update above $server_name , $server_admin_login_name, $moodledbname, $admin_password, $moodledbuser and $ moodledbpass values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
+            - *Note:* 
+                - Update above $server_name , $server_admin_login_name values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
+                - $moodledbname, $admin_password, $moodledbuser and $ moodledbpass 
             - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
         
         - Configure directory permissions.
@@ -398,7 +400,7 @@
             ```
         -   Install Missing PHP extensions.
                 - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-            - Note: If on-premises has any additional PHP extensions those will be installed manually.
+            - Note: If on-premises has any additional PHP extensions those can be installed manually.
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
