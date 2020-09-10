@@ -298,6 +298,7 @@
         ![puttyloginpage](images/puttyloginpage.PNG)
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
+        - Browse and select the SSH key and click on Open button.
         - After the login, run the following set of commands to migrate. 
         -   **Download and install AzCopy**
             - Execute the below commands to install AzCopy
@@ -384,6 +385,11 @@
             sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
             cd /home/azureadmin/storage/configuration/
             sudo cp nginx/sites-enabled/<dns>.conf  /etc/nginx/sites-enabled/
+
+            Example: 
+            sudo mv /etc/nginx/sites-enabled/onpremisemoodle.westus.cloudapp.azure.com.conf  /home/azureadmin/backup/onpremisemoodle.westus.cloudapp.azure.com.conf 
+            cd /home/azureadmin/storage/configuration/
+            sudo cp nginx/sites-enabled/onpremisemoodle.westus.cloudapp.azure.com.conf  /etc/nginx/sites-enabled/
             ```
         - Update the PHP config file.
             ```
