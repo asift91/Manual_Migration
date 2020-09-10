@@ -208,7 +208,7 @@
     - [Large (high availability)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-large-ha.json): Supporting more than 2000 concurrent users. This deployment will use Azure Files, MySQL (16 vCores) and Redis cache, without other options like elastic search.  
     - [Maximum](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-maximal.json): This maximal deployment will use Azure Files, MySQL with highest SKU, Redis cache, elastic search (3 VMs), and pretty large storage sizes (both data disks and DB).
 - To deploy any of the predefined size template click on the launch option.  
-- It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
+- It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, [SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), Region. 
 ![custom_deployment](images/customdeployment.png)
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
 - The following diagram will give an idea about Moodle architecture.
@@ -265,19 +265,7 @@
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates, backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
     - To access the database server created navigate to the resource group provided while deployment and go to Azure Database for MySQL server.  
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration. 
-    - Configure firewall:
-        -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
-            ```
-            az mysql server firewall-rule create --resource-group manual_migration --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
-            ```
-        -  Click your newly created  MySQL server, and then click Connection security.
-        ![connectionSecurity SS](images/connection_security.png)
-        -  You can Add My IP, or configure firewall rules here. Click on save after you have created the rules. You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool. 
-    - Ways to connect to database server. 
-        - Use MySQL client or tools such as MySQL Workbench. 
-        - For workbench give the connection name, hostname (server name), username (server admin login name).
-    ![mysqlworkbench](images/mysql-workbench.png)
-        - After giving the details test connection. If the connection is successful it will prompt for password. Provide the password to get connected. 
+    
         
 - **Virtual Machine Template:** This template will create a Virtual Machine.
     - Controller VM: 
@@ -311,19 +299,28 @@
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - After the login, run the following set of commands to migrate. 
+        -   **Download and install AzCopy**
+            - Execute the below commands to install AzCopy
+                ```
+                sudo -s
+                wget https://aka.ms/downloadazcopy-v10-linux
+                tar -xvf downloadazcopy-v10-linux
+                sudo rm /usr/bin/azcopy
+                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+                ```
             - Download the on-premises backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
             -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
-            ```
-            sudo -s
-            cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
+                ```
+                sudo -s
+                cd /home/azureadmin/
+                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
-            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
-            ```
+                Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
+                ```
             - Extract the compressed content to a directory.
-            ```
-            tar -zxvf /home/azureadmin/storage.tar.gz
-            ```
+                ```
+                tar -zxvf /home/azureadmin/storage.tar.gz
+                ```
         -   A backup directory is extracted as storage/ at /home/azureadmin.
         - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
         - Create a backup directory.
@@ -408,6 +405,15 @@
 -   **Virtual Machine Scaleset**
     -   Login to Scaleset VM instance and execute the following sequence of steps.
     - Download the on-premises compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directories with database backup file to /home/azureadmin location. 
+        -   **Download and install AzCopy**
+            - Execute the below commands to install AzCopy
+                ```
+                sudo -s
+                wget https://aka.ms/downloadazcopy-v10-linux
+                tar -xvf downloadazcopy-v10-linux
+                sudo rm /usr/bin/azcopy
+                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+                ```    
         -   Download the compressed backup file to Virtual machine at /home/azureadmin/ location.
             ```
             sudo -s
