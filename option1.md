@@ -351,20 +351,21 @@
             -   Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
                 ```    
-                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
                 ```
             - Assign right permissions to database.
                 ```
-                mysql -h $ server_name -u $server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO $moodledbuser IDENTIFIED BY '$moodledbpass';"
                 ``` 
             - Import the database.
                 ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
                 ```
             - *Note:* 
                 - Update above $server_name , $server_admin_login_name values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
-                - $moodledbname, $moodledbuser and $ moodledbpass can be newly created
-                - $admin_password can be taken from the azure portal 
+                - $moodledbname, $moodledbuser and $moodledbpass can be newly created by the user.
+                - $admin_password can be reset from the Azure portal.
+                - Go to the created Azure Database for MySQL server and click on "Reset Password" button at the top left of the page.
             - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
         
         - Configure directory permissions.
@@ -405,6 +406,24 @@
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
+        
+        - Update DNS Name and log files location
+            -   Update the Azure cloud DNS name with the on-premises DNS name.
+                ```
+                nano /etc/nginx/sites-enabled/*.conf
+                # Above command will open the configuration file.
+                # Update the server name.
+                # Example: server_name onpremisemoodle.westus.cloudapp.azure.com;
+                # Change to server_name lb-fnulin.eastus.cloudapp.azure.com; 
+                # Most of the cases DNS may remain same in the migration.
+                # 
+                # Change the log path location.
+                # Find access_log and error_log and update the log path.
+                #
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
+                ``` 
+
         - Restart the webservers.
             ```
             sudo systemctl restart nginx 
@@ -466,12 +485,24 @@
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
-            
-        -   **Log Paths**
-            -   The logging destination will need to be standardized.
-            - Log path are defaulted to /var/log/nginx. 
-            - Go to the /etc/nginx/sites-enabled/ edit the configuration file to set the logs paths to /var/log/nginx.
-                -   access.log and error.log are created.
+            - Update DNS Name and log files location
+                -   Update the Azure cloud DNS name with the on-premises DNS name.
+                    ```
+                    nano /etc/nginx/sites-enabled/*.conf
+                    # Above command will open the configuration file.
+                    # Update the server name.
+                    # Example: server_name onpremisemoodle.westus.cloudapp.azure.com;
+                    # Change to server_name lb-fnulin.eastus.cloudapp.azure.com; 
+                    # Most of the cases DNS may remain same in the migration.
+                    # 
+                    # Change the log path location.
+                    # Find access_log and error_log and update the log path.
+                    #
+                    # After the changes, Save the file. 
+                    # Press CTRL+o to save and CTRL+x to exit.
+                    ``` 
+
+        
         -   **Restart servers**
             - Update the time-stamp to update the local copy in VMSS instance.
             /usr/local/bin/update_last_modified_time.azlamp.sh.
@@ -491,22 +522,53 @@
         -   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
             -   Ex: /var/log/syslogs/moodle/access.log
             -   Ex: /var/log/syslogs/moodle/error.log 
+         - Update log files location
+                ```
+                nano /etc/nginx/sites-enabled/*.conf
+                # Above command will open the configuration file.
+                # 
+                # Change the log path location.
+                # Find access_log and error_log and update the log path.
+                #
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
+                ``` 
+
     -   **Certs:**
         -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs.
-        -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
-        -   You can also generate a self-signed certificate, useful for testing only.
-            
-            ```
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -keyout /moodle/certs/nginx.key \
-            -out /moodle/certs/nginx.crt \
-            -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
-            ```
-        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
-            ```
-            chown www-data:www-data /moodle/certs/nginx.*
-            chmod 400 /moodle/certs/nginx.*
-            ```
+            -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
+                -   Command to change the certs name.
+                    ```
+                    cd /path/to/certs/location
+                    mv /path/to/certs/location/*.key /moodle/certs/nginx.key
+                    mv /path/to/certs/location/*.crt /moodle/certs/nginx.crt
+                    ```
+            -   You can also generate a self-signed certificate, useful for testing only.
+                
+                ```
+                openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout /moodle/certs/nginx.key \
+                -out /moodle/certs/nginx.crt \
+                -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+                ```
+            -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
+                ```
+                chown www-data:www-data /moodle/certs/nginx.*
+                chmod 400 /moodle/certs/nginx.*
+                ```
+        -   Update Certs location.
+                ```
+                nano /etc/nginx/sites-enabled/*.conf
+                # Above command will open the configuration file.
+                # 
+                # Change the certs path location.
+                # Find ssl_certificate and update the certs path as below
+                # /moodle/certs//moodle/certs/nginx.crt;
+                # /moodle/certs/nginx.key;
+                #
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit. 
+
     -   **Update Time-Stamp:**
         -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
