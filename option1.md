@@ -359,11 +359,12 @@
                 ``` 
             - Import the database.
                 ```
-                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/*.sql
+                mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
                 ```
             - *Note:* 
                 - Update above $server_name , $server_admin_login_name values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
-                - $moodledbname, $admin_password, $moodledbuser and $ moodledbpass 
+                - $moodledbname, $moodledbuser and $ moodledbpass can be newly created
+                - $admin_password can be taken from the azure portal 
             - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
         
         - Configure directory permissions.
