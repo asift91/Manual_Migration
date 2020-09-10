@@ -155,7 +155,8 @@
 
 	- Create an archive tar.gz file of backup directory.
         ```
-        tar -zcvf storage.tar.gz /home/azureadmin/storage/
+        cd  /home/azureadmin/
+        tar -zcvf storage.tar.gz storage
     	```
 
     -   **Download and install AzCopy**
@@ -320,7 +321,8 @@
                 ```
             - Extract the compressed content to a directory.
                 ```
-                tar -zxvf /home/azureadmin/storage.tar.gz
+                cd /home/azureadmin
+                tar -zxvf storage.tar.gz --directory /home/azureadmin
                 ```
         -   A backup directory is extracted as storage/ at /home/azureadmin.
         - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -336,14 +338,14 @@
             
                 ```
                 mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
-                cp  /home/azureadmin/storage/moodle /moodle/html/
+                cp -rf /home/azureadmin/storage/moodle /moodle/html/
                 ```
         - Replace the moodledata directory.
             - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory.
             
                 ```
                 mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
-                cp /home/azureadmin/storage/moodledata /moodle/moodledata
+                cp -rf /home/azureadmin/storage/moodledata /moodle/moodledata
                 ``` 
         - Importing the moodle Database to Azure moodle DB.
             -   Import the on-premises database to Azure Database for MySQL.
@@ -385,14 +387,14 @@
             ```
             sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/onpremisemoodle.westus.cloudapp.azure.com.conf 
             cd /home/azureadmin/storage/configuration/
-            sudo cp nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
+            sudo cp -rf nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
             ```
         - Update the PHP config file.
             ```
             _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
             echo $_PHPVER
             sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-            sudo  cp /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
+            sudo cp -rf /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
             ```
         -   Install Missing PHP extensions.
                 - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
@@ -428,7 +430,8 @@
             ```
         - Extract the compressed content to a directory.
             ```
-            tar -zxvf /home/azureadmin/stoarge.tar.gz
+            cd /home/azureadmin
+            tar -zxvf storage.tar.gz --directory /home/azureadmin
             ```
     -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -470,12 +473,12 @@
             - Update the time-stamp to update the local copy in VMSS instance.
             /usr/local/bin/update_last_modified_time.azlamp.sh.
             - Restart nginx and php-fpm.
-            ```
-            sudo systemctl restart nginx
-            sudo systemctl restart php$_PHPVER-fpm
-            # If apache is installed as a webserver then restart apache
-            sudo systemctl restart apache
-            ```
+                ```
+                sudo systemctl restart nginx
+                sudo systemctl restart php$_PHPVER-fpm
+                # If apache is installed as a webserver then restart apache
+                sudo systemctl restart apache
+                ```
 ## Post Migration
 - Post migration tasks are around final application configuration that include setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
 -   **Virtual Machine:**
