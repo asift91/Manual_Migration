@@ -383,19 +383,16 @@
                 ```
         - Update the nginx conf file.
             ```
-            sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
+            sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/onpremisemoodle.westus.cloudapp.azure.com.conf 
             cd /home/azureadmin/storage/configuration/
-            sudo cp nginx/sites-enabled/<dns>.conf  /etc/nginx/sites-enabled/
-
-            Example: 
-            sudo mv /etc/nginx/sites-enabled/onpremisemoodle.westus.cloudapp.azure.com.conf  /home/azureadmin/backup/onpremisemoodle.westus.cloudapp.azure.com.conf 
-            cd /home/azureadmin/storage/configuration/
-            sudo cp nginx/sites-enabled/onpremisemoodle.westus.cloudapp.azure.com.conf  /etc/nginx/sites-enabled/
+            sudo cp nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
             ```
         - Update the PHP config file.
             ```
-            sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-            sudo  cp /home/azureadmin/storage/configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+            _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+            echo $_PHPVER
+            sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+            sudo  cp /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
             ```
         -   Install Missing PHP extensions.
                 - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
@@ -406,7 +403,7 @@
         - Restart the webservers.
             ```
             sudo systemctl restart nginx 
-            sudo systemctl restart php(phpVersion)-fpm  
+            sudo systemctl restart php$_PHPVER-fpm  
             ``` 
            
 -   **Virtual Machine Scaleset**
@@ -451,8 +448,10 @@
                 ```
             - Update the php config file.
                 ```
-                sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-                sudo  cp /home/azureadmin/storage/configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/ 
+                _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+                echo $_PHPVER
+                sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+                sudo  cp /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
                 ```
             -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
@@ -473,7 +472,7 @@
             - Restart nginx and php-fpm.
             ```
             sudo systemctl restart nginx
-            sudo systemctl restart php<phpVersion>-fpm
+            sudo systemctl restart php$_PHPVER-fpm
             # If apache is installed as a webserver then restart apache
             sudo systemctl restart apache
             ```
