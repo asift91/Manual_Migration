@@ -353,12 +353,13 @@
                 ```
             - Assign right permissions to database.
                 ```
-                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${Moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
+                mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}.* TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
                 ``` 
             - Import the database.
                 ```
                 mysql -h db_server_name -u db_login_name -pdb_pass dbname >/path/to/.sql
                 ```
+            - Note: Update above $server_name , $server_admin_login_name, $moodledbname, $admin_password, $moodledbuser and $ moodledbpass values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
             - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
         
         - Configure directory permissions.
