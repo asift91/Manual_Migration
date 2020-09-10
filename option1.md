@@ -170,11 +170,11 @@
 
     -   **Copy Archive file to Blob storage**
         - Copy the on-premises archive file to blob storage using AzCopy.
-        - To use AzCopy, user should a generate SAS Token first.
+        - To use AzCopy, user should generate SAS Token first.
         - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
 
             ![image](images/storage-account.png)
-        - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
+        - Select the Container, object checkboxes and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
 
             ![image](images/storageaccountSAS.PNG)
         
@@ -184,7 +184,9 @@
             ```
             az storage container create --account-name <storageAccontName> --name <containerName> --auth-mode login
 
-            Example: az storage container create --account-name onpremisesstorage --name migration --sas-token --auth-mode login
+            Example: az storage container create --account-name onpremisesstorage --name migration --auth-mode login
+
+            # --auth-mode login means authentication mode as login, after login the container will be created.
             ```
         -   Command to copy archive file to blob storage.
         
@@ -199,7 +201,7 @@
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
-- A fully configurable deployment that provides gives more flexibility and choice around deployments.
+- A fully configurable deployment that gives more flexibility and choice around deployments.
 - The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/Moodle).
     - [Minimal](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-minimal.json): This deployment will use NFS, MySQL, and smaller auto scale web frontend VM sku (1 vCore) that will give faster deployment time (less than 30 minutes) and requires only 2 VM cores currently that will fit even in a free trial Azure subscription.  
     - [Small to Mid](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-small2mid-noha.json): Supporting up to 1000 concurrent users. This deployment will use NFS (no high availability) and MySQL (8 vCores), without other options like elastic search or Redis cache.  
@@ -209,7 +211,7 @@
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, SSH key, Region. 
 ![custom_deployment](images/customdeployment.png)
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
-- The following diagram will gives an idea about Moodle architecture.
+- The following diagram will give an idea about Moodle architecture.
 ![images](images/stack_diagram.png)
 - The deployment will install supported Infrastructure and Moodle.
     - Moodle version: 3.8 and 3.9
@@ -236,7 +238,7 @@
     - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. For more details [redis cache](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 - **Storage Template:**  
     -  storage account template will create a storage account with File Storage Kind and Premium LRS replication, Size of 1TB. For more details on [storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
-    -   As per the predefined template storage account with Azure files creates File Share.
+    -   As per the predefined template, storage account with Azure files creates File Share.
     -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS.
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
     - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS).
@@ -266,7 +268,7 @@
     - Configure firewall:
         -  Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range). 
             ```
-            az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
+            az mysql server firewall-rule create --resource-group manual_migration --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
             ```
         -  Click your newly created  MySQL server, and then click Connection security.
         ![connectionSecurity SS](images/connection_security.png)
@@ -316,7 +318,7 @@
             cd /home/azureadmin/
             azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
-            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/test/storage.tar.gz'
+            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
             ```
             - Extract the compressed content to a directory.
             ```
@@ -412,7 +414,7 @@
             cd /home/azureadmin/
             azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
-            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/test/storage.tar.gz'
+            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
             ```
         - Extract the compressed content to a directory.
             ```
