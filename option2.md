@@ -456,6 +456,29 @@ This document explains how to migrate Moodle application from an On-Premise serv
             sudo chown -R www-data:www-data /moodle/moodledata
             ```
     -  **Importing Database**  
+        
+        - Importing the moodle Database to Azure moodle DB.
+            -   Import the on-premises database to Azure Database for MySQL.
+            - Create a database to import on-premises database.
+                ```    
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
+                ```
+            - Assign right permissions to database.
+                ```
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO $moodledbuser IDENTIFIED BY '$moodledbpass';"
+                ``` 
+            - Import the database.
+                ```
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
+                ```
+            - *Note:* 
+                - Update above $server_name , $server_admin_login_name values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
+                - $moodledbname, $moodledbuser and $moodledbpass can be newly created by the user.
+                - $admin_password can be reset from the Azure portal.
+                - Go to the created Azure Database for MySQL server and click on "Reset Password" button at the top left of the page.
+            - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
+        #
+        
         - Import the database from a backup file to a new database created in Azure Database for MySQL.
         - Before creating database install mysql-clinet on controller VM.
                 ```

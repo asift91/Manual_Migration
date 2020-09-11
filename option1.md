@@ -100,6 +100,7 @@
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind BlobStorage -l location
 
             example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind BlobStorage -l eastus
+            # In the above command --kind Indicates the type of storage account.
             ```
         - Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
     
@@ -290,12 +291,12 @@
     - After completion of deployment, go to the resource group. 
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images/resourcesoverview.PNG)
-    - Update the moodle directory and configuration in both the controller virtual machine and virtual machine scale set instance.
+    
 -  **Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
         - Copy the public IP of controller VM to use as the hostname.
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
-        - Click on Open and it will prompt to give the username. Give it as azureadmin as it is hard coded in template.
+        - Click on Open and it will prompt for give the username. Give it as azureadmin as it is hard coded in template.
         ![puttyloginpage](images/puttyloginpage.PNG)
         ![puttykey](images/puttykeybrowse.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
@@ -310,8 +311,7 @@
                 sudo rm /usr/bin/azcopy
                 sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
                 ```
-            - Download the on-premises backup data from Azure Blob storage to VM such as moodle, moodledata, configuration directory with database backup file to /home/azureadmin location. 
-            -   Download the compressed backup file from blob storage to virtual Machine at /home/azureadmin/ location.
+            -   Download the compressed backup file(storage.tar.gz) from blob storage to virtual Machine at /home/azureadmin/ location.
                 ```
                 sudo -s
                 cd /home/azureadmin/
@@ -333,6 +333,17 @@
             mkdir -p backup/moodle
             mkdir -p backup/moodle/html
             ```
+        - Create backup of moodle and moodledata directories.
+            ```
+            mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
+            mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
+            ```
+        - Copy on-premises moodle and moodledata directories to shared location (/moodle).
+            ```
+            cp -rf /home/azureadmin/storage/moodle /moodle/html/
+            cp -rf /home/azureadmin/storage/moodledata /moodle/moodledata
+            ```
+        
         - Replace the moodle directory.
             - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle).
             
@@ -366,12 +377,12 @@
                 - $moodledbname, $moodledbuser and $moodledbpass can be newly created by the user.
                 - $admin_password can be reset from the Azure portal.
                 - Go to the created Azure Database for MySQL server and click on "Reset Password" button at the top left of the page.
-            - [Database general FAQ/troubleshooting questions](https://www.digitalocean.com/docs/databases/mysql/resources/troubleshoot-connections/)
+            - [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
         
         - Configure directory permissions.
             - Set 755 and www-data owner:group permissions to moodle directory.
                 ```
-                sudo chmod 755 /moodle
+                sudo chmod 755 /moodle/html/moodle
                 sudo chown -R www-data:www-data /moodle/html/moodle
                 ```
             - Set 770 and www-data owner:group permissions to moodledata directory.
@@ -389,7 +400,7 @@
                 ```
         - Update the nginx conf file.
             ```
-            sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/onpremisemoodle.westus.cloudapp.azure.com.conf 
+            sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/ 
             cd /home/azureadmin/storage/configuration/
             sudo cp -rf nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
             ```
@@ -467,9 +478,9 @@
         - **Configuring PHP & webserver**
             - Update the nginx conf file.
                 ```
-                sudo mv /etc/nginx/sites-enabled/<dns>.conf  /home/azureadmin/backup/<dns>.conf 
+                sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/ 
                 cd /home/azureadmin/storage/configuration/
-                sudo cp nginx/sites-enabled/<dns>.conf  /etc/nginx/sites-enabled/
+                sudo cp nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
                 ```
             - Update the php config file.
                 ```
