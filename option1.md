@@ -288,7 +288,8 @@
 </details>
 
 -   ### Manual Moodle migration follow the below steps 
-    - After completion of deployment, go to the resource group. 
+    - After completion of deployment, Login into [Azure](http://portal.azure.com/).
+    - Go to the created Resource Group and find all the created resources. 
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images/resourcesoverview.PNG)
     
@@ -302,6 +303,22 @@
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - Browse and select the SSH key and click on Open button.
         - After the login, run the following set of commands to migrate. 
+        - **Install Azure CLI:**
+            - Install Azure CLI if it is not installed.
+                ```
+                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                ```
+            -   Now login into your Azure account
+                ```
+                az login
+                ```
+            - az login: Azure CLI will quite likely launch an instance or a tab inside your default web-browser and prompt you to login to Azure using your Microsoft Account.
+            - If the above browser launch does not happen, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin) and enter the authorization code displayed in your terminal.
+            -  To use command line use below command.
+                ```
+                az login -u <username> -p <password>
+                ```
+
         -   **Download and install AzCopy**
             - Execute the below commands to install AzCopy
                 ```
