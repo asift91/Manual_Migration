@@ -361,17 +361,24 @@ This document explains how to migrate Moodle application from an On-Premise serv
                     - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
             
                 ```
-                sudo apt-get -y  --force-yes install php$phpVersion-fpm
-                sudo apt-get -y  --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
-                sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
-                sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt 
+                sudo apt-get install -y --force-yes php$phpVersion
+                # $phpVersion (7.2, 7.3 and 7.4 are supported versions) indicates version of php to be installed.
+
+                # Setting PHP Version to a variable $_PHPVER.
+                _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+                echo $_PHPVER
+
+                sudo apt-get install -y --force-yes php$_PHPVER-fpm
+                sudo apt-get install -y --force-yes php$_PHPVER-cli php$_PHPVER-curl php$_PHPVER-zip
+                sudo apt-get install -y --force-yes graphviz aspell php$_PHPVER-common php$_PHPVER-soap php$_PHPVER-json php$_PHPVER-redis
+                sudo apt-get install -y --force-yes php$_PHPVER-bcmath php$_PHPVER-gd php$_PHPVER-xmlrpc php$_PHPVER-intl php$_PHPVER-xml php$_PHPVER-bz2 php-pear php$_PHPVER-mbstring php$_PHPVER-dev mcrypt 
                 ```
             -   *Note:*
                 -   If On-Premise has any additional php extensions those will be installed by the user.
                     ```
                     sudo apt-get install -y php-<extensionName>
                     ```
-                -   phpVersion indicates version of php to be installed.
+                
             -   Install nginx webserver
                 ```
                 sudo apt-get -y  --force-yes install nginx
@@ -395,14 +402,16 @@ This document explains how to migrate Moodle application from an On-Premise serv
     - **Download On-Premise archive file** 
         - Download the On-Premise archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
         -   **Download and Install AzCopy:**
-            -   Install AzCopy to copy data from On-Premiseise to blob storage.
+            -   Install AzCopy to download data from On-Premises blob storage to created virtual machine.
+             - Execute the below commands to install AzCopy
                 ```
-                echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-                sudo cp ./azure.list /etc/apt/sources.list.d/
-                sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-                sudo apt-get update
-                sudo apt-get install azcopy
+                sudo -s
+                wget https://aka.ms/downloadazcopy-v10-linux
+                tar -xvf downloadazcopy-v10-linux
+                sudo rm /usr/bin/azcopy
+                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
                 ```
+                
         - Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
         
             ```
