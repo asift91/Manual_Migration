@@ -97,9 +97,9 @@
         ![image](/images/storageaccountcreate.png)
         - Alternatively, you can use Azure CLI command 
             ```
-            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l location
+            az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind BlobStorage -l location
 
-            example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind StorageV2 -l eastus
+            example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind BlobStorage -l eastus
             ```
         - Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
     
