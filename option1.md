@@ -303,22 +303,7 @@
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - Browse and select the SSH key and click on Open button.
         - After the login, run the following set of commands to migrate. 
-        - **Install Azure CLI:**
-            - Install Azure CLI if it is not installed.
-                ```
-                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                ```
-            -   Now login into your Azure account
-                ```
-                az login
-                ```
-            - az login: Azure CLI will quite likely launch an instance or a tab inside your default web-browser and prompt you to login to Azure using your Microsoft Account.
-            - If the above browser launch does not happen, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin) and enter the authorization code displayed in your terminal.
-            -  To use command line use below command.
-                ```
-                az login -u <username> -p <password>
-                ```
-
+        
         -   **Download and install AzCopy**
             - Execute the below commands to install AzCopy
                 ```
@@ -360,21 +345,7 @@
             cp -rf /home/azureadmin/storage/moodle /moodle/html/
             cp -rf /home/azureadmin/storage/moodledata /moodle/moodledata
             ```
-        
-        - Replace the moodle directory.
-            - Copy and replace this moodle directory with existing directory (/home/azureadmin/storage/moodle/html) to existing moodle html path (/moodle/html/moodle).
-            
-                ```
-                mv /moodle/html/moodle /home/azureadmin/backup/moodle/html/moodle
-                cp -rf /home/azureadmin/storage/moodle /moodle/html/
-                ```
-        - Replace the moodledata directory.
-            - Copy and replace this moodledata (/moodle/moodledata) directory with existing moodledata directory.
-            
-                ```
-                mv /moodle/moodledata /home/azureadmin/backup/moodle/moodledata
-                cp -rf /home/azureadmin/storage/moodledata /moodle/moodledata
-                ``` 
+
         - Importing the moodle Database to Azure moodle DB.
             -   Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
@@ -412,8 +383,11 @@
             - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
                 ```
                 cd /moodle/html/moodle/
-                vi config.php
-                # update the database details and save the file.
+                nano config.php
+                # Update the database details and save the file.
+                # Example: $CFG->dbhost    = 'localhost'; - change the local host with servername.
+                # similarly update dbname with server admin name.
+                # dataroot with the location of moodledata (/moodle/moodledata)
                 ```
         - Update the nginx conf file.
             ```
@@ -430,23 +404,31 @@
             ```
         -   Install Missing PHP extensions.
                 - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+        -   To know the PHP extensions which are installed on on-premises run the below command to get the list.
+            ```
+            php -m
+            ```
             - Note: If on-premises has any additional PHP extensions those can be installed manually.
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
         
-        - Update DNS Name and log files location
+        - Update DNS Name and root directory location
             -   Update the Azure cloud DNS name with the on-premises DNS name.
                 ```
                 nano /etc/nginx/sites-enabled/*.conf
                 # Above command will open the configuration file.
+                #
+                # ARM Template deployment will set the nginx server on port 81.
+                # Please update the server port to 81 if it is not 81.
+                #
                 # Update the server name.
                 # Example: server_name onpremisemoodle.westus.cloudapp.azure.com;
                 # Change to server_name lb-fnulin.eastus.cloudapp.azure.com; 
                 # Most of the cases DNS may remain same in the migration.
                 # 
-                # Change the log path location.
-                # Find access_log and error_log and update the log path.
+                # Update the HTML root directory location.
+                # 'root /var/www/html/moodle;' update as  'root /moodle/html/moodle;'.
                 #
                 # After the changes, Save the file. 
                 # Press CTRL+o to save and CTRL+x to exit.
@@ -459,8 +441,22 @@
             ``` 
            
 -   **Virtual Machine Scaleset**
+    -   Before accessing Virtual Machine Scaleset please make sure that it is VMSS is password enabled.
+    -   *Get Virtual Machine Scaleset Private IP:*
+        -   To get the Virtual Machine Scaleset instances private IP follow the below steps.
+        -   Login to [Azure](portal.azure.com) and go to the created Resource Group.
+        -   Find and navigate to the Virtual Machine Scaleset resource.
+        -   In the left panel, select the Instances.
+        -   Navigate to the running instance and find the Private IP associated to it in the Overview section.
+    -   To login into Virtual Machine Scaleset, login to Controller VM and run the set of commands.
+        ```
+        sudo -s
+        sudo ssh azureadmin@172.31.X.X 
+
+        # 172.31.X.X is the Virtual Machine Scaleset Instance private IP.
+        ```
     -   Login to Scaleset VM instance and execute the following sequence of steps.
-    - Download the on-premises compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directories with database backup file to /home/azureadmin location. 
+    -   Download the on-premises compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directories with database backup file to /home/azureadmin location. 
         -   **Download and install AzCopy**
             - Execute the below commands to install AzCopy
                 ```
@@ -513,18 +509,22 @@
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
-            - Update DNS Name and log files location
+            - Update DNS Name and root directory location
                 -   Update the Azure cloud DNS name with the on-premises DNS name.
                     ```
                     nano /etc/nginx/sites-enabled/*.conf
                     # Above command will open the configuration file.
+                    #
+                    # ARM Template deployment will set the nginx server on port 81.
+                    # Please update the server port to 81 if it is not 81.
+                    #
                     # Update the server name.
                     # Example: server_name onpremisemoodle.westus.cloudapp.azure.com;
                     # Change to server_name lb-fnulin.eastus.cloudapp.azure.com; 
                     # Most of the cases DNS may remain same in the migration.
                     # 
-                    # Change the log path location.
-                    # Find access_log and error_log and update the log path.
+                    # Update the HTML root directory location.
+                    # 'root /var/www/html/moodle;' update as  'root /moodle/html/moodle;'.
                     #
                     # After the changes, Save the file. 
                     # Press CTRL+o to save and CTRL+x to exit.
@@ -552,7 +552,7 @@
             -   Ex: /var/log/syslogs/moodle/error.log 
          - Update log files location
                 ```
-                nano /etc/nginx/sites-enabled/*.conf
+                nano /etc/nginx/nginx.conf
                 # Above command will open the configuration file.
                 # 
                 # Change the log path location.
