@@ -140,13 +140,13 @@
 
 	  ![image](/images/folderstructure.png)
 
-	 - First create a empty storage directory in any desired location to copy all the data.
+	 - First create an empty storage directory in any desired location to copy all the data.
 
   
 
 		```
 		sudo -s
-		for example the location is /home/azureadmin
+		for example, the location is /home/azureadmin
 		cd /home/azureadmin
 		mkdir storage
 		```
@@ -173,24 +173,24 @@
 	cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
 	cp -R /etc/php /home/azureadmin/storage/configuration/php
 	```
-	- If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
+	- If the webserver used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
 
   
 -  **Create a backup of database**
-	- If you already have mysql-client installed ,skip the step to install mysql-client.
-	- If you do not have mysql-client installed on the database instance, now would be a good time to do that.
+	- If you already have MySQL-client installed ,skip the step to install mysql-client.
+	- If you do not have MySQL-client installed on the database instance, now would be a good time to do that.
 
 	```
 
 	sudo -s
 
-	# command to check mysql-client is installed or not
+	# command to check MySQL-client is installed or not
 
 	mysql -V
 
-	# if the mysql-client is not installed, install the same by following command.
+	# if the MySQL-client is not installed, install the same by following command.
 
-	sudo apt-get install mysql-client
+	sudo apt-get install MySQL-client
 
 	#following command will allow to you to take the backup of database.
 
@@ -208,8 +208,8 @@
 
 	```
 
-  -  **Download and install AzCopy**
-		- Execute the below commands to install AzCopy
+  -  **Download and install Az Copy**
+		- Execute the below commands to install Az Copy
 			
 			```
 
@@ -228,9 +228,9 @@
   
 -  **Copy Archive file to Blob storage**
 
-	- Copy the on-premises archive file to blob storage using AzCopy.
+	- Copy the on-premises archive file to blob storage using Az Copy.
 
-	- To use AzCopy, user should generate SAS Token first.
+	- To use Az Copy, user should generate SAS Token first.
 
 	- Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
 
