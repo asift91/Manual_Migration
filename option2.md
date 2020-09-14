@@ -8,15 +8,15 @@
   
 ## Option 2: Moodle Migration without ARM Template Infrastructure
 
-* Migration of Moodle with out ARM template infrastructure is to create the infrastructure manually in Azure and migrate Moodle on it.
-* Once the infrastructure is created, the moodle software stack and associated dependencies are migrated.
+* Migration of Moodle without ARM template infrastructure is to create the infrastructure manually in Azure and migrate Moodle on it.
+* Once the infrastructure is created, the Moodle software stack and associated dependencies are migrated.
 
   
 ## Prerequisites
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
 - Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
 - Azure subscription and Azure Blob storage should be created prior to migration.
-- Make sure to have Azure CLI and AzCopy handy.
+- Make sure to have Azure CLI and Az Copy handy.
 - Make sure Moodle website should be in maintenance mode.
 - This migration guide supports the following software versions:
 	- Ubuntu 16.04 LTS
@@ -34,7 +34,7 @@
 	- Create a Resource Group inside Azure.
 	- Create a Storage Account inside Azure.
 	- Backup all relevant data from on-premises infrastructure.
-	- Ensure the on-premises database instance has mysql-client installed.
+	- Ensure the on-premises database instance has MySQL-client installed.
 	- Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
 
   
@@ -47,7 +47,7 @@
 	- Download and run the migrate_moodle.sh script.
 	- Configuring permissions.
 	- Importing Database.
-	- Configuring PHP & WebServer.
+	- Configuring PHP & Webserver.
 	- Configuring VMSS.
 	- Set a cron job.
 
