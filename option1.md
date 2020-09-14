@@ -536,10 +536,14 @@
             -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
                         - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-                Note: If on-premises has any additional PHP extensions those will be installed by the user.
-                ```
-                sudo apt-get install -y php-<extensionName>
-                ```
+                -   To know the PHP extensions which are installed on on-premises run the below command to get the list.
+                    ```
+                    php -m
+                    ```    
+                -   If on-premises has any additional PHP extensions those will be installed by the user.
+                    ```
+                    sudo apt-get install -y php-<extensionName>
+                    ```
             - Update DNS Name and root directory location
                 -   Update the Azure cloud DNS name with the on-premises DNS name.
                     ```
@@ -561,16 +565,6 @@
                     # Press CTRL+o to save and CTRL+x to exit.
                     ``` 
         
-        <!-- -   **Restart servers**
-            - Update the timestamp to update the local copy in VMSS instance.
-            /usr/local/bin/update_last_modified_time.azlamp.sh.
-            - Restart nginx and php-fpm.
-                ```
-                sudo systemctl restart nginx
-                sudo systemctl restart php$_PHPVER-fpm
-                # If apache is installed as a webserver then restart apache
-                sudo systemctl restart apache
-                ``` -->
 ## Post Migration
 - Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
 -   **Controller Virtual Machine:**
