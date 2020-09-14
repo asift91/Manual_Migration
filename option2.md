@@ -43,7 +43,7 @@
 	- Migration of Moodle.
 	- Install prerequisites for Moodle.
 	- Create Moodle Shared folder.
-	- Download On-premise archive file.
+	- Download On-premises archive file.
 	- Download and run the migrate_moodle.sh script.
 	- Configuring permissions.
 	- Importing Database.
@@ -514,7 +514,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
 		```
 
-	 -  *Note:* If On-Premise has any additional php extensions those will be installed by the user.
+	 -  *Note:* If On-Premises has any additional php extensions those will be installed by the user.
 		```
 		sudo apt-get install -y php-<extensionName>
 		```
@@ -548,11 +548,11 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 
 	  - Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
 
-  -  **Download On-Premise archive file**
-		- Download the On-Premise archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+  -  **Download On-Premises archive file**
+		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
 
   -  **Download and Install AzCopy:**
-		- Install AzCopy to copy data from On-Premiseise to blob storage.
+		- Install AzCopy to copy data from On-Premises to blob storage.
 			```
 				echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
 				sudo cp ./azure.list /etc/apt/sources.list.d/
@@ -576,7 +576,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 	- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
 
   
- -  **Migrate On-Premise Moodle:**
+ -  **Migrate On-Premises Moodle:**
 	- Create a backup folder
 
   
@@ -588,7 +588,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 
   
 
-	- Copy and replace moodle folder with On-Premise moodle folder
+	- Copy and replace moodle folder with On-Premises moodle folder
 
 		  
 
@@ -773,8 +773,8 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 
   
 
--  **Download On-Premise archive file**
-	- Download the On-Premise archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+-  **Download On-Premises archive file**
+	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
 	- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
 
   
@@ -884,7 +884,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 	- With the above steps Moodle infrastructure is ready.
 
   -  **Log Paths**
-		- On-Premise might be having different log path location and those paths need to be updated with Azure log paths.
+		- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 		- TBD Need to be check how to configure log paths in Azure.
 -  **Restart servers**
 	- Update the time stamp to update the local copy in VMSS instance.
@@ -912,7 +912,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 
 	 - Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
 -  **Log Paths**
-	- On-Premise might be having different log path location and those paths need to be updated with Azure log paths.
+	- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 	- nginx log path are defaulted to /var/log/nginx.
 	- access.log and error.log are created.
 -   **Certs:**
