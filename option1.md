@@ -146,7 +146,7 @@
             ```
 
 	- **Create a backup of database**
-		- If you already have mysql-client installed ,skip the step to install mysql-client.
+		- If you already have mysql-client installed, skip the step to install mysql-client.
 		- If you do not have mysql-client, now would be a good time to do that.
 			```
 			sudo -s
@@ -256,12 +256,12 @@
     - **Virtual network:** An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a Vnet, your services and VMs within your Vnet can communicate directly and securely with each other in the cloud. More details [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview).
     - **Network Security Group:** A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure Vnets. For more details [network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
     -   **Network Interface:** A network interface enables an Azure Virtual Machine to communicate with internet, Azure and on-premises resources. For more details [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-netwAork-interface).
-    - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the Vnet. More details[Subnet](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
+    - **Subnet:** A subnet or subnetwork is a smaller network inside a large network. By default, an IP in a subnet can communicate with any other IP inside the Vnet. More details [Subnet](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet). 
     - **Public IP:** Public IP addresses are used to communicate Azure resources to the Internet. The address is dedicated to the Azure resource. More details [Public IP](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses#:~:text=Public%20IP%20addresses%20enable%20Azure,IP%20assigned%20can%20communicate%20outbound). 
     - **Load Balancer:** It is an efficient distribution of network or application traffic across multiple servers in a server farm. Ensures high availability and reliability by sending requests only to servers that are online. More details [Load balancer](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/tutorial-load-balancer#:~:text=An%20Azure%20load%20balancer%20is,traffic%20to%20an%20operational%20VM). 
     - ***Note***: Any of the 4 pre-defined template will deploy Azure Load Balancer, only in Fully Configurable deployment user has choice to choose App Gateway instead of Load Balancer.
     -  **Azure Application Gateway**: It is a web traffic load balancer that enables you to manage traffic to your web applications. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. More details [App Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview). 
-    - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It is able to process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. For more details [redis cache](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
+    - **Redis Cache:** Azure Cache for Redis provides an in-memory data store based on the open-source software Redis. Redis improves the performance and scalability of an application that uses on backend data stores heavily. It can process large volumes of application request by keeping frequently accessed data in the server memory that can be written to and read from quickly. For more details [redis cache](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview). 
 - **Storage Template:**  
     -  storage account template will create a storage account with File Storage Kind and Premium LRS replication, Size of 1TB. For more details on [storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   As per the predefined template, storage account with Azure files creates File Share.
@@ -307,7 +307,7 @@
     - Autoscaling of VM Instances depends on [CPU utilization.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview).  
     - While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
     - VM instances have Private IP. 
-    - For connecting to VMs on ScaleSet with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
+    - For connecting to VMs on Scaleset with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
     
 </details>
 
@@ -468,7 +468,7 @@
             ``` 
            
 -   **Virtual Machine Scaleset**
-    -   VMSS instances are assigned with Private IP and can be accessable only with the controller virtual machine which is associated with in the same Virtual Network.
+    -   VMSS instances are assigned with Private IP and can be accessible only with the controller virtual machine which is associated with in the same Virtual Network.
     -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
     -   [Deploy Virtual Network Gateway](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md) to set the gateway access to VMSS instances. 
     -   Before accessing Virtual Machine Scaleset, please make sure that VMSS is password enabled.
@@ -611,7 +611,7 @@
             -out /moodle/certs/nginx.crt \
             -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
             ```
-        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
+        -   It is recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
             ```
             chown www-data:www-data /moodle/certs/nginx.*
             chmod 400 /moodle/certs/nginx.*
