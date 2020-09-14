@@ -212,6 +212,16 @@
 - To deploy any of the predefined size template click on the launch option.  
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, [SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), Region. 
 ![custom_deployment](images/customdeployment.png)
+- If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following set of steps.
+    - Click on Edit Template in Custom deployment page.
+    - In the Resources section, add the moodle and php versions in the parameters block.
+        ```
+        "phpVersion":       { "value": "7.2" },
+        "moodleVersion":    { "value": "MOODLE_38_STABLE"}
+
+        # for moodle 3.9 value should be "MOODLE_39_STABLE"
+        ```
+    - To save the changes, click on Save button.
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
 - The following diagram will give an idea about Moodle architecture.
 ![images](images/stack_diagram.png)
