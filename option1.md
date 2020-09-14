@@ -144,11 +144,10 @@
             cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
             cp -R /etc/php /home/azureadmin/storage/configuration/php
             ```
-		- If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
 
 	- **Create a backup of database**
 		- If you already have mysql-client installed ,skip the step to install mysql-client.
-		- If you do not have mysql-client installed on the database instance, now would be a good time to do that.
+		- If you do not have mysql-client, now would be a good time to do that.
 			```
 			sudo -s
 			# command to check mysql-client is installed or not
@@ -207,7 +206,7 @@
             ```
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 ## Migration
-### Migrating Moodle with Azure ARM Templates 
+### Deploy Azure Infrastructure with Azure ARM Templates
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
@@ -226,14 +225,15 @@
     PHP: 7.4
     Moodle: 3.8
     ```
-- If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following set of steps.
+- If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following steps.
     - Click on Edit Template in Custom deployment page.
+    ![ Add Screenshot of Edit Template->resouces section](images/edittemplate.png)
     - In the Resources section, add the moodle and php versions in the parameters block.
         ```
         "phpVersion":       { "value": "7.2" },
         "moodleVersion":    { "value": "MOODLE_38_STABLE"}
 
-        # for moodle 3.9 value should be "MOODLE_39_STABLE"
+        # for moodle 3.9, value should be "MOODLE_39_STABLE"
         ```
     - To save the changes, click on Save button.
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
@@ -317,7 +317,7 @@
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images/resourcesoverview.PNG)
     
--  **Virtual Machine**
+-  **Controller Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
         - Copy the public IP of controller VM to use as the hostname.
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
@@ -378,7 +378,7 @@
                 ```
             - Assign right permissions to database.
                 ```
-                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO $server_admin_login_name IDENTIFIED BY '$admin_password';"
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO '$server_admin_login_name' IDENTIFIED BY '$admin_password';"
                 ``` 
             - Import the database.
                 ```
@@ -465,13 +465,17 @@
             ``` 
            
 -   **Virtual Machine Scaleset**
-    -   Before accessing Virtual Machine Scaleset please make sure that it is VMSS is password enabled.
+    -   VMSS instances are assigned with Private IP and can be accessable only with the Controller virtual machine which is associated with in the same Virtual Network.
+    -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
+    -   [Deploy Virtual Network Gateway](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md) to set the gateway access to VMSS instances. 
+    -   Before accessing Virtual Machine Scaleset, please make sure that VMSS is password enabled.
     -   *Get Virtual Machine Scaleset Private IP:*
         -   To get the Virtual Machine Scaleset instances private IP follow the below steps.
         -   Login to [Azure](portal.azure.com) and go to the created Resource Group.
         -   Find and navigate to the Virtual Machine Scaleset resource.
         -   In the left panel, select the Instances.
         -   Navigate to the running instance and find the Private IP associated to it in the Overview section.
+    
     -   To login into Virtual Machine Scaleset, login to Controller VM and run the set of commands.
         ```
         sudo -s
@@ -553,9 +557,8 @@
                     # After the changes, Save the file. 
                     # Press CTRL+o to save and CTRL+x to exit.
                     ``` 
-
         
-        -   **Restart servers**
+        <!-- -   **Restart servers**
             - Update the time-stamp to update the local copy in VMSS instance.
             /usr/local/bin/update_last_modified_time.azlamp.sh.
             - Restart nginx and php-fpm.
@@ -564,9 +567,9 @@
                 sudo systemctl restart php$_PHPVER-fpm
                 # If apache is installed as a webserver then restart apache
                 sudo systemctl restart apache
-                ```
+                ``` -->
 ## Post Migration
-- Post migration tasks are around final application configuration that include setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
+- Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
 -   **Virtual Machine:**
     
     -   **Log Paths**
@@ -587,41 +590,45 @@
             ``` 
 
     -   **Certs:**
-        -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs.
-            -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
-                -   Command to change the certs name.
-                    ```
-                    cd /path/to/certs/location
-                    mv /path/to/certs/location/*.key /moodle/certs/nginx.key
-                    mv /path/to/certs/location/*.crt /moodle/certs/nginx.crt
-                    ```
-            -   You can also generate a self-signed certificate, useful for testing only.
-                
+        -   Login to the Controller Virtual Machine and follow the below steps.
+        -   The certificates for your moodle application reside in /moodle/certs.
+         
+        -   Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to be recognized by the configured nginx servers. Depending on your local environment, you may choose to use the utility SCP or a tool like WinSCP to copy these files over to the controller virtual machine.
+            -   Command to change the certs name.
                 ```
-                openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-                -keyout /moodle/certs/nginx.key \
-                -out /moodle/certs/nginx.crt \
-                -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+                cd /path/to/certs/location
+                mv /path/to/certs/location/*.key /moodle/certs/nginx.key
+                mv /path/to/certs/location/*.crt /moodle/certs/nginx.crt
                 ```
-            -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
-                ```
-                chown www-data:www-data /moodle/certs/nginx.*
-                chmod 400 /moodle/certs/nginx.*
-                ```
+        -   You can also generate a self-signed certificate, useful for testing only.
+            
+            ```
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /moodle/certs/nginx.key \
+            -out /moodle/certs/nginx.crt \
+            -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
+            ```
+        -   It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
+            ```
+            chown www-data:www-data /moodle/certs/nginx.*
+            chmod 400 /moodle/certs/nginx.*
+            ```
         -   Update Certs location.
-                ```
-                nano /etc/nginx/sites-enabled/*.conf
-                # Above command will open the configuration file.
-                # 
-                # Change the certs path location.
-                # Find ssl_certificate and update the certs path as below
-                # /moodle/certs//moodle/certs/nginx.crt;
-                # /moodle/certs/nginx.key;
-                #
-                # After the changes, Save the file. 
-                # Press CTRL+o to save and CTRL+x to exit. 
+            ```
+            nano /etc/nginx/sites-enabled/*.conf
+            # Above command will open the configuration file.
+            # 
+            # Change the certs path location.
+            # Find ssl_certificate and update the certs path as below
+            # /moodle/certs//moodle/certs/nginx.crt;
+            # /moodle/certs/nginx.key;
+            #
+            # After the changes, Save the file. 
+            # Press CTRL+o to save and CTRL+x to exit. 
+            ```
 
-    -   **Update Time-Stamp:**
+    -   **Updating HTML Local Copy:**
+        -   Update the time-stamp in the Controller Virtual Machine.
         -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
         -   Update the time-stamp to update the local copy in VMSS instance.
@@ -629,20 +636,17 @@
             sudo -s
             /usr/local/bin/update_last_modified_time.azlamp.sh
             ```
-    -   **Restart servers**
+    -   **Restart Servers**
         
         -   Restart the nginx and php-fpm servers.
             ```
             sudo systemctl restart nginx
             sudo systemctl restart php<phpVersion>-fpm
             ```
-        -   If apache is installed as a webserver then restart apache server.
-            ```
-            sudo systemctl restart apache
-            ```
-    -   **Mapping IP:**
+
+    -   **Map DNS Name with Load Balancer IP:**
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
         -   Disable Moodle website from Maintenance mode.
-        -   Hit the load balancer DNS name to get the migrated Moodle web page.         
+        -   Hit the DNS name to get the migrated Moodle web page.         
 
     
