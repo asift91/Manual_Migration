@@ -8,6 +8,7 @@ This document explains how to setup Virtual Network Gateway in Azure.
 	-	Search for Virtual network gate way and click on that.
 	-	Click on create and it will open a window.
 	-	Fill all the details like Name, Region, Gateway type, sku, vnet and keep the rest to default values.
+        -   Select the vnet which is associated with VM's created under the same resource group.
 	-	Click on create then it will start deploying.
 -	Create Virtual Network gateway by Azure CLI command
 	```
