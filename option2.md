@@ -102,7 +102,7 @@
 	- One option is to create resource group using Azure portal.
 	- Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
 
-		![image](/images/rg.PNG)
+		![image](/images/resource-group.PNG)
 
 	- Alternatively, you can use the Azure CLI command to create a resource group.
 	- Provide the same default Location provided in previous steps.
