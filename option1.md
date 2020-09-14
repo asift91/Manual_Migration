@@ -409,9 +409,12 @@
                 cd /moodle/html/moodle/
                 nano config.php
                 # Update the database details and save the file.
-                # Example: $CFG->dbhost    = 'localhost'; - change the local host with servername.
+                # Example: $CFG->dbhost    = 'localhost'; - change the localhost with servername.
                 # similarly update dbname with server admin name.
                 # dataroot with the location of moodledata (/moodle/moodledata)
+                #
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
                 ```
         - Update the nginx conf file.
             ```
