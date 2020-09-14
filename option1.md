@@ -220,6 +220,12 @@
 - To deploy any of the predefined size template click on the launch option.  
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, [SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), Region. 
 ![custom_deployment](images/customdeployment.png)
+- Above pre-defined templates will deploy the default versions.
+    ```
+    Ubuntu: 16.04 LTS
+    PHP: 7.4
+    Moodle: 3.8
+    ```
 - If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following set of steps.
     - Click on Edit Template in Custom deployment page.
     - In the Resources section, add the moodle and php versions in the parameters block.
