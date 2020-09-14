@@ -117,7 +117,7 @@
 
 	    ![image](/images/folderstructure.png)
 
-        - First create a empty storage directory in any desired location to copy all the data.
+        - First create an empty storage directory in any desired location to copy all the data.
 
             ```
             sudo -s
@@ -378,7 +378,7 @@
                 ```
             - Assign right permissions to database.
                 ```
-                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO $moodledbuser IDENTIFIED BY '$moodledbpass';"
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO $server_admin_login_name IDENTIFIED BY '$admin_password';"
                 ``` 
             - Import the database.
                 ```
@@ -386,7 +386,7 @@
                 ```
             - *Note:* 
                 - Update above $server_name , $server_admin_login_name values from created Azure Database for MySQL server within the same Resource Group in Azure Portal.
-                - $moodledbname, $moodledbuser and $moodledbpass can be newly created by the user.
+                - $moodledbname can be newly created by the user.
                 - $admin_password can be reset from the Azure portal.
                 - Go to the created Azure Database for MySQL server and click on "Reset Password" button at the top left of the page.
             - [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
@@ -575,16 +575,16 @@
             -   Ex: /var/log/syslogs/moodle/access.log
             -   Ex: /var/log/syslogs/moodle/error.log 
          - Update log files location
-                ```
-                nano /etc/nginx/nginx.conf
-                # Above command will open the configuration file.
-                # 
-                # Change the log path location.
-                # Find access_log and error_log and update the log path.
-                #
-                # After the changes, Save the file. 
-                # Press CTRL+o to save and CTRL+x to exit.
-                ``` 
+            ```
+            nano /etc/nginx/nginx.conf
+            # Above command will open the configuration file.
+            # 
+            # Change the log path location.
+            # Find access_log and error_log and update the log path.
+            #
+            # After the changes, Save the file. 
+            # Press CTRL+o to save and CTRL+x to exit.
+            ``` 
 
     -   **Certs:**
         -   _SSL Certs_: The certificates for your moodle application reside in /moodle/certs.
