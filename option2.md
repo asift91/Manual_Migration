@@ -1,143 +1,163 @@
 ## Moodle Manual  Migration
-This document explains how to migrate Moodle from On-Premise servers to Azure cloud.
-## Option 2: Moodle Migration without ARM Template
+- This document explains how to migrate Moodle application from an on-premises environment to Azure. 
+- For each of the steps, you have two approaches provided
+    - One that lets you to use Azure Portal 
+    - Other that lets you accomplish the same tasks on a command line using Azure CLI.
+## Option 2: Moodle Migration without ARM Template Infrastructure
 
- * Migration of Moodle with out ARM Template is to create the infrastructure manually in Azure and migrate Moodle on it. 
- * The Azure infrastructure is the basic skeleton of the resources which will host the Moodle application.
+ * Migration of Moodle with out ARM template infrastructure is to create the infrastructure manually in Azure and migrate Moodle on it. 
+ * Once the infrastructure is created, the moodle software stack and associated dependencies are migrated.
  
 
 ## Prerequisites
-- If the predefined templates do not match with On-Premise configuration then On-Premise Moodle has to be upgraded to more recent versions.
+- If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
 - Must have access to the On-Premise servers to take backup of Moodle and database/configurations.
 - Should have a Azure subscription and the Azure Blob storage created before migration.
 - Azure cli should be installed in On-Premise to use AZCOPY
 - This migration activity installs the following Softwares with supported versions.
     - Ubuntu 16.04 LTS
     - Nginx web server 1.10.3
-    - Apache2 2.4
+    - Apache 2 2.4
     - MySQL PaaS 5.6, 5.7 database server
     - PHP 7.2, 7.3, or 7.4
     - Moodle 3.8 & 3.9
 
-## Migration Approach
-- Migration of Moodle application has 3 phases
-    - Pre Migration
-    - Migration
-    - Post Migration
+-   **Pre-Migration**
+    
+    -   Data Export from on-premises to Azure involves the following tasks:
+        -   Install Azure CLI.
+        -   Have an Azure subscription handy.
+        -   Create a Resource Group inside Azure.
+        -   Create a Storage Account inside Azure.
+        -   Backup all relevant data from on-premises infrastructure.
+        -   Ensure the on-premises database instance has mysql-client installed.
+        -   Copy backup archive file to Blob storage on Azure.
 
-Following operations are performed in the process of Migration.
 
-- **Pre Migration**
-    - Data Export from On-Premise to Azure Cloud
-        - Create Subscription
-        - Install Azure CLI
-        - Create Resource Group
-        - Create Storage Account
-        - Backup of On-Premise data
-        - Copy Archive file to Blob storage
+-   **Migration**
+    
+    - Migration of Moodle.
+    - Install prerequisites for Moodle.
+    - Create Moodle Shared folder.
+    - Download On-premise archive file.
+    - Download and run the migrate_moodle.sh script.
+    - Configuring permissions.
+    - Importing Database.
+    - Configuring PHP & WebServer.
+    - Configuring VMSS.
+    - Set a cron job.
 
-- **Migration**
-    - Migration of Moodle
-        - Install prerequisites for Moodle
-        - Create Moodle Shared folder
-        - Download On-Premise archive file
-        - Download and run the migrate_moodle.sh script
-        - Configuring permissions
-        - Importing Database
-        - Configuring Php & WebServer
-        - Configuring VMSS
-        - Set a cron job
+       
+-   **Post Migration**
+    
+    - Post migration tasks that include application configuration.
+    - Update general configuration (e.g. log file destinations).
+    - Update any cron jobs / scheduled tasks.
+    - Restart servers.
+    - Configure certificates.
+    - Restart servers.
 
-- **Post Migration**
-    - Update log paths
-    - Updating Cron Job 
-    - Configuring certs
-    - Restarting servers
 
 ## Pre Migration
-- **Data Export from On-Premise to Azure Cloud:**
-    - **Create Subscription:**
-        - User must have Azure subscription to create a blob storage.
-        - Select existing subscription or user can add a subscription [click here](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade), can select [Pay-As-You-Go](https://azure.microsoft.com/en-in/offers/ms-azr-0003p/).
-    - **Install Azure CLI** 
-        - Install Azure CLI to copy the On-Premise data to cloud.
-            - Install Azure CLI 
-                ```
-                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                ```
-        - Now login into your Azure account
+
+-   **Data Export from on-premises to Azure Cloud::**
+    -   **Install Azure CLI**
+        -   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+            ```
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+            ```
+        -   Now login into your Azure account
             ```
             az login
             ```
-        - If the CLI can open your default browser, it will do so and load an Azure sign-in page.
-        - Otherwise, open a browser page at https://aka.ms/devicelogin and enter the authorization code displayed in your terminal.
-        - Sign in with your account credentials in the browser.
-        - Sign in with credentials on the command line
+         - az login: Azure CLI will quite likely launch an instance or a tab inside your default web-browser and prompt you to login to Azure using your Microsoft Account.
+          - If the above browser launch does not happen, open a browser page at  [https://aka.ms/devicelogin](https://aka.ms/devicelogin) and enter the authorization code displayed in your terminal.
+        -  To use command line use below command.
             ```
             az login -u <username> -p <password>
             ```
-    - **Create Resource Group:**
-        - After creating the subscription, create a [Resource Group](https://ms.portal.azure.com/#create/Microsoft.ResourceGroup).
-            ```
-            # cmd to create a RG
-            az deployment group create --resource-group <resource-group-name> --template-file <path-to-template>
-            ```
-    - **Create Storage Account:**
-        - Create Azure Storage Account in the same Resource Group 
-            - Create a [storage account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) with AutoKind value as "BlobStorage"
+
+
+    -   **Create Subscription:**
+         - If you do not have a subscription already present, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
+        - To create the subscription using azure portal, navigate to Subscription from Home section.
+        ![image](/images/subscription1.png)
+    -   **Create Resource Group:**
+        -  Once you have a subscription handy, you will need to create a Resource Group.Alternatively, you can use the Azure CLI command to create a resource group.
+        ```
+                az group create -l location -n name
+                # az group create -l westus -n migration
+
+        ```
+     -   **Create Resource Group:**
+
+        - Once you have a subscription handy, you will need to create a Resource Group.
+        - One option is to create resource group using Azure portal.  
+        - Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
+        ![image](/images/resourcegroup.png)
+        - Alternatively, you can use the Azure CLI command to create a resource group.
+        ```
+                az group create -l location -n name
+                # example: az group create -l westus -n migration
+
+        ```
+    -   **Create Storage Account:**
+
+        -  The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
+        - Storage account can be also be created using  Azure portal or Azure CLI command.
+        - To create using portal, navigate to portal and search for storage account and click on Add. After filling the mandatory detials, Click on create.
+        ![image](/images/storageaccountcreate.png)
+        - Alternatively, you can use Azure CLI command storage account and set the Account
+
             ```
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
             ```
-            - The storage account name must be in the combination of lowercase and numerical, click on create button as shown above.
-            - Storage Account is created, can be used to store the On-Premise data.
-    - **Backup of On-Premise data:**
-        - Take backup of On-Premise data such as moodle, moodledata, configurations and database backup file to a folder. For pictorial representation [click here](https://github.com/asift91/Manual_Migration/blob/master/images/folderstructure.png).
-        
-        - Moodle and Moodledata
-            - Moodle folder consists of site HTML content and Moodledata contains Moodle site data
-        - Configurations
-            - Copy the php configurations files such as php-fpm.conf, php.ini, pool.d and conf.d folder to phpconfig folder under the configuration folder.
-            - copy the ngnix or apache configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig folder under the configuration folder
-        - **Database Backup** 
-            - Before taking backup of database On-Premise should have mysql-client to be installed.
+        - Once the storage account is created, this is used as the destination to take the on-premises backup.
+
+    
+    -   **Backup of onpremise data:**
+        -   Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a a single directory.
+         - The following illustration should give you a good idea:
+        ![image](/images/folderstructure.png)
+        -   moodle and moodledata
+            -   The moodle directory consists of site HTML content and moodledata contains moodle site data
+        - configuration
+            -   Copy the php configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
+            -  Copy the ngnix configuration such as nginx.conf, sites-enabled/dns.conf to the nginxconfig directory under the configuration directory.
+            -  If the web-server used is Apache instead, copy all the relevant configuration for Apache to the configuration directory.
+        -   create a backup of database
+            -  If you do not have mysql-client installed on the database instance, now would be a good time to do that.
+                
                 ```
                 sudo -s
                 sudo apt install mysql-client
                 mysql -u dbUserName -p
+                
                 # After the above command user will prompted for database password
+                
                 mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /path/to/location/database.sql
-                # Replace dbServerName, dbUserId, dbPassword and bdName with On-Premise database details
+                
+                # Replace dbServerName, dbUserId, dbPassword and bdName with onpremise database details
                 ```
-            - Create an archive tar.gz file of backup folder
-                - It will take the backup of the storage folder, this folder contains backup of Moodle html data, Moodledata, Configuration and database backup file as per the folder structure.
-                ```
-                tar -zcvf storage.tar.gz <source/folder/name>
-                ```
-    -   **Download and Install AzCopy:**
-        -   Install AzCopy to copy data from On-Premiseise to blob storage.
+        -   Create an archive tar.gz file of backup directory
             ```
-            echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-            sudo cp ./azure.list /etc/apt/sources.list.d/
-            sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-            sudo apt-get update
-            sudo apt-get install azcopy
+            tar -zcvf moodle.tar.gz <source/directory/name>
             ```
+    -   **Copy Archive file to Blob storage**
+       - Copy the on-premises archive file to blob storage using AzCopy.
+        - To use AzCopy user should a generate SAS Token first.
+        - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
+        ![image](images/storage-account.png)
+        - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
+        ![image](images/storageaccountSAS.PNG)
+        - Copy and save the SAS token for further use.
+        - Command to genarate SAS token.
 
-    - **Copy Archive file to Blob storage**
-        - Copy the On-Premise archive file to blob storage by following command.
-            - AZCopy requires SAS Token to copy On-Premise archived file to blob storage 
-            - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
-            - Select the Container checkbox and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String". 
-            - Generate SAS Token from Azure CLI
-                ```
-                az storage container generate-sas --account-name <storage-account> --name <container> --permissions acdlrw --expiry <date-time> --auth-mode login --as-user
-                ```
-            - copy the SAS token for further use.
-                ```
+            ```
                 az storage container create --account-name <storageAccontName> --name <containerName> --sas-token <SAS_token>
-                sudo azcopy copy '/path/to/location/moodle.tar' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>'
-                ```
-            - With the above steps On-Premise compressed data is exported to Azure blob storage.
+                sudo azcopy copy '/path/to/location/moodle.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<dns>/<SAStoken>
+            ```
+        -  Now, you should have a copy of your archive inside the Azure blob storage account.
             
 ## Migration
     
@@ -146,45 +166,49 @@ Following operations are performed in the process of Migration.
         - To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
         - Create the infrastructure by adding the resources.
 
-- ##### Creating Resources to host the Moodle application 
-- **Network Resources**
+- **Creating Resources to host the Moodle application** 
+    - **Network Resources:**
 
-    - **Virtual Network** - An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on Virtual Network [click here](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
+    - **Virtual Network**
+      - An Azure Virtual Network is a representation of your own network in the cloud. It is a logical isolation of the Azure cloud dedicated to your subscription. When you create a VNet, your services and VMs within your VNet can communicate directly and securely with each other in the cloud. More information on [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview). 
+      - you can create using Azure CLI command.
         ```
         #command to create virtual network
         az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
         ```
-    - Navigate to the resource group, select Create a resource. From the Azure Marketplace, select Networking > Virtual network.
-    - In Create virtual network, for Basics section provide this information: 
+      - Navigate to the resource group, select Create a resource. From the Azure Marketplace, select Networking > Virtual network.
+      - In Create virtual network, for Basics section provide this information: 
+            ![image](images/vn1.png)
+
         - Subscription: Select the same subscription. 
         - Resource Group: Select same resource group. 
         - Name: Give the instance name. 
         - Region: Select default region. 
-    - Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16. 
-    - Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
+      - Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16. 
+      - Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
         ```
         #command to create subnet
         az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
         ```
 
-    - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
-    - For more Details [click here](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-portal)
+      - Select Add, then select Review + create. Leave the rest parameters as default and select Create.
+      - For more Details [virtual network](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-portal)
 
     - **Network Security Group:**
-    - A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [click here](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+      - A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [Network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 
-        Create a network security group using Azure CLI
+      - Create a network security group using Azure CLI
         ```
         az network nsg create --resource-group myResourceGroup --name myNSG
         ```
     -   **Network Interface:**
-    -   A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
-    -   Create Network Interface with Azure CLI command
+        -   A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
+        -   Create Network Interface with Azure CLI command
         ```
         az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
         ```
 
-    - **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. [click here](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
+    - **Load Balancer:**  An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. For more details on [Load balancer](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal) 
         ```
         #Create a public IP
         az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
@@ -193,21 +217,22 @@ Following operations are performed in the process of Migration.
         az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
         ```  
 
-    - **Azure Application GateWay** - An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more information [click here](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
-        - To deploy the Application gate way from Azure Portal [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
+    - **Azure Application GateWay** - An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more details on [Azure application gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
+        - To deploy the Application gate way from [Azure Portal](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
+        ![image](images/agwcreate.PNG)
         - To deploy the Application gate way from Azure CLI [click here](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
     
         *Note:* Azure Application Gateway is optional, this migration document supports only Azure Load Balancer.
     
 - **Storage Resources**
     * An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
-    * Storage account will have specific type, replication, Performance, Size. For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
-     *  The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
-    - Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more information [click here](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
+    * Storage account will have specific type, replication, Performance, Size. For more details on [Storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
+     *  The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information on [types of storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
+    - Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more details on[replication types](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
     - Performance: 
         - Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
         - Premium- A premium performance tier for storing unmanaged virtual machine disks.
-    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service. For more information [click here](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
+    - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service. For more details on [size types](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
     
     - Creating storage account with Azure Files Premium below should be the mandatory parameters.
         - Replication is Premium Locally-redundant storage (LRS)
@@ -218,9 +243,10 @@ Following operations are performed in the process of Migration.
         az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
         ```
     - To access the containers and file share etc. navigate to storage account in resource group in the portal.
+    ![storage_account](images/storage-account.png)
 
 - **Database Resources** - 
-    - Creates an Azure Database for MySQL server. [click here](https://docs.microsoft.com/en-in/azure/mysql/).
+    - Creates an [Azure Database for MySQL server](https://docs.microsoft.com/en-in/azure/mysql/).
     - Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
         ```
         #command to create Azure database for MySQL
@@ -233,16 +259,17 @@ Following operations are performed in the process of Migration.
         ```
     -  Click your newly created  MySQL server, and then click Connection security.
       ![connectionSecurity SS](images/connection_security.png)
-    -  You can Add My IP, or configure firewall rules here. Click on save after you have created the rules. You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool. 
+    -  You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
+    - You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool. 
 -  **Get connection information:**
     -  From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
       ![Connection Info ss](images/mysql-workbench.png)
     -  For example, the server name is mydemoserver.mysql.database.azure.com, and the server admin login is myadmin@mydemoserver.
     
 -  **Virtual Machine** 
-    -  A virtual machine is a computer file, typically called an image, which behaves like an actual compute [click here](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/). 
+    -  A virtual machine is a computer file, typically called an image, which behaves like an actual compute [Virtual machine](https://azure.microsoft.com/en-in/overview/what-is-a-virtual-machine/). 
     -  Before creating Virtual machine create an SSH key pair.
-        -   To generate SSH keys, [click here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
+        -   To generate [SSH keys](https://docs.microsoft.com/e1n-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
 
         -  If you already have an SSH key pair, you can skip this step. 
         -  Go to the PuTTY installation folder (the default location is C:\Program Files\PuTTY) and run: puttygen.exe 
