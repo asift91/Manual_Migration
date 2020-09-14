@@ -293,21 +293,21 @@
     - The database server will have a server name, server admin login name, MySQL version, and Performance Configuration. 
     
         
-- **Virtual Machine Template:** This template will create a Virtual Machine.
-    - Controller VM: 
+- **Virtual Machine Template:** This template will create a Virtual Machine as Controller Virtual Machine.
+    - Controller Virtual Machine: 
         - The OS used at this time is Ubuntu 16.04.
     - VM extension: 
         - Extension can be small applications that provide post-deployment configuration and automation tasks on [Azure VMs](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview).
-        - VM extension will executes a shell script file which installs Moodle on the Virtual Machine and captures the log files. 
+        - VM extension will executes a shell script file which installs Moodle on the Controller Virtual Machine and captures the log files. 
         - Log files stderr and stdout are created at the /var/lib/waagent/custom-script/download/0/  
         - User can view the log files as a root user. 
-- **Scale Set Template**: 
-    -   This template will create a [Virtual Machine Scale Set.](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview). 
-    - A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
+- **Scaleset Template**: 
+    -   This template will create a [Virtual Machine Scaleset.](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview). 
+    - A virtual machine scaleset allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scaleset manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
     - Autoscaling of VM Instances depends on [CPU utilization.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview).  
     - While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
     - VM instances have Private IP. 
-    - For connecting to VMs on Scale Set with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
+    - For connecting to VMs on ScaleSet with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
     
 </details>
 
@@ -337,7 +337,7 @@
                 sudo rm /usr/bin/azcopy
                 sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
                 ```
-            -   Download the compressed backup file(storage.tar.gz) from blob storage to virtual Machine at /home/azureadmin/ location.
+            -   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
                 ```
                 sudo -s
                 cd /home/azureadmin/
@@ -468,7 +468,7 @@
             ``` 
            
 -   **Virtual Machine Scaleset**
-    -   VMSS instances are assigned with Private IP and can be accessable only with the Controller virtual machine which is associated with in the same Virtual Network.
+    -   VMSS instances are assigned with Private IP and can be accessable only with the controller virtual machine which is associated with in the same Virtual Network.
     -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
     -   [Deploy Virtual Network Gateway](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md) to set the gateway access to VMSS instances. 
     -   Before accessing Virtual Machine Scaleset, please make sure that VMSS is password enabled.
@@ -497,7 +497,7 @@
                 sudo rm /usr/bin/azcopy
                 sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
                 ```    
-        -   Download the compressed backup file to Virtual machine at /home/azureadmin/ location.
+        -   Download the compressed backup file to Virtual machine scaleset instance at /home/azureadmin/ location.
             ```
             sudo -s
             cd /home/azureadmin/
@@ -573,7 +573,7 @@
                 ``` -->
 ## Post Migration
 - Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
--   **Virtual Machine:**
+-   **Controller Virtual Machine:**
     
     -   **Log Paths**
         
