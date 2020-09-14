@@ -562,7 +562,7 @@
                     ``` 
         
         <!-- -   **Restart servers**
-            - Update the time-stamp to update the local copy in VMSS instance.
+            - Update the timestamp to update the local copy in VMSS instance.
             /usr/local/bin/update_last_modified_time.azlamp.sh.
             - Restart nginx and php-fpm.
                 ```
@@ -631,10 +631,10 @@
             ```
 
     -   **Updating HTML Local Copy:**
-        -   Update the time-stamp in the Controller Virtual Machine.
-        -   A cron job that run in the VMSS instances(s) which will check the updates in time-stamp for every minute. If there is an update in time-stamp then local copy of VMSS is updated in web root directory.
+        -   Update the timestamp in the Controller Virtual Machine.
+        -   A cron job that run in the VMSS instances(s) which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
         -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
-        -   Update the time-stamp to update the local copy in VMSS instance.
+        -   Update the timestamp to update the local copy in VMSS instance.
             ```
             sudo -s
             /usr/local/bin/update_last_modified_time.azlamp.sh
