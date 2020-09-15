@@ -563,12 +563,14 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 		sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
 		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
 		```
+	 
+	- Install Missing PHP extensions.
+	- ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+	- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
 
-	 -  *Note:* If On-Premises has any additional php extensions those will be installed by the user.
 		```
-		sudo apt-get install -y php-<extensionName>
+		php -m
 		```
-		
 
 	 - phpVersion indicates version of php to be installed.
 	- Install nginx webserver
