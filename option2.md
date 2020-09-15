@@ -111,10 +111,10 @@
 		```
 		az group create -l location -n name -s Subscription_NAME_OR_ID
 		# Update the screenshot and subscription name with sample test account
-		# example: az group create -l eastus -n manual_migration -s FreeTrail
+		# example: az group create -l eastus -n migration_option2 -s FreeTrail
 		```
 
-	- In above step resource group is created as "manual_migration". Use the same resource group in further steps.
+	- In above step resource group is created as "migration_option2". Use the same resource group in further steps.
 
 -  **Create Storage Account:**
 	- The next step would be to [create a Storage Account](https://ms.portal.azure.com/#create/Microsoft.StorageAccount) in the Resource Group you've just created.
@@ -128,12 +128,12 @@
 
 		```
 		az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind BlobStorage -l location
-		example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind BlobStorage -l eastus
+		example: az storage account create -n onpremstorage1 -g migration_option2 --sku Standard_LRS --kind BlobStorage -l eastus
 
 		# In the above command --kind Indicates the type of storage account.
 		```
 
-	- Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
+	- Once the storage account "onpremstorage1" is created, this is used as the destination to take the on-premises backup.
 
 -  **Backup of on-premises data:**
 	 - Before taking backup of on-premises data, enable maintenance mode for moodle site.
