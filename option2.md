@@ -251,6 +251,9 @@
 	![image](ss/SAStoken.PNG)
 
 	- Copy and save the SAS token for further use.
+	- Container can be created using Azure Portal,Navigate to the same storage account created and click on container and click on Add.
+	- After giving the mandatory container name,click on create.
+	![image](ss/Containercreation.PNG)
 
 	- Command to create a container in the storage account.
 
@@ -477,6 +480,8 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 
 	 - Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
 	- Copy the public IP of controller VM and paste as host name and expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deployment. Click on Open and it will prompt to give the username as azureadmin same as given while deployment that is azureadmin
+	 - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
+
 
   
 	![putty ss1](images/puttyloginpage.PNG)
