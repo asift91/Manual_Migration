@@ -114,7 +114,7 @@
     
     -   **Backup of on-premises data:**
         - Before taking backup of on-premises data, enable maintenance mode for moodle site.
-            - Run the below commnad in on-premises virtual machine.
+            - Run the below command in on-premises virtual machine.
                 ```
                 sudo /usr/bin/php admin/cli/maintenance.php --enable
                 ```
@@ -167,7 +167,7 @@
 			
             #following command will allow to you to take the backup of database.
 			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /home/azureadmin/storage/database.sql
-			# Replace dbServerName, dbUserId, dbPassword and bdName with on-premises database details
+			# Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details
 			```
 
 	- Create an archive tar.gz file of backup directory.
@@ -207,7 +207,7 @@
 
             # --auth-mode login means authentication mode as login, after login the container will be created.
             ```
-        - Container can be created using Azure Portal, Navigate to the same storage account created and click on container and click on Add button.
+        - Container can be created using Azure Portal, navigate to the same storage account created and click on container and click on Add button.
             
         - After giving the mandatory container name, click on create button.
             ![image](ss/Containercreation.PNG)
@@ -419,9 +419,9 @@
                 # $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
                 # $CFG->dbuser    = 'root';                     - change root with Server admin login name.
                 # $CFG->dbpass    = 'password';                 - change password with Server admin login password.
-                # $CFG->wwwroot   = 'http://on-premises.com';   - change onpremises with DNS name.
+                # $CFG->wwwroot   = 'http://on-premises.com';   - change on-premises with DNS name.
                 # $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
-                    # Onpremise dataroot directory can be at any location.
+                    # On-premises dataroot directory can be at any location.
                 # 
                 # After the changes, Save the file. 
                 # Press CTRL+o to save and CTRL+x to exit.
@@ -676,7 +676,7 @@
     -   **Map DNS Name with Load Balancer IP:**
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
         -   Disable Moodle website from Maintenance mode.
-            - Run the below commnad in Controller Virtual Machine.
+            - Run the below command in Controller Virtual Machine.
                 ```
                 sudo /usr/bin/php admin/cli/maintenance.php --disable
                 ```
