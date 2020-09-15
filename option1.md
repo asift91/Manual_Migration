@@ -458,7 +458,7 @@
             ```
             php -m
             ```
-            - Note: If on-premises has any additional PHP extensions which are not present in Controller VM can be installed manually.
+            - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
                 ```
                 sudo apt-get install -y php-<extensionName>
                 ```
@@ -568,7 +568,7 @@
                     ```
                     php -m
                     ```
-                    - Note: If on-premises has any additional PHP extensions which are not present in Controller VM can be installed manually.
+                    - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
                         ```
                         sudo apt-get install -y php-<extensionName>
                         ```
