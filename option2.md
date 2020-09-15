@@ -484,6 +484,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 	- Click next on networking and select the virtual network created in above step and the public IP and keep the above parameters as default.
 	- Click on next for management and keep the parameters as default.
 	- Keeping the other parameters as default Click on review and create.
+	 ![image](ss/vm.png)
 	- Alternatively Virtual Machine can be created using AZ CLI command
 
   
