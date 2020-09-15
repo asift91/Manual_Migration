@@ -298,6 +298,7 @@
 		```
 		#command to create virtual network
 		az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
+		ex: az network vnet create --name migrationvnet --resource-group migration_option2 --subnet-name 
 		```
 
 	- Alternatively virtual network can be created using Azure Portal.
@@ -309,10 +310,10 @@
 
 	 - Subscription: Select the same subscription created or used in above steps.
 	- Resource Group: Select same resource group as migration_option2
-	- Name: Give the instance name as myVirtualNetwork.
+	- Name: Give the instance name ex:migrationvnet.
 	- Region: Select default region as eastus
 	- Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16.
-	- Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
+	- Select Add subnet, then select the default address name and select Subnet name 
 	- Then create a subnet in the Virtual Network using AZ CLI command
 
   
@@ -330,17 +331,22 @@
 
  -  **Network Security Group:**
 	- A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [Network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
-	- Add text 
+	- One option is to create network security group using Azure Portal.
+	- Navigate to same resource group, Click on Add resource and select network security group.
+	- Give the instance details such as name and region to create network security group.
 	
 	![image](ss/networksecuritygroup.png)
 	- You can create a network security group using Azure CLI
 
 		```
 		az network nsg create --resource-group myResourceGroup --name myNSG
+		ex: az network nsg create --resource-group migration_option2 --name migration_nsg
 	```
 -  **Network Interface:**
 	- A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
-	- Add text
+	- One option is to create network interface using Azure Portal.
+	- Navigate to same resource group, Click on Add resource and select network interface.
+	- Give the instance details such as name and region and fill the other mandatory details.
 	
 	![image](ss/NI.png)
 	- Create Network Interface with Azure CLI command
@@ -349,22 +355,31 @@
 
 		```
 		az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
+		ex: az network nic create --resource-group migration_option2 --name migration_ni --vnet-name migrationvnet --subnet MySubnet --network-security-group migration_nsg
+
 		```
 
   
 -  **Load Balancer:**
 	- An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. For more details on [Load balancer](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal)
-	- Add text
+	- One option is to create Load Balancer using Azure Portal.
+	- Navigate to same resource group, Click on Add resource and select Load balancer.
+	- Give the instance details such as name and region.
+	- Give the type as public and sku as standard
+	- For the public Ip address create a new IP address and give the name.
+	- After filling the details. Click on review and create.
 	
 	![image](ss/Loadbalancer.png)
-
+        - Alternatively, Load balancer can be created using Az CLI commands.  
   
 
 		```
 		#Create a public IP
 		az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
+		ex: az network public-ip create --resource-group migration_option2 --name migration_lb_ip --sku Standard
 		#Create Load balancer
 		az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
+		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
 
   
@@ -386,7 +401,6 @@
 	* Storage account will have specific type, replication, Performance, Size. For more details on [Storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 	* The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information on [types of storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
 	- Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more details on[replication types](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
-	- Performance:
 	- Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
 	- Premium- A premium performance tier for storing unmanaged virtual machine disks.
 	- Size(sku): A single storage account can store up to 500 TB of data and like any other Azure service. For more details on [size types](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
@@ -412,9 +426,12 @@
 
 	  - Creates an [Azure Database for MySQL server](https://docs.microsoft.com/en-in/azure/mysql/).
 	  -  Azure Database for MySQL is easy to set up, manage and scale. It automates the management and maintenance of your infrastructure and database server, including routine updates,backups and security. Build with the latest community edition of MySQL, including versions 5.6, 5.7 and 8.0.
-	  - Add text
+	  - One option is to create Database using Azure Portal.
+	  - Navigate to same resource group, Click on Add resource and select Azure Database for MySQL server .
+	  - Give the instance details such as name and region and fill the other mandatory details such as servername,login name and password.
 	  ![image](ss/database.png)
-
+	  
+	  - Alternativel, database can be created using AZ CLI commands
   
 
 ```
