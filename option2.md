@@ -265,6 +265,8 @@
         ![image](ss/ArchivefileinBlobstorage.PNG)
 	- After giving the mandatory container name, click on create button.
 	    ![image](ss/Containercreation.PNG)
+	    ![image](ss/ArchivefileinBlobstorage.PNG)
+
 
 
 	- Command to copy archive file to blob storage.
