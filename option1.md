@@ -208,7 +208,7 @@
             # --auth-mode login means authentication mode as login, after login the container will be created.
             ```
         - Container can be created using Azure Portal, Navigate to the same storage account created and click on container and click on Add button.
-            ![image](ss/ArchivefileinBlobstorage.PNG)
+            
         - After giving the mandatory container name, click on create button.
             ![image](ss/Containercreation.PNG)
         -   Command to copy archive file to blob storage.
@@ -218,6 +218,7 @@
 
             Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
             ```
+            ![image](ss/ArchivefileinBlobstorage.PNG)
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
 ## Migration
 ### Deploy Azure Infrastructure with Azure ARM Templates
@@ -385,6 +386,8 @@
             ```
 
         - Importing the moodle Database to Azure moodle DB.
+            - Before importing database, should have database details handy.
+
             -   Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
                 ```    
