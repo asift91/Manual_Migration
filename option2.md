@@ -588,7 +588,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 		```	
 	- Install nginx webserver
 
-		 ```
+		```
 		sudo apt-get -y --force-yes install nginx
 		```
 
