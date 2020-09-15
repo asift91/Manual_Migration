@@ -684,6 +684,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 - Update the following parameters in config.php
 - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
 
+
   
 
 	```
@@ -691,6 +692,7 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 	vi config.php
 	# update the database details and save the file.
 	```
+- [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
 
   
 
