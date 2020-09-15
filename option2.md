@@ -583,11 +583,11 @@
 		sudo apt-get install -y php-<extensionName>
 		```
 	- By default php with 7.2 and higher versions are installing apache2.
+	- This documentation will support only nginx and if apache is installed then mask the apache service.
 	- Check the apache service is installed by below command.
 		```
 		apache2 -v
 		```
-	- This documentation will support only nginx and if apache is installed then mask the apache service.
 	- Run the below commands to mask the apache2 service.
 		```
 		sudo systemctl stop apache2
