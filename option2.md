@@ -262,6 +262,7 @@
 		Example: az storage container create --account-name onpremisesstorage --name migration --auth-mode login
 		# --auth-mode login means authentication mode as login, after login the container will be created.
 		```
+        ![image](ss/ArchivefileinBlobstorage.PNG)
 
 	- Command to copy archive file to blob storage.
 				```
