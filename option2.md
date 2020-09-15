@@ -571,22 +571,26 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 		```
 		php -m
 		```
-	  - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
-                ```
-                sudo apt-get install -y php-<extensionName>
-	        ```
+	- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+		```
+		sudo apt-get install -y php-<extensionName>
+		```
+	- By default php with 7.2 and higher versions are installing apache2.
+	- Check the apache service is installed by below command.
+		```
+		apache2 -v
+		```
+	- This documentation will support only nginx and if apache is installed then mask the apache service.
+	- Run the below commands to mask the apache2 service.
+		```
+		sudo systemctl stop apache2
+		sudo systemctl mask apache2
+		```	
 	- Install nginx webserver
 
 		 ```
 		sudo apt-get -y --force-yes install nginx
 		```
-	- Install apache webserver if you are not going with nginx.
-		
-		```
-		sudo apt-get install -y libapache2-mod-php
-		```
-
-	  *Note:* This documentation will support nginx by default and apache as optional.
 
   -  **Create Moodle Shared folder**
 		- Create a moodle shared folder to install Moodle (/moodle)
