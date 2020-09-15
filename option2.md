@@ -331,7 +331,7 @@
  -  **Network Security Group:**
 	- A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [Network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 	- Add text 
-	 ![image](ss/networksecuritygroup.png)
+	![image](ss/networksecuritygroup.png)
 	- You can create a network security group using Azure CLI
 
 		```
