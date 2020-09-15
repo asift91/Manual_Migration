@@ -122,7 +122,7 @@
 	- To create using portal, navigate to portal and search for storage account and click on Add button.
 	- After filling the mandatory details, click on create.
 
-	![image](/images/storageaccountcreate.png)
+	![image](/ss/Storageaccount.PNG)
 
 	- Alternatively, you can use Azure CLI command
 
