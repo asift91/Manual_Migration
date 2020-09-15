@@ -113,6 +113,15 @@
         - Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
     
     -   **Backup of on-premises data:**
+        - Before taking backup of on-premises data, enable maintenance mode for moodle site.
+            - Run the below commnad in on-premises virtual machine.
+                ```
+                sudo /usr/bin/php admin/cli/maintenance.php --enable
+                ```
+            - To check the status of the moodle site run the below command.
+                ```
+                sudo /usr/bin/php admin/cli/maintenance.php
+                ```
         - Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea.
 
 	    ![image](/images/folderstructure.png)
@@ -644,6 +653,14 @@
     -   **Map DNS Name with Load Balancer IP:**
         -   DNS name mapping with the load balancer IP must be done at the hosting provider level.
         -   Disable Moodle website from Maintenance mode.
+            - Run the below commnad in Controller Virtual Machine.
+                ```
+                sudo /usr/bin/php admin/cli/maintenance.php --disable
+                ```
+            - To check the status of the moodle site run the below command.
+                ```
+                sudo /usr/bin/php admin/cli/maintenance.php
+                ```
         -   Hit the DNS name to get the migrated Moodle web page.         
 
     
