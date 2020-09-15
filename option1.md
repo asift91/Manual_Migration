@@ -386,12 +386,12 @@
             ```
 
         - Importing the moodle Database to Azure moodle DB.
-            - Before importing database, make sure that Azure Database for MySQL server details handy.
+            - Before importing database, make sure that Azure Database for MySQL server details are handy.
                 - Navigate to Azure Portal and go to the created Resource Group.
                 - Select the Azure Database for MySQL server resource.
                 - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
                 - Reset the password by clicking the Reset Password button at top let of the page.
-                - Use above gathered database server details in the below command
+                - Use above gathered database server details in the below commands.
 
             - Import the on-premises database to Azure Database for MySQL.
             - Create a database to import on-premises database.
@@ -411,7 +411,7 @@
 
         - Update the database details in moodle configuration file (/moodle/config.php).
             - Update the following parameters in config.php.
-            - prior to this make sure that DNS name is handy.
+            - Prior to this make sure that DNS name is handy.
                 - Navigate to Azure Portal and go to the created Resource group.
                 - Find the Load Balancer public IP and get the DNS name from overview panel. 
             - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
@@ -421,12 +421,12 @@
                 # Update the database details and save the file.
                 #
                 # Example:
-                # $CFG->dbhost    = 'localhost';    - change the localhost with servername.
-                # $CFG->dbname    = 'moodle';       - change moodle to newly created database name.
-                # $CFG->dbuser    = 'root';         - change root with Server admin login name.
-                # $CFG->dbpass    = 'password';     - change password with Server admin login password.
-                # $CFG->wwwroot   = 'http://on-premises.com'; - change onpremises with DNS name.
-                # $CFG->dataroot  = '/var/moodledata';  - change the path to '/moodle/moodledata'
+                # $CFG->dbhost    = 'localhost';                - change the localhost with servername.
+                # $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
+                # $CFG->dbuser    = 'root';                     - change root with Server admin login name.
+                # $CFG->dbpass    = 'password';                 - change password with Server admin login password.
+                # $CFG->wwwroot   = 'http://on-premises.com';   - change onpremises with DNS name.
+                # $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
                     # Onpremise dataroot directory can be at any location.
                 # 
                 # After the changes, Save the file. 
