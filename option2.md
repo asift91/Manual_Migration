@@ -617,14 +617,23 @@
 		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
 
   -  **Download and Install AzCopy:**
-		- Install AzCopy to copy data from On-Premises to blob storage.
+		
+		- Execute the below commands to install Az Copy
+			
 			```
-				echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod/ xenial main" > azure.list
-				sudo cp ./azure.list /etc/apt/sources.list.d/
-				sudo apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF
-				sudo apt-get update
-				sudo apt-get install azcopy
+
+			sudo -s
+
+			wget https://aka.ms/downloadazcopy-v10-linux
+
+			tar -xvf downloadazcopy-v10-linux
+
+			sudo rm /usr/bin/azcopy
+
+			sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+
 			```
+
 		- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
 
 			 ```
