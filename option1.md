@@ -197,6 +197,7 @@
             ![image](images/storageaccountSAS.PNG)
         
         - Copy and save the SAS token for further use.
+
         
         - Command to create a container in the storage account.
             ```
@@ -206,6 +207,10 @@
 
             # --auth-mode login means authentication mode as login, after login the container will be created.
             ```
+        - Container can be created using Azure Portal, Navigate to the same storage account created and click on container and click on Add button.
+            ![image](ss/ArchivefileinBlobstorage.PNG)
+        - After giving the mandatory container name, click on create button.
+            ![image](ss/Containercreation.PNG)
         -   Command to copy archive file to blob storage.
         
             ```
@@ -328,7 +333,7 @@
     
 -  **Controller Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
-        - Copy the public IP of controller VM to use as the hostname.
+        - Copy the public IP of controller Virtual Machine to use as the hostname.
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
         - Click on Open and it will prompt for give the username. Give it as azureadmin as it is hard coded in template.
         ![puttyloginpage](images/puttyloginpage.PNG)
@@ -488,7 +493,7 @@
         -   In the left panel, select the Instances.
         -   Navigate to the running instance and find the Private IP associated to it in the Overview section.
     
-    -   To login into Virtual Machine Scaleset, login to Controller VM and run the set of commands.
+    -   To login into Virtual Machine Scaleset, login to Controller Virtual Machine and run the set of commands.
         ```
         sudo -s
         sudo ssh azureadmin@172.31.X.X 
@@ -640,7 +645,7 @@
         -   Update the timestamp to update the local copy in VMSS instance.
             ```
             sudo -s
-            /usr/local/bin/update_last_modified_time.azlamp.sh
+            /usr/local/bin/update_last_modified_time.moodle_on_azure.sh
             ```
     -   **Restart Servers**
         

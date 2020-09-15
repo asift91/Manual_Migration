@@ -248,13 +248,10 @@
 	- Select the Container, object checkboxes and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
 
   
-	![image](ss/SAStoken.PNG)
+	    ![image](ss/SAStoken.PNG)
 
 	- Copy and save the SAS token for further use.
-	- Container can be created using Azure Portal,Navigate to the same storage account created and click on container and click on Add.
-	- After giving the mandatory container name,click on create.
-	![image](ss/Containercreation.PNG)
-
+	
 	- Command to create a container in the storage account.
 
 		```
@@ -262,13 +259,19 @@
 		Example: az storage container create --account-name onpremisesstorage --name migration --auth-mode login
 		# --auth-mode login means authentication mode as login, after login the container will be created.
 		```
+        
+
+    - Container can be created using Azure Portal, Navigate to the same storage account created and click on container and click on Add button.
         ![image](ss/ArchivefileinBlobstorage.PNG)
+	- After giving the mandatory container name, click on create button.
+	    ![image](ss/Containercreation.PNG)
+
 
 	- Command to copy archive file to blob storage.
-				```
-					sudo azcopy copy '/home/azureadmin/storage.tar.gz' 					'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
-					Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
-	       ```
+        ```
+        sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
+        Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
+        ```
 		
 	- Now, you should have a copy of your archive inside the Azure blob storage account.
 
