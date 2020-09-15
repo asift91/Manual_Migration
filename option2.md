@@ -889,12 +889,15 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 -  **Restart servers**
 	- Update the time stamp to update the local copy in VMSS instance.
 
+  
+
 		```
 		/usr/local/bin/update_last_modified_time.azlamp.sh
 		```
 
 	- Restart the nginx and php-fpm servers
 
+  
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
