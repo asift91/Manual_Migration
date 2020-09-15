@@ -269,7 +269,7 @@
 					Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
 	       ```
 		
-	- Now, you should have a copy of your archive inside the Azure blob storage a
+	- Now, you should have a copy of your archive inside the Azure blob storage account.
 
   
 
