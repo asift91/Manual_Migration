@@ -588,6 +588,7 @@
 		```
 		apache2 -v
 		```
+	- If the apache service is installed it will show up the service version,so you can identify that apache service is installed.
 	- Run the below commands to mask the apache2 service.
 		```
 		sudo systemctl stop apache2
