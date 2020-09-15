@@ -256,7 +256,7 @@
 
 		```
 		az storage container create --account-name <storageAccontName> --name <containerName> --auth-mode login
-		Example: az storage container create --account-name onpremisesstorage --name migration --auth-mode login
+		Example: az storage container create --account-name onpremstorage1 --name migration --auth-mode login
 		# --auth-mode login means authentication mode as login, after login the container will be created.
 		```
         
@@ -270,7 +270,7 @@
 	- Command to copy archive file to blob storage.
         ```
         sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
-        Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
+        Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremstorage1.blob.core.windows.net/migration/?sv=2019-12-12&ss='
         ```
 		
 	- Now, you should have a copy of your archive inside the Azure blob storage account.
@@ -305,12 +305,12 @@
 	- In Create virtual network, for Basics section provide this information:
 
   
-	![image](images/vn1.png)
+	![image](ss/VirtualNetworkCreate.PNG)
 
-	 - Subscription: Select the same subscription.
-	- Resource Group: Select same resource group.
-	- Name: Give the instance name.
-	- Region: Select default region.
+	 - Subscription: Select the same subscription created or used in above steps.
+	- Resource Group: Select same resource group as migration_option2
+	- Name: Give the instance name as myVirtualNetwork.
+	- Region: Select default region as eastus
 	- Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16.
 	- Select Add subnet, then enter Subnet name and 10.1.0.0/24 for Subnet address range.
 	- Then create a subnet in the Virtual Network using AZ CLI command
