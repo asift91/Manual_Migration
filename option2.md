@@ -331,6 +331,7 @@
  -  **Network Security Group:**
 	- A network security group (NSG) is a networking filter (firewall) containing a list of security rules allowing or denying network traffic to resources connected to Azure VNets. For more information [Network security group](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 	- Add text 
+	
 	![image](ss/networksecuritygroup.png)
 	- You can create a network security group using Azure CLI
 
@@ -340,6 +341,7 @@
 -  **Network Interface:**
 	- A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
 	- Add text
+	
 	![image](ss/NI.png)
 	- Create Network Interface with Azure CLI command
 
@@ -353,6 +355,7 @@
 -  **Load Balancer:**
 	- An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs. A load balancer health probe monitors a given port on each VM and only distributes traffic to an operational VM. For more details on [Load balancer](https://docs.microsoft.com/en-us/azure/load-balancer/tutorial-load-balancer-standard-internal-portal)
 	- Add text
+	
 	![image](ss/Loadbalancer.png)
 
   
