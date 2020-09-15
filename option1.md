@@ -224,6 +224,8 @@
 ### Deploy Azure Infrastructure with Azure ARM Templates
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
+- The following diagram will give an idea about Moodle architecture.
+    ![images](images/stack_diagram.png)
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
 - A fully configurable deployment that gives more flexibility and choice around deployments.
 - The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/Moodle).
@@ -252,15 +254,7 @@
         ```
     - To save the changes, click on Save button.
 - Click on purchase to start the deployment of Moodle on Azure. Link for [pricing calculator]( https://azure.microsoft.com/en-us/pricing/calculator/ ).
-- The following diagram will give an idea about Moodle architecture.
-![images](images/stack_diagram.png)
-- The deployment will install supported Infrastructure and Moodle.
-    - Moodle version: 3.8 and 3.9
-    - Webserver: nginx 1.10.0
-    - PHP version: 7.4, 7.3 or 7.2 
-    - Database server type: MySQL  
-    - MySQL version: 5.6, 5.7 and 8.0 
-    - Ubuntu version: 16.04-LTS  
+
  <details>
   <summary>When the ARM template is used, the following resources are created within Azure (click to expand!)</summary>
   
@@ -659,14 +653,18 @@
             ```
 
     -   **Updating HTML Local Copy:**
-        -   Update the timestamp in the Controller Virtual Machine.
-        -   A cron job that run in the VMSS instances(s) which will check the updates in timestamp for every minute. If there is an update in timestamp then local copy of VMSS is updated in web root directory.
-        -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/).
-        -   Update the timestamp to update the local copy in VMSS instance.
+        
+        - Moodle html site (/moodle/html/moodle) content's local copy is created in VMSS at /var/www/html/moodle.
+        - Local copy is updated only when there is an update in timestamp.
+        -   Execute the below command from Controller Virtual Machine to update the timestamp. 
             ```
             sudo -s
             /usr/local/bin/update_last_modified_time.moodle_on_azure.sh
             ```
+        -  By executing the script last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)  everytime the /moodle/html/moodle directory content is updated in local copy (/var/www/html).
+
+        <!-- -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/). -->
+        
     -   **Restart Servers**
         
         -   Restart the nginx and php-fpm servers.
