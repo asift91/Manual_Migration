@@ -571,8 +571,10 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
 		```
 		php -m
 		```
-
-	 - phpVersion indicates version of php to be installed.
+	  - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+                ```
+                sudo apt-get install -y php-<extensionName>
+	        ```
 	- Install nginx webserver
 
 		 ```
