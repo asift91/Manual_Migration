@@ -636,18 +636,18 @@
 
 		- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
 
-			 ```
-						cd /home/azureadmin
-						azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
 		```
-- Extract archive storage.tar.gz file
+		cd /home/azureadmin 
+		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+		```
+		- Extract archive storage.tar.gz file
 
-				  ```
-				tar -zxvf yourfile.tar.gz
-				ex: tar -zxvf storage.tar.gz
+		```
+		tar -zxvf yourfile.tar.gz
+		ex: tar -zxvf storage.tar.gz
 		```
 
-	- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
+		- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
 
   
  -  **Migrate On-Premises Moodle:**
