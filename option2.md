@@ -243,12 +243,12 @@
 
 	- Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
 
-	  ![image](images/storage-account.png)
+	  ![image](ss/Storageaccountcreated.PNG)
 
 	- Select the Container, object checkboxes and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
 
   
-	![image](images/storageaccountSAS.PNG)
+	![image](ss/SAStoken.PNG)
 
 	- Copy and save the SAS token for further use.
 
