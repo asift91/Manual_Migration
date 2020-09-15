@@ -296,7 +296,6 @@
   
 
 		```
-		#command to create virtual network
 		az network vnet create --name myVirtualNetwork --resource-group myResourceGroup --subnet-name default
 		ex: az network vnet create --name migrationvnet --resource-group migration_option2 --subnet-name 
 		```
@@ -319,8 +318,9 @@
   
 
 		```
-		#command to create subnet
 		az network vnet subnet create -g MyResourceGroup --vnet-name MyVnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
+
+		ex: az network vnet subnet create -g migration_option2 --vnet-name migrationvnet -n MySubnet --address-prefixes 10.0.0.0/24 --network-security-group MyNsg --route-table MyRouteTable
 		```
 
   
@@ -338,10 +338,12 @@
 	![image](ss/networksecuritygroup.png)
 	- You can create a network security group using Azure CLI
 
-		```
+	```
 		az network nsg create --resource-group myResourceGroup --name myNSG
+
 		ex: az network nsg create --resource-group migration_option2 --name migration_nsg
 	```
+
 -  **Network Interface:**
 	- A network interface enables an Azure Virtual Machine to communicate with internet, Azure, and on-premises resources.
 	- One option is to create network interface using Azure Portal.
@@ -355,6 +357,7 @@
 
 		```
 		az network nic create --resource-group myResourceGroupLB --name myNicVM1 --vnet-name myVNet --subnet myBackEndSubnet --network-security-group myNSG
+
 		ex: az network nic create --resource-group migration_option2 --name migration_ni --vnet-name migrationvnet --subnet MySubnet --network-security-group migration_nsg
 
 		```
@@ -369,16 +372,19 @@
 	- For the public Ip address create a new IP address and give the name.
 	- After filling the details. Click on review and create.
 	
-	![image](ss/Loadbalancer.png)
+		![image](ss/Loadbalancer.png)
         - Alternatively, Load balancer can be created using Az CLI commands.  
   
 
 		```
 		#Create a public IP
 		az network public-ip create --resource-group myResourceGroupLB --name myPublicIP --sku Standard
+
 		ex: az network public-ip create --resource-group migration_option2 --name migration_lb_ip --sku Standard
+
 		#Create Load balancer
 		az network lb create --resource-group myResourceGroupLB --name myLoadBalancer --sku Standard --public-ip-address myPublicIP --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
+
 		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
 
@@ -388,7 +394,7 @@
 		- An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more details on [Azure application gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
 		- To deploy the Application gate way from [Azure Portal](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
 
-	  ![image](images/agwcreate.PNG)
+	 	![image](images/agwcreate.PNG)
 
 	  - To deploy the Application gate way from [Azure CLI](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
 
@@ -413,7 +419,6 @@
   
 
 		```
-		#command to deploy storage account
 		az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
 		```
 
@@ -431,13 +436,14 @@
 	  - Give the instance details such as name and region and fill the other mandatory details such as servername,login name and password.
 	  ![image](ss/database.png)
 	  
-	  - Alternativel, database can be created using AZ CLI commands
+	  - Alternatively, database can be created using AZ CLI commands
   
 
-```
-#command to create Azure database for MySQL
-az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
-```
+		```
+		az mysql server create --resource-group myresourcegroup --name mydemoserver --location westus --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
+
+		ex: az mysql server create --resource-group migration_option2 --name mysql-migration --location eastu --admin-user myadmin --admin-password <server_admin_password> --sku-name GP_Gen5_2
+		```
 -  **Configure firewall:**
 	- Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range).
 
@@ -510,8 +516,9 @@ az mysql server create --resource-group myresourcegroup --name mydemoserver --lo
   
 
 		```
-		#command to create Virtual machine
 		az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
+
+		ex: az vm create --resource-group migration_option2 --name igrattionvm --image UbuntuLTS --admin-username azureadmin --authentication-type ssh --generate-ssh-keys
 		```
 
 	 - Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
