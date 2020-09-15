@@ -95,7 +95,7 @@
 	- And if you do not have a subscription, you can choose to [create one within the Azure Portal](https://ms.portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade) or opt for a [Pay-As-You-Go](https://azure.microsoft.com/en-us/offers/ms-azr-0003p/)
 	- To create the subscription using azure portal, navigate to Subscription from Home section.
 
-![image](/images/subscription1.png)
+		![image](/images/subscription1.png)
 
 -  **Create Resource Group:**
 	- Once you have a subscription handy, you will need to create a Resource Group.
@@ -111,7 +111,7 @@
 		```
 		az group create -l location -n name -s Subscription_NAME_OR_ID
 		# Update the screenshot and subscription name with sample test account
-		# example: az group create -l eastus -n migration_option2 -s FreeTrail
+		# example: az group create -l eastus -n migration_option2 -s ComputePM LibrarySub - 067
 		```
 
 	- In above step resource group is created as "migration_option2". Use the same resource group in further steps.
@@ -122,7 +122,7 @@
 	- To create using portal, navigate to portal and search for storage account and click on Add button.
 	- After filling the mandatory details, click on create.
 
-	![image](/ss/Storageaccount.PNG)
+		![image](/ss/Storageaccount.PNG)
 
 	- Alternatively, you can use Azure CLI command
 
@@ -165,11 +165,11 @@
 -  **Backup of moodle and moodledata**
 	- The moodle directory consists of site HTML content and moodledata contains moodle site data.
 
-  ```
-	#commands to copy moodle and moodledata
-	cp -R /var/www/html/moodle /home/azureadmin/storage/
-	cp -R /var/moodledata /home/azureadmin/storage/
-```
+	```
+		#commands to copy moodle and moodledata
+		cp -R /var/www/html/moodle /home/azureadmin/storage/
+		cp -R /var/moodledata /home/azureadmin/storage/
+	```
 
 -  **Backup of PHP and webserver configuration**
 	- Copy the PHP configuration files such as php-fpm.conf, php.ini, pool.d and conf.d directory to phpconfig directory under the configuration directory.
@@ -305,7 +305,7 @@
 	- In Create virtual network, for Basics section provide this information:
 
   
-	![image](ss/vnetcreate.png)
+		![image](ss/vnetcreate.png)
 
 	 - Subscription: Select the same subscription created or used in above steps.
 	- Resource Group: Select same resource group as migration_option2
@@ -313,7 +313,7 @@
 	- Region: Select default region as eastus
 	- Select Next: IP Addresses, and for IPv4 address space, enter 10.1.0.0/16.
 	- Select Add subnet, then select the default address name and select Subnet name 
-	- Then create a subnet in the Virtual Network using AZ CLI command
+	- Then create a subnet in the Virtual Network using Azure CLI command
 
   
 
@@ -373,7 +373,7 @@
 	- After filling the details. Click on review and create.
 	
 		![image](ss/Loadbalancer.png)
-        - Alternatively, Load balancer can be created using Az CLI commands.  
+        - Alternatively, Load balancer can be created using Azure CLI commands.  
   
 
 		```
@@ -425,7 +425,7 @@
 	- To access the containers and file share etc. navigate to storage account in resource group in the portal.
 
   
-		![storage_account](images/storage-account.png)
+		![storage_account](ss/Storageaccountcreated.PNG)
 
   -  **Database Resources** -
 
@@ -436,7 +436,7 @@
 	  - Give the instance details such as name and region and fill the other mandatory details such as servername,login name and password.
 	  ![image](ss/database.png)
 	  
-	  - Alternatively, database can be created using AZ CLI commands
+	  - Alternatively, database can be created using Azure CLI commands
   
 
 		```
@@ -493,7 +493,7 @@
 	- When the key generation has finished, select Save public key, and then select Save private key to save your keys to files.
 
   
-	![putty keygen ss 1](images/puttykeygen2.png)
+		![putty keygen ss 1](images/puttykeygen2.png)
 
 	- The public and private key is generated
 
@@ -527,8 +527,8 @@
 
 
   
-	![putty ss1](images/puttyloginpage.PNG)
-	 ![putty ss1](images/puttykeybrowse.PNG)
+		![putty ss1](images/puttyloginpage.PNG)
+	 	![putty ss1](images/puttykeybrowse.PNG)
 
   
 
