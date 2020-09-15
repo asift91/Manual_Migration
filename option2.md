@@ -305,7 +305,7 @@
 	- In Create virtual network, for Basics section provide this information:
 
   
-	![image](images/vn1.png)
+	![image](ss/VirtualNetworkCreate.PNG)
 
 	 - Subscription: Select the same subscription.
 	- Resource Group: Select same resource group.
