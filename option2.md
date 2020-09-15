@@ -262,10 +262,8 @@
         
 
     - Container can be created using Azure Portal, Navigate to the same storage account created and click on container and click on Add button.
-        ![image](ss/ArchivefileinBlobstorage.PNG)
 	- After giving the mandatory container name, click on create button.
 	    ![image](ss/Containercreation.PNG)
-	    ![image](ss/ArchivefileinBlobstorage.PNG)
 
 
 
@@ -276,6 +274,8 @@
         ```
 		
 	- Now, you should have a copy of your archive inside the Azure blob storage account.
+	 ![image](ss/ArchivefileinBlobstorage.PNG)
+
 
   
 
