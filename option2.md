@@ -545,16 +545,17 @@
 
 		```
 		sudo -s
+		sudo add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
+		sudo apt-get update > /dev/null 2>&1
 		sudo apt-get -y update
-		sudo apt-get -y install unattended-upgrades fail2ban
-		sudo apt-get -y update
-		sudo apt-get -y --force-yes install rsyslog git
-		sudo apt-get -y update
-		sudo apt-get install -y --fix-missing python-software-properties unzip
+		sudo apt-get -y install unattended-upgrades
+		sudo apt-get -y install python-software-properties unzip rsyslog
+		sudo apt-get -y install postgresql-client mysql-client git
+		sudo apt-get -y install varnish php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
 		```
 
 	 - Install Php and extensions
-	- If you are installing PHP greater than 7.2 then upgrade ppa package
+	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
 
   
 
