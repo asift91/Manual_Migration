@@ -244,6 +244,7 @@
     ```
 - If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following steps.
     - Click on Edit Template in Custom deployment page.
+    
     ![ Add Screenshot of Edit Template->resouces section](images/edittemplate.png)
     - In the Resources section, add the moodle and php versions in the parameters block.
         ```

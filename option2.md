@@ -726,10 +726,6 @@
 		# After the changes, Save the file. 
 		# Press CTRL+o to save and CTRL+x to exit.
 		```
-        
-
-  
-
 -  **Configuring Php & WebServer**
 	- Update the nginx conf file
 		```
@@ -738,17 +734,12 @@
 		sudo cp *.conf /etc/nginx/sites-enabled/
 
 		 ```
-	
-
 	 - Update the php config file
-
-  
-
 		```
 		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-		sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		cd /home/azureadmin/storage
+		sudo cp configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/
 		```
-
 	  - Restart the web servers
 
 		```
@@ -843,11 +834,14 @@
 		cd /home/azureadmin/storage/configuration/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
-	- Update the php config file
-
+	- Update the php config file.
 		```
 		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-		sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		cd /home/azureadmin/storage
+		sudo cp configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		```
+	- Restart the servers. 
+		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php(phpVersion)-fpm
 		ex: sudo systemctl restart php7.4-fpm
