@@ -495,6 +495,19 @@
                 sudo systemctl stop nginx 
                 sudo systemctl stop php$_PHPVER-fpm  
                 ```
+    - **Copy of Configuration files:**
+        -   Copying php and webserver configuration files to shared location.
+        -   Configuration files can be copied to VMSS instance(s) from the shared location easily.
+        -   Creating directory for configuration in shared location.
+            ```
+            mkdir -p /moodle/config
+            ```
+        -   Copying the php and webserver config files to configuration folder.
+            ```
+            cp /etc/nginx/sites-enabled/* /moodle/config/
+            cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/
+            ```
+    
 -   **Virtual Machine Scaleset**
     -   VMSS instances are assigned with Private IP and can be accessible only with the controller virtual machine which is associated with in the same Virtual Network.
     -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
@@ -515,29 +528,7 @@
         # 172.31.X.X is the Virtual Machine Scaleset Instance private IP.
         ```
     -   Login to Scaleset VM instance and execute the following sequence of steps.
-    -   Download the on-premises compressed data from Azure Blob storage to VM such as moodle, moodledata, configuration directories with database backup file to /home/azureadmin location. 
-        -   **Download and install AzCopy**
-            - Execute the below commands to install AzCopy
-                ```
-                sudo -s
-                wget https://aka.ms/downloadazcopy-v10-linux
-                tar -xvf downloadazcopy-v10-linux
-                sudo rm /usr/bin/azcopy
-                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
-                ```    
-        -   Download the compressed backup file to Virtual machine scaleset instance at /home/azureadmin/ location.
-            ```
-            sudo -s
-            cd /home/azureadmin/
-            azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
-
-            Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
-            ```
-        - Extract the compressed content to a directory.
-            ```
-            cd /home/azureadmin
-            tar -zxvf storage.tar.gz
-            ```
+    
     -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
         - Create a backup directory.
@@ -548,18 +539,22 @@
             ```
         
         - **Configuring PHP & webserver**
-            - Update the nginx conf file.
+            - Create a backup of php and webserver configuration.
                 ```
-                sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/ 
-                cd /home/azureadmin/storage/configuration/
-                sudo cp nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
-                ```
-            - Update the php config file.
-                ```
+                # Set PHP version to a variable.
                 _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
                 echo $_PHPVER
-                sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-                sudo  cp /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
+
+                sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/
+                sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf  
+
+                
+                ```
+            - Copy the php and webserver configuration files.
+                ```
+                sudo cp /moodle/config/*.conf  /etc/nginx/sites-enabled/
+
+                sudo  cp /moodle/config/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
                 ```
             -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
@@ -572,26 +567,6 @@
                         ```
                         sudo apt-get install -y php-<extensionName>
                         ```
-            - Update DNS Name and root directory location
-                -   Update the Azure cloud DNS name with the on-premises DNS name.
-                    ```
-                    nano /etc/nginx/sites-enabled/*.conf
-                    # Above command will open the configuration file.
-                    #
-                    # ARM Template deployment will set the nginx server on port 81.
-                    # Please update the server port to 81 if it is not 81.
-                    #
-                    # Update the server name.
-                    # Example: server_name on-premises.com; update the on-premises.com with DNS Name. 
-                    # Most of the cases DNS may remain same in the migration.
-                    # 
-                    # Update the HTML root directory location.
-                    # Example: 'root /var/www/html/moodle;' update as  'root /moodle/html/moodle;'.
-                    # root directory in the on-premises can be at any location.
-                    #
-                    # After the changes, Save the file. 
-                    # Press CTRL+o to save and CTRL+x to exit.
-                    ``` 
         
 ## Post Migration
 - Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
