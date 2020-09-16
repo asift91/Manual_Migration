@@ -167,7 +167,6 @@
 		cd /home/azureadmin
 		mkdir storage
 		```
-
   
 
 -  **Backup of moodle and moodledata**
@@ -395,7 +394,14 @@
 
 		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
+    	- Configure DNS name for load balancer.
+		- Navigate to the load balancer created in Azure Portal.
+		- In the left panel, look for configuration and click on it.
+		- Add the DND name and click on save.
 
+
+
+		![image](ss/DNSConfiguration.PNG)
   
 
   -  **Azure Application GateWay**
