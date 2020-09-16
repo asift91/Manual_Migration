@@ -13,8 +13,8 @@
 - Make sure to have Azure CLI and AzCopy handy.
 - Make sure Moodle website should be in maintenance mode.
 - This migration guide supports the following software versions:   
-     - Ubuntu 16.04 LTS
-     - Nginx 1.10.3
+     - Ubuntu 18.04 LTS
+     - Nginx 1.14
      - MySQL 5.6, 5.7 or 8.0 database server (This guide uses Azure Database for MYSQL)
      - PHP 7.2, 7.3, or 7.4
      - Moodle 3.8 & 3.9
@@ -238,7 +238,7 @@
 ![custom_deployment](images/customdeployment.png)
 - Above pre-defined templates will deploy the default versions.
     ```
-    Ubuntu: 16.04 LTS
+    Ubuntu: 18.04 LTS
     PHP: 7.4
     Moodle: 3.8
     ```
@@ -304,7 +304,7 @@
         
 - **Virtual Machine Template:** This template will create a Virtual Machine as Controller Virtual Machine.
     - Controller Virtual Machine: 
-        - The OS used at this time is Ubuntu 16.04.
+        - The OS used at this time is Ubuntu 18.04.
     - VM extension: 
         - Extension can be small applications that provide post-deployment configuration and automation tasks on [Azure VMs](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview).
         - VM extension will executes a shell script file which installs Moodle on the Controller Virtual Machine and captures the log files. 
