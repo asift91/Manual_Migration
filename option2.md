@@ -733,9 +733,9 @@
 -  **Configuring Php & WebServer**
 	- Update the nginx conf file
 		```
-		sudo mv /etc/nginx/sites-enabled/<dns>.conf /home/azureadmin/backup/
+		sudo mv /etc/nginx/sites-enabled/*.conf /home/azureadmin/backup/
 		cd /home/azureadmin/storage/configuration/nginx
-		sudo cp <dns>.conf /etc/nginx/sites-enabled/
+		sudo cp *.conf /etc/nginx/sites-enabled/
 
 		 ```
 	
@@ -857,9 +857,9 @@
 
 		```
 		mkdir -p /home/azureadmin/backup/
-		sudo mv /etc/nginx/sites-enabled/<dns>.conf /home/azureadmin/backup/
+		sudo mv /etc/nginx/sites-enabled/*.conf /home/azureadmin/backup/
 		cd /home/azureadmin/storage/configuration/
-		sudo cp <dns>.conf /etc/nginx/sites-enabled/
+		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
 
   
