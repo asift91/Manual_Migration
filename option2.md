@@ -603,56 +603,47 @@
 			mkdir -p /moodle/html
 			mkdir -p /moodle/certs
 			```
-	-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
-		```
-		curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-		```
-	- Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
+		-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+			```
+			curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+			```
+		- Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
 
   -  **Download On-Premises archive file**
 		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
 
  		- Execute the below commands to install AzCopy
-                ```
-                sudo -s
-                wget https://aka.ms/downloadazcopy-v10-linux
-                tar -xvf downloadazcopy-v10-linux
-                sudo rm /usr/bin/azcopy
-                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
-                ```
-            -   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
-                ```
-                sudo -s
-                cd /home/azureadmin/
-                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
+			```
+			sudo -s
+			wget https://aka.ms/downloadazcopy-v10-linux
+			tar -xvf downloadazcopy-v10-linux
+			sudo rm /usr/bin/azcopy
+			sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+			```
+		-   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
+			```
+			sudo -s
+			cd /home/azureadmin/
+			azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
-                Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
-                ```
-            - Extract the compressed content to a directory.
-                ```
-                cd /home/azureadmin
-                tar -zxvf storage.tar.gz
-                ```
+			Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
+			```
+		- Extract the compressed content to a directory.
+			```
+			cd /home/azureadmin
+			tar -zxvf storage.tar.gz
+			```
 
 		- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
 
   
  -  **Migrate On-Premises Moodle:**
 	- Create a backup folder
-
-  
-		
 		```
 		cd /home/azureadmin/
 		mkdir -p backup
-		```
-
-  
 
 	- Copy and replace moodle folder with On-Premises moodle folder
-
-		  
-
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodle /moodle/html/moodle
@@ -661,51 +652,33 @@
 	 - Replace the moodledata folder
 	- Copy and replace this moodledata (/moodle/moodledata) folder with existing folder
 	- Copy the moodledata folder existing path
-
-  
-
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodledata /moodle/moodledata
 		```
 
-  
-
 -  **Configuring permissions**
 	- Set the Moodle and Moodledata folder permissions.
 	- Set 755 and www-data owner:group permissions to Moodle folder
-
-  
-		
 		```
 		sudo chmod 755 /moodle
 		sudo chown -R www-data:www-data /moodle
 		```
 
 	 - Set 770 and www-data owner:group permissions to Moodledata folder
-
-  
-
 		```
 		sudo chmod 755 /moodle/moodledata
 		sudo chown -R www-data:www-data /moodle/moodledata
 		```
 
-  
-
 -  **Importing Database**
 	- Import the database from a backup file to a new database created in Azure Database for MySQL.
 	- Before creating database install mysql-clinet on controller VM.
 
-  
-
 		```
 		sudo apt install mysql-client
 		```
-
 	- A database needs to be created prior to the import.
-
-  
 
 		```
 		mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
@@ -719,27 +692,54 @@
 		mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}. * TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
     ```
 
-  - Import the database.
+  - Importing the moodle Database to Azure moodle DB.
+            - Before importing database, make sure that Azure Database for MySQL server details are handy.
+                - Navigate to Azure Portal and go to the created Resource Group.
+                - Select the Azure Database for MySQL server resource.
+                - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
+                - Reset the password by clicking the Reset Password button at top let of the page.
+                - Use above gathered database server details in the below commands.
 
-  
+            - Import the on-premises database to Azure Database for MySQL.
+            - Create a database to import on-premises database.
+                ```    
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
+                ```
+            - Assign right permissions to database.
+                ```
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO '$server_admin_login_name' IDENTIFIED BY '$admin_password';"
+                ``` 
+            - Import the database.
+                ```
+                mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
+                ```
+            
+            - [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
 
-		```
-		mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
-		```
-
-  - Change the database details in moodle configuration file (/moodle/config.php).
-- Update the following parameters in config.php
-- dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
-
-
-  
-
-	```
-	cd /moodle/html/moodle/
-	vi config.php
-	# update the database details and save the file.
-	```
-- [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
+        - Update the database details in moodle configuration file (/moodle/config.php).
+            - Update the following parameters in config.php.
+            - Prior to this make sure that DNS name is handy.
+                - Navigate to Azure Portal and go to the created Resource group.
+                - Find the Load Balancer public IP and get the DNS name from overview panel. 
+            - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+                ```
+                cd /moodle/html/moodle/
+                nano config.php
+                # Update the database details and save the file.
+                #
+                # Example:
+                # $CFG->dbhost    = 'localhost';                - change the localhost with servername.
+                # $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
+                # $CFG->dbuser    = 'root';                     - change root with Server admin login name.
+                # $CFG->dbpass    = 'password';                 - change password with Server admin login password.
+                # $CFG->wwwroot   = 'http://on-premises.com';   - change on-premises with DNS name.
+                # $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
+                    # On-premises dataroot directory can be at any location.
+                # 
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
+                ```
+        
 
   
 
