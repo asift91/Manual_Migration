@@ -395,14 +395,11 @@
 		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
     	- Configure DNS name for load balancer.
-		- Navigate to the load balancer created in Azure Portal.
-		- In the left panel, look for configuration and click on it.
-		- Add the DND name and click on save.
+			- Navigate to the load balancer created in Azure Portal.
+			- In the left panel, look for configuration and click on it.
+			- Add the DNS name and click on save.
 
-
-
-		![image](ss/DNSConfiguration.PNG)
-  
+	 	![image](ss/DNSConfiguration.PNG)
 
   -  **Azure Application GateWay**
 		- An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more details on [Azure application gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
