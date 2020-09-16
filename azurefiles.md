@@ -61,7 +61,7 @@
         ```
     -   Run the entry.sh file with following command and Azure Premium Files will be mounted successfully.
         ```
-        	bash entry.sh
+        	bash /home/azureadmin/entry.sh
         ```
 
     -   Check the list of mounted systems.
