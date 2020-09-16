@@ -35,18 +35,19 @@
     -   Create a credentials file with the moodle_azure_files.credential name
     -   Run the following commands
         ```
-            cat <<EOF > /etc/moodle_azure_files.credential
-            username=$storageAccountName
-            password=$storageAccountKey
-            EOF
-            chmod 600 /etc/moodle_azure_files.credential
+        # Replace gathered $storageAccountName and Key values in the below command
+        cat <<EOF > /etc/moodle_azure_files.credential
+        username=$storageAccountName
+        password=$storageAccountKey
+        EOF
+        chmod 600 /etc/moodle_azure_files.credential
         ```
     -   It will create a file and change the permissions 
     -   Now run the following commands to set the azure premium files to fstab file
     -   Create a shell file “entry.sh” with the commands
         ```
         nano /home/azureadmin/entry.sh
-        # It will create a new file and copy below lines to the file and save it.
+        # Above command will create a new file and copy below lines to the file and save it.
             
             #!/bin/bash
             grep -q -s "^//$storageAccountName.file.core.windows.net/moodle\s\s*/moodle\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
