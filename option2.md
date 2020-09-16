@@ -42,7 +42,7 @@
 -  **Migration**
 	- Migration of Moodle.
 	- Install prerequisites for Moodle.
-	- Create Moodle Shared folder.
+	- Create Moodle Shared directory.
 	- Download On-premises archive file.
 	- Download and run the migrate_moodle.sh script.
 	- Configuring permissions.
@@ -482,7 +482,7 @@
 
 	- If you already have an SSH key pair, you can skip this step.
 
-	- Go to the PuTTY installation folder (the default location is C:\Program Files\PuTTY) and run: puttygen.exe
+	- Go to the PuTTY installation directory (the default location is C:\Program Files\PuTTY) and run: puttygen.exe
 
 	- In the PuTTY Key Generator window, set Type of key to generate to RSA, and set Number of bits in a generated key to 2048.
 
@@ -603,8 +603,8 @@
 		curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 		```
 
-  -  **Create Moodle Shared folder**
-		- Create a moodle shared folder to install Moodle (/moodle)
+  -  **Create Moodle Shared directory**
+		- Create a moodle shared directory to install Moodle (/moodle)
 			```
 			mkdir -p /moodle
 			mkdir -p /moodle/moodledata
@@ -615,10 +615,10 @@
 			```
 			curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 			```
-		- Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
+		- Mount shared [moodle directory with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
 
   -  **Download On-Premises archive file**
-		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location
 
  		- Execute the below commands to install AzCopy
 			```
@@ -642,35 +642,33 @@
 			tar -zxvf storage.tar.gz
 			```
 
-		- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
+		- Storage directory contains Moodle, Moodledata and configuration directory along with database backup file.
 
   
  -  **Migrate On-Premises Moodle:**
 
 
-	- Copy and replace moodle folder with On-Premises moodle folder
+	- Copy and replace moodle directory with On-Premises moodle directory
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodle /moodle/html/moodle
 		```
 
-	 - Replace the moodledata folder
-	- Copy and replace this moodledata (/moodle/moodledata) folder with existing folder
-	- Copy the moodledata folder existing path
+	- Copy and replace moodledata directory with On-Premises moodle directory
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodledata /moodle/moodledata
 		```
 
 -  **Configuring permissions**
-	- Set the Moodle and Moodledata folder permissions.
-	- Set 755 and www-data owner:group permissions to Moodle folder
+	- Set the Moodle and Moodledata directory permissions.
+	- Set 755 and www-data owner:group permissions to Moodle directory
 		```
 		sudo chmod 755 /moodle
 		sudo chown -R www-data:www-data /moodle
 		```
 
-	 - Set 770 and www-data owner:group permissions to Moodledata folder
+	 - Set 770 and www-data owner:group permissions to Moodledata directory
 		```
 		sudo chmod 755 /moodle/moodledata
 		sudo chown -R www-data:www-data /moodle/moodledata
@@ -764,7 +762,7 @@
             mkdir -p /moodle/config/php
             mkdir -p /moodle/config/nginx
             ```
-    -   Copying the php and webserver config files to configuration folder.
+    -   Copying the php and webserver config files to configuration directory.
           
 		 ```
             cp /etc/nginx/sites-enabled/* /moodle/config/nginx
@@ -813,8 +811,8 @@
 	- Install web server (nginx/apache) with the given version
 	- Install PHP with its extensions.
 	-  *Note:* Use same commands as controller VM to install PHP and Webserver.
--  **Create Moodle Shared Folder**
-	- Create a moodle shared folder (/moodle)
+-  **Create Moodle Shared directory**
+	- Create a moodle shared directory (/moodle)
 		```
 		mkdir -p /moodle
 		mkdir -p /moodle/moodledata
@@ -831,7 +829,7 @@
   
 
 -  **Download On-Premises archive file**
-	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location
 	- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
 
   
@@ -839,7 +837,7 @@
 		```
 		sudo -s
 		cd /home/azureadmin
-		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
+		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
 		```
 
   
@@ -1000,7 +998,7 @@
   
 
 -  **Update Time Stamp:**
-	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared folder (/moodle/html/moodle).
+	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared directory (/moodle/html/moodle).
 	- Update the time stamp to update the local copy in VMSS instance.
 
   
