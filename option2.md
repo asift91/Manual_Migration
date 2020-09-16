@@ -612,36 +612,27 @@
   -  **Download On-Premises archive file**
 		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
 
-  -  **Download and Install AzCopy:**
-		
-		- Execute the below commands to install Az Copy
-			
-			```
+ 		- Execute the below commands to install AzCopy
+                ```
+                sudo -s
+                wget https://aka.ms/downloadazcopy-v10-linux
+                tar -xvf downloadazcopy-v10-linux
+                sudo rm /usr/bin/azcopy
+                sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+                ```
+            -   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
+                ```
+                sudo -s
+                cd /home/azureadmin/
+                azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
-			sudo -s
-
-			wget https://aka.ms/downloadazcopy-v10-linux
-
-			tar -xvf downloadazcopy-v10-linux
-
-			sudo rm /usr/bin/azcopy
-
-			sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
-
-			```
-
-		- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
-
-		```
-		cd /home/azureadmin 
-		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-		```
-		- Extract archive storage.tar.gz file
-
-		```
-		tar -zxvf yourfile.tar.gz
-		ex: tar -zxvf storage.tar.gz
-		```
+                Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
+                ```
+            - Extract the compressed content to a directory.
+                ```
+                cd /home/azureadmin
+                tar -zxvf storage.tar.gz
+                ```
 
 		- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
 
