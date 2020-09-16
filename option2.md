@@ -795,14 +795,9 @@
 	- Select Next and keep the other things as default.
 	- Click on review and create and the scale set.
 	- Scale set can be created from Azure CLI
-
-  
-
 		```
 		az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
 		```
-
-	 
 	- VMSS will create a VM instance with an internal IP. User need to have a VPN gateway to access the VM.
 	- To setup the Virtual Network Gateway access the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md).
 
@@ -822,36 +817,23 @@
 		mkdir -p /moodle/html
 		mkdir -p /moodle/certs
 		```
-
-  
-
 -  **Mounting File Share**
 	- Mount Azure File share in VM instance
 	- Follow the [documentation](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) to set the Azure File Share on VMSS
 
-  
-
 -  **Download On-Premises archive file**
 	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location
 	- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
-
-  
-
 		```
 		sudo -s
 		cd /home/azureadmin
 		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
 		```
-
-  
 	- Extract archive storage.tar.gz file
 		```
 		tar -zxvf yourfile.tar.gz
 		ex: tar -zxvf storage.tar.gz
 		```
-
-  
-
 -  **Configuring Php & WebServer**
 	- Update nginx configuration file (/moodle/config.php)
 
@@ -861,9 +843,6 @@
 		cd /home/azureadmin/storage/configuration/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
-
-  
-
 	- Update the php config file
 
 		```
@@ -875,19 +854,19 @@
 
 		```
 
-  -  **Set a cron job**
+-  **Set a cron job**
 
-		- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
+	- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
 
-		- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
-	-  *Setup Cron Job:*
-
-  
-		
+	- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
+	- *Setup Cron Job:*
 		```
 		local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+
 		mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
+		
 		local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+		
 		cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
 
 		 #!/bin/bash
@@ -929,9 +908,9 @@
 
 		- Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
 
-```
-	echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
-```
+		```
+		echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+		```
 
 -  **Restart Servers**
 	- Restart nginx server & php-fpm server
@@ -950,17 +929,13 @@
 		```
 		/usr/local/bin/update_last_modified_time.azlamp.sh
 		```
-
 	- Restart the nginx and php-fpm servers
-
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
 		```
 
-  
-
-## Post Migration
+## **Post Migration**
 - Post migration of Moodle application user need to update the certs and log paths as follows
 -  **Virtual Machine:**
 
@@ -973,16 +948,10 @@
 	-   *SSL Certs*: The certificates for your Moodle application reside in /moodle/certs/
 	- Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to recognize by the configured nginx servers. Depending on your local environment, you may choose to use the utility scp or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
 	- You can also generate a self-signed certificate, useful for testing only:
-
-  
-
 		```
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
 		```
-	- It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
-
-  
-
+	- It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
 		```
 		chown www-data:www-data /moodle/certs/nginx.*
 		chmod 400 /moodle/certs/nginx.*
@@ -990,28 +959,17 @@
 
  -  **Restart servers:**
 	- Restart the nginx and php-fpm servers
-
-  
-		
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
 		```
 
-  
-
 -  **Update Time Stamp:**
 	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared directory (/moodle/html/moodle).
 	- Update the time stamp to update the local copy in VMSS instance.
-
-  
-
 		```
 		/usr/local/bin/update_last_modified_time.azlamp.sh
 		```
-
-  
-
 -  **Set Rules**
 	- Set the Load Balancing rules and Auto Scaling rules.
 -  **Load Balancing Rules**
@@ -1020,15 +978,9 @@
 		```
 		az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
 		```
-
-  
-
 -  **Auto Scaling Rules**
 	- Go to the Virtual Machine Scale Set Resource in Azure portal.
 	- In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
-
-  
-
 		```
 		# Auto scaling rules can be created by scaling precentage or by the scaling count.
 		az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
@@ -1038,9 +990,6 @@
 		--scale in 50% --condition "Percentage CPU < 25 avg 15m"
 		# Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
 		```
-
-  
-
 -  **Mapping IP:**
 	- Map the load balancer IP with the DNS name.
 	-   Disable Moodle website from Maintenance mode.
