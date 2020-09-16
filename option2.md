@@ -602,8 +602,11 @@
 			mkdir -p /moodle/html
 			mkdir -p /moodle/certs
 			```
-
-	  - Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
+	-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+		```
+		curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+		```
+	- Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
 
   -  **Download On-Premises archive file**
 		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
