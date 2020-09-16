@@ -539,73 +539,64 @@
 
  -  **Install prerequisites for Moodle**.
 	- To install prerequisites for Moodle run the following commands
-	- Update and install rsyslog, unzip
-
-  
-
+	
+	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
 		```
 		sudo -s
 		sudo add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
 		sudo apt-get update > /dev/null 2>&1
+		```
+	-	Update and install rsyslog, unzip, mysql-client, php and php extensions.
+		```
 		sudo apt-get -y update
 		sudo apt-get -y install unattended-upgrades
 		sudo apt-get -y install python-software-properties unzip rsyslog
-		sudo apt-get -y install postgresql-client mysql-client git
+		sudo apt-get -y install mysql-client git
+		sudo apt-get -y install php$phpVersion
+		```
+
+	 - Install Php extensions and varnish.
+	 	```
+		# set php version to a variable 
+		phpVersion=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+		echo $phpVersion
+
 		sudo apt-get -y install varnish php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
-		```
-
-	 - Install Php and extensions
-	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
-
-  
-
-		```
-		sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
-		```
-	- List of Extensions are below
-	- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-
-		 ```
 		sudo apt-get -y --force-yes install php$phpVersion-fpm
-		sudo apt-get -y --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
 		sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
-		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
+		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 
 		```
-	 
+
 	- Install Missing PHP extensions.
-	- ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-	- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
-
-		```
-		php -m
-		```
-	- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
-		```
-		sudo apt-get install -y php-<extensionName>
-		```
-	- By default php with 7.2 and higher versions are installing apache2.
-	- This documentation will support only nginx and if apache is installed then mask the apache service.
-	- Check the apache service is installed by below command.
-		```
-		apache2 -v
-		```
-	- If the apache service is installed it will show up the service version,so you can identify that apache service is installed.
-	- Run the below commands to mask the apache2 service.
-		```
-		sudo systemctl stop apache2
-		sudo systemctl mask apache2
-		```	
+		- ARM template install the following PHP extensions 
+			- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+		- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+			```
+			php -m
+			```
+		- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+			```
+			sudo apt-get install -y php-extensionName
+			```
+	- PHP with 7.2 and higher versions are installing apache2 by default.
+		- This documentation will support only nginx and if apache is installed then mask the apache service.
+		- Check the apache service is installed by below command.
+			```
+			apache2 -v
+			```
+		- If the apache service is installed it will show up the service version, so you can identify that apache service is installed.
+		- Run the below commands to mask the apache2 service.
+			```
+			sudo systemctl stop apache2
+			sudo systemctl mask apache2
+			```	
 	- Install nginx webserver
-
 		```
 		sudo apt-get -y --force-yes install nginx
 		```
 
   -  **Create Moodle Shared folder**
 		- Create a moodle shared folder to install Moodle (/moodle)
-
-  
-
 			```
 			mkdir -p /moodle
 			mkdir -p /moodle/moodledata
