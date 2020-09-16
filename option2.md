@@ -405,15 +405,10 @@
 -  **Storage Resources**
 	* An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
 	* Storage account will have specific type, replication, Performance, Size. For more details on [Storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
-	* The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information on [types of storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
-	- Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more details on[replication types](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
-	- Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
-	- Premium- A premium performance tier for storing unmanaged virtual machine disks.
-	- Size(sku): A single storage account can store up to 500 TB of data and like any other Azure service. For more details on [size types](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
 	- Creating storage account with Azure Files Premium below should be the mandatory parameters.
 	- Replication is Premium Locally-redundant storage (LRS)
 	- Type is File Storage
-	![image](ss/storageaccount2.png)
+	![image](ss/storageaccountAPF.PNG)
 	- Azure CLI command to create storage account
 
   

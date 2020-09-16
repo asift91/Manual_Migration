@@ -6,8 +6,8 @@
 -   A File Share to be created under the same Storage account.
    
 -   **Create File Storage:**
-    -   Login to your Azure subscription and go the created Resource Group.
-    -   Select the Storage resource from the resource group.
+    -   Login to your same Azure subscription and go the same Resource Group.
+    -   Select the  Azure created storage resource from the resource group.
     -   Go to the storage account & click on the file storage.
     -   Now click on + File Share button to create a File Share.
     -   Fill the below parameters and create a file share
