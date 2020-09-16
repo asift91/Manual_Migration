@@ -730,7 +730,7 @@
 	- Update the nginx conf file
 		```
 		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/nginx
+		cd /home/azureadmin/storage/configuration/nginx/sites-enabled/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 
 		 ```
@@ -831,7 +831,7 @@
 		```
 		mkdir -p /home/azureadmin/backup/
 		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/
+		cd /home/azureadmin/storage/configuration/nginx/sites-enabled/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
 	- Update the php config file.
