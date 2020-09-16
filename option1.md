@@ -501,11 +501,13 @@
         -   Creating directory for configuration in shared location.
             ```
             mkdir -p /moodle/config
+            mkdir -p /moodle/config/php
+            mkdir -p /moodle/config/nginx
             ```
         -   Copying the php and webserver config files to configuration folder.
             ```
-            cp /etc/nginx/sites-enabled/* /moodle/config/
-            cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/
+            cp /etc/nginx/sites-enabled/* /moodle/config/nginx
+            cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
             ```
     
 -   **Virtual Machine Scaleset**
@@ -547,14 +549,11 @@
 
                 sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/
                 sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf  
-
-                
                 ```
             - Copy the php and webserver configuration files.
                 ```
-                sudo cp /moodle/config/*.conf  /etc/nginx/sites-enabled/
-
-                sudo  cp /moodle/config/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
+                sudo cp /moodle/config/nginx/*.conf  /etc/nginx/sites-enabled/
+                sudo  cp /moodle/config/php/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
                 ```
             -   Install Missing PHP extensions.
                     - ARM template install the following PHP extensions.
