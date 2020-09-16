@@ -97,6 +97,14 @@
 
 		![image](/images/subscription1.png)
 
+	 - Command to set the subscription.
+            ```
+            az account set --subscription "Subscription Name"
+
+            # Example: az account set --subscription "FreeTrail"
+            ```
+
+
 -  **Create Resource Group:**
 	- Once you have a subscription handy, you will need to create a Resource Group.
 	- One option is to create resource group using Azure portal.
@@ -638,10 +646,7 @@
 
   
  -  **Migrate On-Premises Moodle:**
-	- Create a backup folder
-		```
-		cd /home/azureadmin/
-		mkdir -p backup
+
 
 	- Copy and replace moodle folder with On-Premises moodle folder
 		```
@@ -732,31 +737,39 @@
 		sudo cp <dns>.conf /etc/nginx/sites-enabled/
 
 		 ```
-	- Update the apache conf file
-				
-	```
-		sudo mv /etc/apache/sites-enabled/<dns>.conf /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/apache
-		sudo cp <dns>.conf /etc/apache/sites-enabled/
-	```
+	
 
-	  - Update the php config file
+	 - Update the php config file
 
   
 
-	```
-	sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-	sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
-	```
+		```
+		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
+		sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		```
 
 	  - Restart the web servers
 
-	```
-	sudo systemctl restart nginx
-	sudo systemctl restart php(phpVersion)-fpm
-	ex: sudo systemctl restart php7.4-fpm
-	```
-
+		```
+		sudo systemctl restart nginx
+		sudo systemctl restart php(phpVersion)-fpm
+		ex: sudo systemctl restart php7.4-fpm
+		```
+ - **Copy of Configuration files:**
+     -   Copying php and webserver configuration files to shared location.
+        -   Configuration files can be copied to VMSS instance(s) from the shared location easily.
+        -   Creating directory for configuration in shared location.
+            ```
+            mkdir -p /moodle/config
+            mkdir -p /moodle/config/php
+            mkdir -p /moodle/config/nginx
+            ```
+    -   Copying the php and webserver config files to configuration folder.
+          
+		 ```
+            cp /etc/nginx/sites-enabled/* /moodle/config/nginx
+            cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
+        ```
   
 -  **Scale Set:**
 	- A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic. An Azure load balancer then distributes traffic to the VM instances in the scale set. For more information on [Scaleset](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-portal).
