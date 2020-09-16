@@ -594,6 +594,10 @@
 		```
 		sudo apt-get -y --force-yes install nginx
 		```
+	-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+		```
+		curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+		```
 
   -  **Create Moodle Shared folder**
 		- Create a moodle shared folder to install Moodle (/moodle)
