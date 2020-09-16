@@ -408,6 +408,7 @@
 	- Creating storage account with Azure Files Premium below should be the mandatory parameters.
 	- Replication is Premium Locally-redundant storage (LRS)
 	- Type is File Storage
+	
 	![image](ss/storageaccountAPF.PNG)
 	- Azure CLI command to create storage account
 
