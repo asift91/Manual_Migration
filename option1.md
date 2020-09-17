@@ -33,7 +33,7 @@
         -   Backup all relevant data from on-premises infrastructure.
         -   Ensure the on-premises database instance has mysql-client installed.
         -   Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
--   **Migration**
+-   **Actual-Migration**
     
     - Actual migration tasks involve the migration of application and all data.
     - Deploy infrastructure on Azure using Moodle ARM template.
@@ -220,7 +220,7 @@
             ```
             ![image](ss/ArchivefileinBlobstorage.PNG)
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
-## Migration
+## Actual Migration
 ### Deploy Azure Infrastructure with Azure ARM Templates
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.

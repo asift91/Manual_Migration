@@ -25,7 +25,12 @@
 	- PHP 7.2, 7.3, or 7.4
 	- Moodle 3.8 & 3.9
 
-  
+  ## Migration Approach
+-   Migration of Moodle application to Azure is broken down in the following three stages:
+    - Pre-migration tasks.
+    - Actual migration of the application.
+    - Post-migration tasks.
+
 
 -  **Pre-Migration**
 	- Data Export from on-premises to Azure involves the following tasks.
@@ -39,7 +44,7 @@
 
   
 
--  **Migration**
+-  **Actual-Migration**
 	- Migration of Moodle.
 	- Install prerequisites for Moodle.
 	- Create Moodle Shared directory.
@@ -145,7 +150,7 @@
 
 -  **Backup of on-premises data:**
 	 - Before taking backup of on-premises data, enable maintenance mode for moodle site.
-        - Run the below commnad in on-premises virtual machine.
+        - Run the below command in on-premises virtual machine.
          ```
              sudo /usr/bin/php admin/cli/maintenance.php --enable
          ```
@@ -286,7 +291,7 @@
 
   
 
--  ## Migration
+-  ## Actual Migration
 -  **Resources Creation**
 	- To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
 	- Create the infrastructure by adding the resources.
@@ -987,7 +992,7 @@
 -  **Mapping IP:**
 	- Map the load balancer IP with the DNS name.
 	-   Disable Moodle website from Maintenance mode.
-         - Run the below commnad in Controller Virtual Machine.
+         - Run the below command in Controller Virtual Machine.
               ```
                 sudo /usr/bin/php admin/cli/maintenance.php --disable
              ```
