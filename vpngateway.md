@@ -63,7 +63,7 @@ This document explains how to setup Virtual Network Gateway in Azure.
     -	Go to the resource group where the Virtual Network Gateway is created.
     -   Go to Point-to-Site-configuration on the left panel.
     -   Click on Configure now in the center panel.
-    -   Add the address pool
+    -   Add the address pool (ex: 192.168.xx.0/24)
     -   Select the tunnel type to IKEv2
     -   Authentication type to Azure certification
     -   Paste the copied root certificate code in the portal and give name as root & click on Save.
