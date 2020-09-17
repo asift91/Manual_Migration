@@ -281,7 +281,7 @@
 	- Set a cron job.
 
 <details> 
- <summary>(For detailed steps click on expand!)</summary>
+<summary>(For detailed steps click on expand!)</summary>
 
 -  **Resources Creation**
 	- To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.

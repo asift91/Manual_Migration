@@ -23,33 +23,20 @@
     - Pre-migration tasks.
     - Actual migration of the application.
     - Post-migration tasks.
--   **Pre-Migration**
-    
-    - Data Export from on-premises to Azure involves the following tasks.
-        -   Install Azure CLI.
-        -   Have an Azure subscription handy.
-        -   Create a Resource Group inside Azure.
-        -   Create a Storage Account inside Azure.
-        -   Backup all relevant data from on-premises infrastructure.
-        -   Ensure the on-premises database instance has mysql-client installed.
-        -   Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
--   **Actual-Migration**
-    
-    - Actual migration tasks involve the migration of application and all data.
-    - Deploy infrastructure on Azure using Moodle ARM template.
-    - Copy over the backup archive (storage.tar.gz) to the moodle controller instance from the ARM deployment.
-    - Setup Moodle controller instance and worker nodes. 
-    - Data migration tasks.
-       
--   **Post Migration**
-    
-    - Post migration tasks that include application configuration.
-    - Update general configuration (e.g. log file destinations).
-    - Update any cron jobs / scheduled tasks.
-    - Configuring certificates.
-    - Restarting PHP and nginx servers.
-    - Mapping DNS name with the Load Balancer public IP.
-## Pre-Migration
+
+## **Pre-Migration:**
+- Data Export from on-premises to Azure involves the following tasks.
+    -   Install Azure CLI.
+    -   Have an Azure subscription handy.
+    -   Create a Resource Group inside Azure.
+    -   Create a Storage Account inside Azure.
+    -   Backup all relevant data from on-premises infrastructure.
+    -   Ensure the on-premises database instance has mysql-client installed.
+    -   Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
+
+<details> 
+<summary>(For detailed steps click on expand!)</summary>
+
 -   **Data Export from on-premises to Azure Cloud:**
     -   **Install Azure CLI**
         -   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
@@ -170,7 +157,7 @@
 			# Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details
 			```
 
-	- Create an archive tar.gz file of backup directory.
+	- Create an archive storage.tar.gz file of backup directory.
         ```
         cd  /home/azureadmin/
         tar -zcvf storage.tar.gz storage
@@ -220,7 +207,20 @@
             ```
             ![image](ss/ArchivefileinBlobstorage.PNG)
         -  Now, you should have a copy of your archive inside the Azure blob storage account.
-## Actual Migration
+</details> 
+
+## **Actual Migration:**
+
+- Actual migration tasks involve the following tasks.
+    - The migration of application and all data.
+    - Deploy infrastructure on Azure using Moodle ARM template.
+    - Copy over the backup archive (storage.tar.gz) to the moodle controller instance from the ARM deployment.
+    - Setup Moodle controller instance and worker nodes. 
+    - Data migration tasks.
+
+<details>
+<summary>(For detailed steps click on expand!)</summary>
+
 ### Deploy Azure Infrastructure with Azure ARM Templates
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
@@ -567,8 +567,22 @@
                         ```
                         sudo apt-get install -y php-<extensionName>
                         ```
-        
-## Post Migration
+</details>
+
+## **Post Migration:**
+
+- Post Migration involves the following tasks.
+    - Post migration tasks that include application configuration.
+    - Update general configuration (e.g. log file destinations).
+    - Update any cron jobs / scheduled tasks.
+    - Configuring certificates.
+    - Restarting PHP and nginx servers.
+    - Mapping DNS name with the Load Balancer public IP.
+
+<details> 
+<summary>(For detailed steps click on expand!)</summary>
+
+
 - Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
 -   **Controller Virtual Machine:**
     
@@ -660,5 +674,5 @@
                 sudo /usr/bin/php admin/cli/maintenance.php
                 ```
         -   Hit the DNS name to get the migrated Moodle web page.         
-
+</details> 
     
