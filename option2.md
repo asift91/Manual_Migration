@@ -31,24 +31,6 @@
     - Actual migration of the application.
     - Post-migration tasks.
 
-
--  **Pre-Migration**
-	
-
-  
-
--  **Actual-Migration**
-	
-
-  
--  **Post Migration**
-	- Post migration tasks that include application configuration.
-	-  Update general configuration (e.g. log file destinations).
-	- Update any cron jobs / scheduled tasks.
-	- Configuring certificates.
-	- Restarting PHP and nginx servers.
-	- Mapping DNS name with the Load Balancer public IP.
-
 ## **Pre Migration:**
 - Data Export from on-premises to Azure involves the following tasks.
 	- Install Azure CLI.
