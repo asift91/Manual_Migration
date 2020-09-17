@@ -65,8 +65,10 @@
 	- Restarting PHP and nginx servers.
 	- Mapping DNS name with the Load Balancer public IP.
 
-## Pre Migration
+## **Pre Migration:**
 
+<details> 
+ <summary>(click to expand!)</summary>
   
 
 -  **Data Export from on-premises to Azure Cloud:**
@@ -288,10 +290,11 @@
 	- Now, you should have a copy of your archive inside the Azure blob storage account.
 	 ![image](ss/ArchivefileinBlobstorage.PNG)
 
-
+</details>
   
-
--  ## Actual Migration
+## **Actual Migration:**
+<details> 
+ <summary>(click to expand!)</summary>
 -  **Resources Creation**
 	- To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
 	- Create the infrastructure by adding the resources.
@@ -984,12 +987,16 @@
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
 		```
+</details>
 
-## **Post Migration**
-- Post migration of Moodle application user need to update the certs and log paths as follows
--  **Virtual Machine:**
+## **Post Migration:** 
+ <details> 
+ <summary>(click to expand!)</summary>
+- Post migration of Moodle application user need to update the certs and log paths as follows.
 
-	 - Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
+- **Virtual Machine:**
+
+		- Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
 -  **Log Paths**
 	- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 	- nginx log path are defaulted to /var/log/nginx.
@@ -1052,3 +1059,4 @@
                 sudo /usr/bin/php admin/cli/maintenance.php
              ```
  	- Hit the load balancer DNS name to get the migrated moodle web page.
+</details>
