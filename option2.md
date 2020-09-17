@@ -545,7 +545,7 @@
   
   
 
-# Install Moodle
+# Migrate Moodle
 
  -  **Install prerequisites for Moodle**.
 	- To install prerequisites for Moodle run the following commands
@@ -811,11 +811,63 @@
   
 -  **Configuring VMSS**
 
--  **Download install_prerequisites.sh script**.
-	- Install Moodle prerequisites in VMSS instance same as controller VM.
-	- Install web server (nginx/apache) with the given version
-	- Install PHP with its extensions.
-	-  *Note:* Use same commands as controller VM to install PHP and Webserver.
+-  **Install prerequisites for Moodle**.
+	- To install prerequisites for Moodle run the following commands
+	
+	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
+		```
+		sudo -s
+		sudo add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
+		sudo apt-get update > /dev/null 2>&1
+		```
+	-	Update and install rsyslog, unzip, mysql-client, php and php extensions.
+		```
+		sudo apt-get -y update
+		sudo apt-get -y install unattended-upgrades
+		sudo apt-get -y install python-software-properties unzip rsyslog
+		sudo apt-get -y install mysql-client git
+		sudo apt-get -y install php$phpVersion
+		```
+
+	 - Install Php extensions and varnish.
+	 	```
+		# set php version to a variable 
+		phpVersion=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+		echo $phpVersion
+
+		sudo apt-get -y install varnish php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
+		sudo apt-get -y --force-yes install php$phpVersion-fpm
+		sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
+		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 
+		```
+
+	- Install Missing PHP extensions.
+		- ARM template install the following PHP extensions 
+			- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+		- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+			```
+			php -m
+			```
+		- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+			```
+			sudo apt-get install -y php-extensionName
+			```
+	- PHP with 7.2 and higher versions are installing apache2 by default.
+		- This documentation will support only nginx and if apache is installed then mask the apache service.
+		- Check the apache service is installed by below command.
+			```
+			apache2 -v
+			```
+		- If the apache service is installed it will show up the service version, so you can identify that apache service is installed.
+		- Run the below commands to mask the apache2 service.
+			```
+			sudo systemctl stop apache2
+			sudo systemctl mask apache2
+			```	
+	- Install nginx webserver
+		```
+		sudo apt-get -y --force-yes install nginx
+		```
 -  **Create Moodle Shared directory**
 	- Create a moodle shared directory (/moodle)
 		```
@@ -828,39 +880,27 @@
 	- Mount Azure File share in VM instance
 	- Follow the [documentation](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) to set the Azure File Share on VMSS
 
--  **Download On-Premises archive file**
-	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location
-	- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
-		```
-		sudo -s
-		cd /home/azureadmin
-		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/directory'
-		```
-	- Extract archive storage.tar.gz file
-		```
-		tar -zxvf yourfile.tar.gz
-		ex: tar -zxvf storage.tar.gz
-		```
--  **Configuring Php & WebServer**
+
+-  **Copy Php & WebServer Configuration files:**
 	- Update nginx configuration file (/moodle/config.php)
 
 		```
 		mkdir -p /home/azureadmin/backup/
 		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/nginx/sites-enabled/
+		cd /moodle/config/nginx/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
 	- Update the php config file.
 		```
 		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-		cd /home/azureadmin/storage
-		sudo cp configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		cd /moodle/config/php/
+		sudo cp www.conf /etc/php/<phpVersion>/fpm/pool.d/
 		```
 	- Restart the servers. 
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php(phpVersion)-fpm
-		ex: sudo systemctl restart php7.4-fpm
+		ex: sudo systemctl restart php7.2-fpm
 
 		```
 
