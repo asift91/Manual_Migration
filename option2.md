@@ -103,11 +103,11 @@
 		![image](/images/subscription1.png)
 
 	 - Command to set the subscription.
-		```
-		az account set --subscription "Subscription Name"
+            ```
+            az account set --subscription "Subscription Name"
 
-		# Example: az account set --subscription "FreeTrail"
-		```
+            # Example: az account set --subscription "FreeTrail"
+            ```
 
 
 -  **Create Resource Group:**
@@ -772,7 +772,6 @@
 	- A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic. An Azure load balancer then distributes traffic to the VM instances in the scale set. For more information on [Scaleset](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-portal).
 	- Create a scale set in same resource group.
 	- Prerequisites is the to create a public Standard Load Balancer.
-	- User can create Azure Application Gateway. For more information [Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
 	- The name and public IP address created are automatically configured as the load balancer's front end.
 	- Scale set creates an VM instance with Ubuntu 16.04 OS.
 	- Search Virtual machine scale sets. Select Create on the Virtual machine scale sets page, which will open the Create a virtual machine scale set page.
@@ -782,13 +781,27 @@
 	- Leave the default value of Scale Set VMs for Orchestration mode.
 	- Enter your desired username and select which authentication type as SSH and give the same SSH key and username as azureadmin.
 	- Select the image or browse the image for the scale set
+
+		![image](ss/ss1.png)
 	- Select the size for the disk.
 	- Click Next for the disk tab select the OS disk type as per choice
+				
+		 ![image](ss/ss2.png)
+
 	- Click Next for the networking section
 	- Select the created virtual network.
+
+		![image](ss/ss3.png)
+
 	- Give the instance count and the scaling policy as manual or custom.
 	- set the rules to scale up/down a VM based on the average cpu percentage.
+
+		 ![image](ss/ss4.png)
+
 	- Select Next and keep the other things as default.
+
+		![image](ss/ss5.png)
+
 	- Click on review and create and the scale set.
 	- Scale set can be created from Azure CLI
 		```
