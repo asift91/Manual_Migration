@@ -11,7 +11,7 @@
 * Migration of Moodle without ARM template infrastructure is to create the infrastructure manually in Azure and migrate Moodle on it.
 * Once the infrastructure is created, the Moodle software stack and associated dependencies are migrated.
 
-  
+
 ## Prerequisites
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
 - Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
