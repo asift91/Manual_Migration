@@ -32,8 +32,9 @@
     - Post-migration tasks.
 
 
--  **Pre-Migration**
-	- Data Export from on-premises to Azure involves the following tasks.
+## **Pre Migration:**
+
+- Data Export from on-premises to Azure involves the following tasks.
 	- Install Azure CLI.
 	- Have an Azure subscription handy.
 	- Create a Resource Group inside Azure.
@@ -42,33 +43,8 @@
 	- Ensure the on-premises database instance has MySQL-client installed.
 	- Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
 
-  
-
--  **Actual-Migration**
-	- Migration of Moodle.
-	- Install prerequisites for Moodle.
-	- Create Moodle Shared directory.
-	- Download On-premises archive file.
-	- Download and run the migrate_moodle.sh script.
-	- Configuring permissions.
-	- Importing Database.
-	- Configuring PHP & Webserver.
-	- Configuring VMSS.
-	- Set a cron job.
-
-  
--  **Post Migration**
-	- Post migration tasks that include application configuration.
-	-  Update general configuration (e.g. log file destinations).
-	- Update any cron jobs / scheduled tasks.
-	- Configuring certificates.
-	- Restarting PHP and nginx servers.
-	- Mapping DNS name with the Load Balancer public IP.
-
-## **Pre Migration:**
-
 <details> 
- <summary>(click to expand!)</summary>
+ <summary>(For detailed steps click on expand!)</summary>
   
 
 -  **Data Export from on-premises to Azure Cloud:**
@@ -293,8 +269,20 @@
 </details>
   
 ## **Actual Migration:**
+- For actual Migration involves the following tasks.
+	- Migration of Moodle.
+	- Install prerequisites for Moodle.
+	- Create Moodle Shared directory.
+	- Download On-premises archive file.
+	- Download and run the migrate_moodle.sh script.
+	- Configuring permissions.
+	- Importing Database.
+	- Configuring PHP & Webserver.
+	- Configuring VMSS.
+	- Set a cron job.
+
 <details> 
- <summary>(click to expand!)</summary>
+ <summary>(For more details click on expand!)</summary>
 -  **Resources Creation**
 	- To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
 	- Create the infrastructure by adding the resources.
@@ -990,8 +978,17 @@
 </details>
 
 ## **Post Migration:** 
+
+- Post Migration involves the following tasks.
+	- Post migration tasks that include application configuration.
+	-  Update general configuration (e.g. log file destinations).
+	- Update any cron jobs / scheduled tasks.
+	- Configuring certificates.
+	- Restarting PHP and nginx servers.
+	- Mapping DNS name with the Load Balancer public IP.
+
  <details> 
- <summary>(click to expand!)</summary>
+ <summary>(For more details click on expand!)</summary>
 - Post migration of Moodle application user need to update the certs and log paths as follows.
 
 - **Virtual Machine:**
