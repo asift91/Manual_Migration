@@ -103,11 +103,11 @@
 		![image](/images/subscription1.png)
 
 	 - Command to set the subscription.
-            ```
-            az account set --subscription "Subscription Name"
+		```
+		az account set --subscription "Subscription Name"
 
-            # Example: az account set --subscription "FreeTrail"
-            ```
+		# Example: az account set --subscription "FreeTrail"
+		```
 
 
 -  **Create Resource Group:**
