@@ -397,6 +397,24 @@
 
 	 	![image](ss/DNSConfiguration.PNG)
 
+		 
+	-  **Load Balancing Rules**
+		- Go to the Load Balancer Resource in Azure portal.
+			- In the left panel, find Health Probes in setting.
+				- Create by clicking add button.
+				- Enter Name, Port as 80 for http and 443 for https, Interval as 5 and Unhealthy threshold as 3.
+				- Click on ok to save.
+			- In the left panel, find Load Balancing Rules.
+				- Add http and https rules by clicking add button.
+				- Fill the Name, select the front end IP (load balancer IP), Port, Backend Port, select the backend pool and health probe.
+				- Cick on ok button to save the rule.
+
+
+		- Alternatively, Set the http (TCP/80) and https (TCP/443) rules from Azure CLI.
+			```
+			az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
+			```
+
   -  **Azure Application GateWay**
 		- An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more details on [Azure application gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
 		- To deploy the Application gate way from [Azure Portal](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
@@ -1028,14 +1046,7 @@
 		```
 		/usr/local/bin/update_last_modified_time.azlamp.sh
 		```
--  **Set Rules**
-	- Set the Load Balancing rules and Auto Scaling rules.
--  **Load Balancing Rules**
-	- Go to the Load Balancer Resource in Azure portal.
-	- Set the http (TCP/80) and https (TCP/443) rules.
-		```
-		az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
-		```
+
 -  **Auto Scaling Rules**
 	- Go to the Virtual Machine Scale Set Resource in Azure portal.
 	- In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
