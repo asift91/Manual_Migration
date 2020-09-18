@@ -781,8 +781,15 @@
             cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
         ```
 -	**Setup Cron Job:**
-	- To update local instance in VMSS instance(s), need to have a script file which should be executed from the Controller Vitual Machine.
-	- Execute the following commands.
+- To update local instance in VMSS instance(s), need to have a script file which should be executed from the Controller Vitual Machine.
+- Execute the following commands.
+- Create a file setup_cron_on_vm.sh
+```
+cd /home/azureadmin/
+nano setup_cron_on_vm.sh
+# Above command will create a new file.
+```
+- Copy the below content to the setup_cron_on_vm.sh
 ```
 SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
 LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
@@ -808,6 +815,17 @@ function run_once_last_modified_time_update_script {
 create_last_modified_time_update_script
 run_once_last_modified_time_update_script
 
+```
+- Save the file with the below commands.
+```
+Press Ctrl + O and enter to save the file.
+Press Ctrl + X to come out the file.
+```
+
+- Execute the below command to set cron job.
+```
+cd /home/azureadmin/
+bash setup_cron_on_vm.sh
 ```
   
 -  **Scale Set:**
