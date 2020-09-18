@@ -199,7 +199,9 @@
         - Container can be created using Azure Portal, navigate to the same storage account created and click on container and click on Add button.
             
         - After giving the mandatory container name, click on create button.
-        ![image](images-1/cc.png)
+    
+    ![image](images-1/cc.png)
+    
         -   Command to copy archive file to blob storage.
             ```
             sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
