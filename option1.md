@@ -10,7 +10,7 @@
 - If the versions of the software stack deployed on-premises are lagging with respect to the versions supported in this guide, the expectation is that the on-premises versions will be updated/patched to the versions listed in this guide.
 - Must have access to the on-premises infrastructure to take backup of Moodle deployment and configurations (including DB configurations).
 - Azure subscription and Azure Blob storage should be created prior to migration.
-- Make sure to have Azure CLI and AzCopy handy.
+- Make sure to have Azure CLI and Az Copy handy.
 - Make sure Moodle website should be in maintenance mode.
 - This migration guide supports the following software versions:   
      - Ubuntu 18.04 LTS
@@ -119,7 +119,7 @@
 
             ```
             sudo -s
-            # for example the location is /home/azureadmin
+            # For example, the location is /home/azureadmin.
             cd /home/azureadmin
             mkdir storage
             ```
@@ -138,7 +138,7 @@
             ```
             cd /home/azureadmin/storage
             mkdir configuration
-            # command to copy nginx and php configuration
+            # command to copy nginx and php configuration.
             cp -R /etc/nginx /home/azureadmin/storage/configuration/nginx
             cp -R /etc/php /home/azureadmin/storage/configuration/php
             ```
@@ -148,7 +148,7 @@
 		- If you do not have mysql-client, now would be a good time to do that.
 			```
 			sudo -s
-			# command to check mysql-client is installed or not
+			# command to check mysql-client is installed or not.
 			mysql -V
 			
             # if the mysql-client is not installed, install the same by following command.
@@ -278,9 +278,9 @@
 - **Storage Template:**  
     -  storage account template will create a storage account with File Storage Kind and Premium LRS replication, Size of 1TB. For more details on [storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview). 
     -   As per the predefined template, storage account with Azure files creates File Share.
-    -   An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS.
+    -   An Azure storage account contains all your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS.
     - The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts.
-    - Types of Replication are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS).
+    - Types of Replication are Locally redundant storage (LRS), Zone redundant storage (ZRS), Geo redundant storage (GRS).
     - Types of Performance are Standard, Premium.
     - Size(sku):  A single storage account can store up to 500 TB of data and like any other Azure service.
     - Below are types of storage account types ARM template support. 
@@ -314,13 +314,13 @@
         - VM extension will executes a shell script file which installs Moodle on the Controller Virtual Machine and captures the log files. 
         - Log files stderr and stdout are created at the /var/lib/waagent/custom-script/download/0/  
         - User can view the log files as a root user. 
-- **Scaleset Template**: 
-    -   This template will create a [Virtual Machine Scaleset.](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview). 
-    - A virtual machine scaleset allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scaleset manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
-    - Autoscaling of VM Instances depends on [CPU utilization.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview).  
+- **Scale Set Template**: 
+    -   This template will create a [Virtual Machine Scale set](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview). 
+    - A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic.
+    - Autoscaling of VM Instances depends on [CPU utilization](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/autoscale-overview).  
     - While scaling up an instance a VM is deployed and a shell script is executed to install the Moodle prerequisites and setting up cron jobs. 
     - VM instances have Private IP. 
-    - For connecting to VMs on Scaleset with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
+    - For connecting to VMs on Scale set with private IP, follow the steps written in the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md). 
     
 </details>
 
@@ -396,7 +396,7 @@
 
 	            ![connectionSecurity SS](images-1/databaseconnectionsecurity.png)
 			
-            - You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
+            - You can Add My IP or configure firewall rules here. Click on save after you have created the rules.
             - You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool.
 
   
@@ -532,32 +532,32 @@
             mkdir -p /moodle/config/php
             mkdir -p /moodle/config/nginx
             ```
-        -   Copying the php and webserver config files to configuration folder.
+        -   Copying the php and webserver config files to configuration directory.
             ```
             cp /etc/nginx/sites-enabled/* /moodle/config/nginx
             cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
             ```
     
--   **Virtual Machine Scaleset**
+-   **Virtual Machine Scale Set**
     -   VMSS instances are assigned with Private IP and can be accessible only with the controller virtual machine which is associated with in the same Virtual Network.
     -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
     -   [Deploy Virtual Network Gateway](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md) to set the gateway access to VMSS instances. 
-    -   Before accessing Virtual Machine Scaleset, please make sure that VMSS is password enabled.
-    -   *Get Virtual Machine Scaleset Private IP:*
-        -   To get the Virtual Machine Scaleset instances private IP follow the below steps.
+    -   Before accessing Virtual Machine Scale Set, please make sure that VMSS is password enabled.
+    -   *Get Virtual Machine Scale Set Private IP:*
+        -   To get the Virtual Machine Scale Set instances private IP follow the below steps.
         -   Login to [Azure](portal.azure.com) and go to the created Resource Group.
-        -   Find and navigate to the Virtual Machine Scaleset resource.
+        -   Find and navigate to the Virtual Machine Scale Set resource.
         -   In the left panel, select the Instances.
         -   Navigate to the running instance and find the Private IP associated to it in the Overview section.
     
-    -   To login into Virtual Machine Scaleset, first login to Controller Virtual Machine and run the set of commands.
+    -   To login into Virtual Machine Scale Set, first login to Controller Virtual Machine and run the set of commands.
         ```
         sudo -s
         sudo ssh azureadmin@172.31.X.X 
 
-        # 172.31.X.X is the Virtual Machine Scaleset Instance private IP.
+        # 172.31.X.X is the Virtual Machine Scale Set Instance private IP.
         ```
-    -   Login to Scaleset VM instance and execute the following sequence of steps.
+    -   Login to Scale Set VM instance and execute the following sequence of steps.
     
     -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -679,7 +679,7 @@
             ```
         -  By executing the script last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)  everytime the /moodle/html/moodle directory content is updated in local copy (/var/www/html).
 
-        <!-- -   In Virtual Machine scaleset a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/). -->
+        <!-- -   In Virtual Machine scale set a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/). -->
         
     -   **Restart Servers**
         
@@ -778,17 +778,17 @@
 9. site is stuck in maintenance mode
 
 	- Sometimes Moodle gets stuck in maintenance mode and you'll see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
-	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files folder). To fix this try the following:
-	- Check that the web server user has write permissions to the moodledata folder.
+	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files directory). To fix this try the following:
+	- Check that the web server user has write permissions to the moodledata directory.
 	- Manually delete the maintenance.html file.
 10. Where to find the logs
 
 	- Syslog
-	- While accessing a page either error or access log are generated.
-	- They are captured ar /var/log/nginx/ location.
+        - While accessing a page either error or access log are generated.
+        - They are captured ar /var/log/nginx/ location.
 	- Cron Log
-	- Cron job will be running and it will update the local copy in instance.
-	-  The path is  /var/log/sitelogs/moodle/cron.log
+        - Cron job will be running and it will update the local copy in instance.
+        -  The path is  /var/log/sitelogs/moodle/cron.log
 
 
 
