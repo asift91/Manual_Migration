@@ -65,7 +65,7 @@
             ```
             az account set --subscription "Subscription Name"
 
-            # Example: az account set --subscription "FreeTrail"
+            # Example: az account set --subscription "ComputePM LibrarySub"
             ```
 
         
@@ -73,7 +73,8 @@
         - Once you have a subscription handy, you will need to create a Resource Group.
         - One option is to create resource group using Azure portal.
         - Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
-        ![image](/ss/rg1.PNG)
+
+       	 ![image](/images-1/rg1.png)
         - Alternatively, you can use the Azure CLI command to create a resource group.
         - Provide the same default Location provided in previous steps.
         - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/).
@@ -81,7 +82,7 @@
             az group create -l location -n name -s Subscription_NAME_OR_ID
             # Update the screenshot and subscription name with sample test account
 
-            # example: az group create -l eastus -n manual_migration -s ComputePM
+            # example: az group create -l eastus -n manual_migration -s ComputePM LibrarySub
             ```
          - In above step resource group is created as "manual_migration". Use the same resource group in further steps.
     -   **Create Storage Account:**
@@ -89,7 +90,7 @@
         - Storage account can also be created using Azure portal or Azure CLI command.
         - To create using portal, navigate to portal and search for storage account and click on Add button.
         - After filling the mandatory details, click on create.
-        ![image](/images/storageaccountcreate.png)
+        ![image](/images-1/storageaccountcreating.png)
         - Alternatively, you can use Azure CLI command 
             ```
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind BlobStorage -l location
@@ -97,6 +98,7 @@
             example: az storage account create -n onpremisesstorage -g manual_migration --sku Standard_LRS --kind BlobStorage -l eastus
             # In the above command --kind Indicates the type of storage account.
             ```
+
         - Once the storage account "onpremisesstorage" is created, this is used as the destination to take the on-premises backup.
     
     -   **Backup of on-premises data:**
@@ -111,7 +113,7 @@
                 ```
         - Take backup of on-premises data such as moodle, moodledata, configurations and database backup file to a single directory. The following illustration should give you a good idea.
 
-	    ![image](/images/folderstructure.png)
+	    	![image](/images-1/directorystructure.png)
 
         - First create an empty storage directory in any desired location to copy all the data.
 
@@ -178,10 +180,10 @@
         - To use AzCopy, user should generate SAS Token first.
         - Go to the created Storage Account Resource and navigate to Shared access signature in the left panel.
 
-            ![image](images/storage-account.png)
+			![image](/images-1/storageaccountcreated.PNG)
         - Select the Container, object checkboxes and set the start, expiry date of the SAS token. Click on "Generate SAS and Connection String".
 
-            ![image](images/storageaccountSAS.PNG)
+            ![image](images-1/SAStokengeneration.PNG)
         
         - Copy and save the SAS token for further use.
 
@@ -197,7 +199,7 @@
         - Container can be created using Azure Portal, navigate to the same storage account created and click on container and click on Add button.
             
         - After giving the mandatory container name, click on create button.
-            ![image](ss/Containercreation.PNG)
+            ![image](images-1/containercreation.png)
         -   Command to copy archive file to blob storage.
         
             ```
@@ -225,7 +227,7 @@
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
 - The following diagram will give an idea about Moodle architecture.
-    ![images](images/stack_diagram.png)
+    ![images](images-1/architecture.png)
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
 - A fully configurable deployment that gives more flexibility and choice around deployments.
 - The 4 predefined templates options such as Minimal, Short-to-Mid, Large, Maximal are available on [GitHub repository](https://github.com/Azure/Moodle).
@@ -235,7 +237,7 @@
     - [Maximum](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FMoodle%2Fmaster%2Fazuredeploy-maximal.json): This maximal deployment will use Azure Files, MySQL with highest SKU, Redis cache, elastic search (3 VMs), and pretty large storage sizes (both data disks and DB).
 - To deploy any of the predefined size template click on the launch option.  
 - It will redirect to Azure Portal where user need to fill mandatory fields such as Subscription, Resource Group, [SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), Region. 
-![custom_deployment](images/customdeployment.png)
+![custom_deployment](images-1/customdeployment.png)
 - Above pre-defined templates will deploy the default versions.
     ```
     Ubuntu: 18.04 LTS
@@ -245,7 +247,7 @@
 - If the PHP and Moodle versions are lagging with the on-premises, then update the versions by following steps.
     - Click on Edit Template in Custom deployment page.
     
-    ![ Add Screenshot of Edit Template->resouces section](images/edittemplate.png)
+    ![image](images-1/edittemplate.png)
     - In the Resources section, add the moodle and php versions in the parameters block.
         ```
         "phpVersion":       { "value": "7.2" },
@@ -325,15 +327,15 @@
     - After completion of deployment, Login into [Azure](http://portal.azure.com/).
     - Go to the created Resource Group and find all the created resources. 
     - The following image will give some idea on how the resources will be created.
-    ![resourcesoverview](images/resourcesoverview.PNG)
+    ![resourcesoverview](images-1/overview.PNG)
     
 -  **Controller Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
         - Copy the public IP of controller Virtual Machine to use as the hostname.
         - Expand SSH in navigation panel and click on Auth and browse the same SSH key file given while deploying the Azure infrastructure using the ARM template.
         - Click on Open and it will prompt for give the username. Give it as azureadmin as it is hard coded in template.
-        ![puttyloginpage](images/puttyloginpage.PNG)
-        ![puttykey](images/puttykeybrowse.PNG)
+        ![puttyloginpage](images-1/puttylogin.PNG)
+        ![puttykey](images-1/puttykeylogin.PNG)
         - [Putty general FAQ/troubleshooting questions](https://documentation.help/PuTTY/faq.html).
         - Browse and select the SSH key and click on Open button.
         - After the login, run the following set of commands to migrate. 
@@ -381,15 +383,38 @@
             ```
 
         - Importing the moodle Database to Azure moodle DB.
-            - Before importing database, make sure that Azure Database for MySQL server details are handy.
-                - Navigate to Azure Portal and go to the created Resource Group.
-                - Select the Azure Database for MySQL server resource.
-                - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
-                - Reset the password by clicking the Reset Password button at top let of the page.
-                - Use above gathered database server details in the below commands.
+			-  **Configure firewall:**
+			- Azure Databases for MySQL are protected by a firewall. By default, all connections to the server and the databases inside the server are rejected. Before connecting to Azure Database for MySQL for the first time, configure the firewall to add the client machine's public network IP address (or IP address range).
 
-            - Import the on-premises database to Azure Database for MySQL.
-            - Create a database to import on-premises database.
+  
+
+				```
+				az mysql server firewall-rule create --resource-group myresourcegroup --server mydemoserver --name AllowMyIP --start-ip-address 192.168.0.1 --end-ip-address 192.168.0.1
+				```
+			- Click your newly created MySQL server, and then click Connection security.
+
+	![connectionSecurity SS](images-1/databaseconnectionsecurity.png.png)
+				- You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
+				- You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool.
+
+  
+
+	-  **Get connection information:**
+	- From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
+
+	  ![Connection Info ss](images-1/databaseconnection.png)
+
+	 - For example, the server name is mydemoserver.mysql.database.azure.com, and the server admin login is myadmin@mydemoserver.
+
+    - Before importing database, make sure that Azure Database for MySQL server details are handy.
+    - Navigate to Azure Portal and go to the created Resource Group.
+    - Select the Azure Database for MySQL server resource.
+    - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
+    - Reset the password by clicking the Reset Password button at top let of the page.
+    - Use above gathered database server details in the below commands.
+
+    - Import the on-premises database to Azure Database for MySQL.
+	- Create a database to import on-premises database.
                 ```    
                 mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
                 ```
