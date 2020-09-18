@@ -775,7 +775,7 @@
 	- If your web server does not support slash arguments, its use in Moodle can be disabled by un-ticking the checkbox 'Use slash arguments' in Administration > Site administration > Server > HTTP.
 	- Warning: Disabling the use of slash arguments will result in SCORM packages not working and slash arguments warnings being displayed!
 
-9. site is stuck in maintenance mode
+9. Site is stuck in maintenance mode
 
 	- Sometimes Moodle gets stuck in maintenance mode and you will see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
 	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files directory). To fix this try the following:
@@ -788,7 +788,7 @@
         - They are captured at /var/log/nginx/ location.
 	- Cron Log
         - Cron job will be running and it will update the local copy in instance.
-        -  The path is  /var/log/sitelogs/moodle/cron.log
+        -  The path is  /var/log/sitelogs/moodle/cron.log.
 
 
 
