@@ -725,5 +725,13 @@
 	- Check first that your main admin account (which will be a manual account) is also a problem. If your users are using an external authentication method (e.g. LDAP) that could be the problem. Isolate the fault and make sure it really is Moodle before going any further.
 	- Check that your hard disk is not full or if your server is on shared hosting check that you have not reached your disk space quota. This will prevent new sessions being created and nobody will be able to log in.
 	- Carefully check the permissions in your 'moodledata' area. The web server needs to be able to write to the 'sessions' subdirectory. 
+5. Fatal error: $CFG->dataroot is not writable, admin has to fix directory permissions! Exiting.
+
+	- Check the moodle and moodledata permissions and make sure they are www-data:www-data only.IF not change the group and ownership permissions.
+	- Command to update the permissions
+
+		```
+		sudo chown -R /moodle/moodledata
+		```
 
 </details> 
