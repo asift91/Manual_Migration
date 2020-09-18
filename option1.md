@@ -399,129 +399,129 @@
             - You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool.
 
   
+        - Get connection information:
 
-    -  **Get connection information:**
-        - From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
+            - From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
 
-        ![Connection Info ss](images-1/databaseconnection.png)
+            ![Connection Info ss](images-1/databaseconnection.png)
 
-	 - For example, the server name is mydemoserver.mysql.database.azure.com, and the server admin login is myadmin@mydemoserver.
+        - For example, the server name is mydemoserver.mysql.database.azure.com, and the server admin login is myadmin@mydemoserver.
 
-        - Before importing database, make sure that Azure Database for MySQL server details are handy.
-        - Navigate to Azure Portal and go to the created Resource Group.
-        - Select the Azure Database for MySQL server resource.
-        - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
-        - Reset the password by clicking the Reset Password button at top let of the page.
-        - Use above gathered database server details in the below commands.
+            - Before importing database, make sure that Azure Database for MySQL server details are handy.
+            - Navigate to Azure Portal and go to the created Resource Group.
+            - Select the Azure Database for MySQL server resource.
+            - In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
+            - Reset the password by clicking the Reset Password button at top let of the page.
+            - Use above gathered database server details in the below commands.
 
-    - Import the on-premises database to Azure Database for MySQL.
-	- Create a database to import on-premises database.
-        ```    
-        mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
-        ```
-    - Assign right permissions to database.
-        ```
-        mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO '$server_admin_login_name' IDENTIFIED BY '$admin_password';"
-        ``` 
-    - Import the database.
-        ```
-        mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
-        ```
-    
-    - [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
-
-    - Update the database details in moodle configuration file (/moodle/config.php).
-        - Update the following parameters in config.php.
-        - Prior to this make sure that DNS name is handy.
-            - Navigate to Azure Portal and go to the created Resource group.
-            - Find the Load Balancer public IP and get the DNS name from overview panel. 
-        - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+        - Import the on-premises database to Azure Database for MySQL.
+        - Create a database to import on-premises database.
+            ```    
+            mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
             ```
-            cd /moodle/html/moodle/
-            nano config.php
-            # Update the database details and save the file.
-            #
-            # Example:
-            # $CFG->dbhost    = 'localhost';                - change the localhost with servername.
-            # $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
-            # $CFG->dbuser    = 'root';                     - change root with Server admin login name.
-            # $CFG->dbpass    = 'password';                 - change password with Server admin login password.
-            # $CFG->wwwroot   = 'http://on-premises.com';   - change on-premises with DNS name.
-            # $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
-                # On-premises dataroot directory can be at any location.
-            # 
-            # After the changes, Save the file. 
-            # Press CTRL+o to save and CTRL+x to exit.
+        - Assign right permissions to database.
+            ```
+            mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO '$server_admin_login_name' IDENTIFIED BY '$admin_password';"
+            ``` 
+        - Import the database.
+            ```
+            mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
             ```
         
-    - Configure directory permissions.
-        - Set 755 and www-data owner:group permissions to moodle directory.
-            ```
-            sudo chmod 755 /moodle/html/moodle
-            sudo chown -R www-data:www-data /moodle/html/moodle
-            ```
-        - Set 770 and www-data owner:group permissions to moodledata directory.
-            ```
-            sudo chmod 770 /moodle/moodledata
-            sudo chown -R www-data:www-data /moodle/moodledata
-            ``` 
-    
-    - Update the nginx conf file.
-        ```
-        sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/ 
-        cd /home/azureadmin/storage/configuration/
-        sudo cp -rf nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
-        ```
-    - Update the PHP config file.
-        ```
-        _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
-        echo $_PHPVER
-        sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
-        sudo cp -rf /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
-        ```
-    -   Install Missing PHP extensions.
-        - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-    -   To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
-        ```
-        php -m
-        ```
-        - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
-            ```
-            sudo apt-get install -y php-<extensionName>
-            ```
-    
-    - Update DNS Name and root directory location
-        -   Update the Azure cloud DNS name with the on-premises DNS name.
-            ```
-            nano /etc/nginx/sites-enabled/*.conf
-            # Above command will open the configuration file.
-            #
-            # ARM Template deployment will set the nginx server on port 81.
-            # Please update the server port to 81 if it is not 81.
-            #
-            # Update the server name.
-            # Example: server_name on-premises.com; update the on-premises.com with DNS Name. 
-            # Most of the cases DNS may remain same in the migration.
-            # 
-            # Update the HTML root directory location.
-            # Example: 'root /var/www/html/moodle;' update as  'root /moodle/html/moodle;'.
-            # root directory in the on-premises can be at any location
-            #
-            # After the changes, Save the file. 
-            # Press CTRL+o to save and CTRL+x to exit.
-            ``` 
+        - [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
 
-    - Restart the webservers.
-        ```
-        sudo systemctl restart nginx 
-        sudo systemctl restart php$_PHPVER-fpm  
-        ``` 
-    - Stop the webservers.
-        -   Whenever a request comes to load balancer, it will be redirected to VMSS instances but not to the Controller Virtual Machine.
+        - Update the database details in moodle configuration file (/moodle/config.php).
+            - Update the following parameters in config.php.
+            - Prior to this make sure that DNS name is handy.
+                - Navigate to Azure Portal and go to the created Resource group.
+                - Find the Load Balancer public IP and get the DNS name from overview panel. 
+            - dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
+                ```
+                cd /moodle/html/moodle/
+                nano config.php
+                # Update the database details and save the file.
+                #
+                # Example:
+                # $CFG->dbhost    = 'localhost';                - change the localhost with servername.
+                # $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
+                # $CFG->dbuser    = 'root';                     - change root with Server admin login name.
+                # $CFG->dbpass    = 'password';                 - change password with Server admin login password.
+                # $CFG->wwwroot   = 'http://on-premises.com';   - change on-premises with DNS name.
+                # $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
+                    # On-premises dataroot directory can be at any location.
+                # 
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
+                ```
+        
+        - Configure directory permissions.
+            - Set 755 and www-data owner:group permissions to moodle directory.
+                ```
+                sudo chmod 755 /moodle/html/moodle
+                sudo chown -R www-data:www-data /moodle/html/moodle
+                ```
+            - Set 770 and www-data owner:group permissions to moodledata directory.
+                ```
+                sudo chmod 770 /moodle/moodledata
+                sudo chown -R www-data:www-data /moodle/moodledata
+                ``` 
+        
+        - Update the nginx conf file.
             ```
-            sudo systemctl stop nginx 
-            sudo systemctl stop php$_PHPVER-fpm  
+            sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/ 
+            cd /home/azureadmin/storage/configuration/
+            sudo cp -rf nginx/sites-enabled/*.conf  /etc/nginx/sites-enabled/
             ```
+        - Update the PHP config file.
+            ```
+            _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+            echo $_PHPVER
+            sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf 
+            sudo cp -rf /home/azureadmin/storage/configuration/php/$_PHPVER/fpm/pool.d/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
+            ```
+        -   Install Missing PHP extensions.
+                - ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+        -   To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+            ```
+            php -m
+            ```
+            - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+                ```
+                sudo apt-get install -y php-<extensionName>
+                ```
+        
+        - Update DNS Name and root directory location
+            -   Update the Azure cloud DNS name with the on-premises DNS name.
+                ```
+                nano /etc/nginx/sites-enabled/*.conf
+                # Above command will open the configuration file.
+                #
+                # ARM Template deployment will set the nginx server on port 81.
+                # Please update the server port to 81 if it is not 81.
+                #
+                # Update the server name.
+                # Example: server_name on-premises.com; update the on-premises.com with DNS Name. 
+                # Most of the cases DNS may remain same in the migration.
+                # 
+                # Update the HTML root directory location.
+                # Example: 'root /var/www/html/moodle;' update as  'root /moodle/html/moodle;'.
+                # root directory in the on-premises can be at any location
+                #
+                # After the changes, Save the file. 
+                # Press CTRL+o to save and CTRL+x to exit.
+                ``` 
+
+        - Restart the webservers.
+            ```
+            sudo systemctl restart nginx 
+            sudo systemctl restart php$_PHPVER-fpm  
+            ``` 
+        - Stop the webservers.
+            -   Whenever a request comes to load balancer, it will be redirected to VMSS instances but not to the Controller Virtual Machine.
+                ```
+                sudo systemctl stop nginx 
+                sudo systemctl stop php$_PHPVER-fpm  
+                ```
     - **Copy of Configuration files:**
         -   Copying php and webserver configuration files to shared location.
         -   Configuration files can be copied to VMSS instance(s) from the shared location easily.
