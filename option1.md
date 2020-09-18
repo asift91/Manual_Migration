@@ -781,7 +781,14 @@
 	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files folder). To fix this try the following:
 	- Check that the web server user has write permissions to the moodledata folder.
 	- Manually delete the maintenance.html file.
+10. Where to find the logs
 
+	- Syslog
+	- While accessing a page either error or access log are generated.
+	- They are captured ar /var/log/nginx/ location.
+	- Cron Log
+	- Cron job will be running and it will update the local copy in instance.
+	-  The path is  /var/log/sitelogs/moodle/cron.log
 
 
 
