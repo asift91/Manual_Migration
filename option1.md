@@ -690,13 +690,13 @@
 		- You should get a cryptic response which includes the version number of the MySQL server.
 		- If you are attempting to run two instances of Moodle on different ports, use the ip address of the host (not localhost) in the $CFG->dbhost setting, e.g. $CFG->dbhost = 127.0.0.1:3308.
 		- You haven't created a Moodle database and assigned a user with the correct privileges to access it.
-        - The Moodle database settings are incorrect. The database name, database user or database user password in your Moodle configuration file config.php are incorrect. Use phpMyAdmin to set up and check your MySQL installation.
+        - The Moodle database settings are incorrect. The database name, database user or database user password in your Moodle configuration file config.php are incorrect. 
 		- Check that there are no apostrophes or non-alphabetic letters in your MySQL username or password.
 2.  Error: "500:Internal Server Error": There are several possible causes for this error. It is a good idea to start by checking your web server error log which should have a more comprehensive explanation. However, here are some known possibilities....
 			
-	- There is a syntax error in your .htaccess or httpd.conf files. The way in which directives are written differs depending on which file you are using. You can test for configuration errors in your Apache files using the command:
+	- There is a syntax error in your .htaccess or httpd.conf files. The way in which directives are written differs depending on which file you are using. You can test for configuration errors in your nginx files using the command:
 		```
-		#apachectl configtest
+		nginx -t
 		```
     - you may also see a 403: Forbidden error
 	-  the webserver executes under your own username and all files have a maximum permissions level of 755. Check that this is set for your Moodle directory in your control panel or (if you have access to the shell) use this command:
@@ -725,4 +725,5 @@
 	- Check first that your main admin account (which will be a manual account) is also a problem. If your users are using an external authentication method (e.g. LDAP) that could be the problem. Isolate the fault and make sure it really is Moodle before going any further.
 	- Check that your hard disk is not full or if your server is on shared hosting check that you have not reached your disk space quota. This will prevent new sessions being created and nobody will be able to log in.
 	- Carefully check the permissions in your 'moodledata' area. The web server needs to be able to write to the 'sessions' subdirectory. 
+
 </details> 
