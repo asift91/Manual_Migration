@@ -734,4 +734,29 @@
 		sudo chown -R /moodle/moodledata
 		```
 
+6. Could not find a top level course
+
+	- If this appears immediately after you have attempted to install Moodle it almost certainly means that the installation did not complete. A complete installation will ask you for the administrator profile and to name the site just before it completes. Check your logs for errors. Then drop the database and start again. If you used the web-based installer try the command line one.
+
+7. I log in but the login link doesn't change. I am logged in and can navigate freely.
+
+	- Make sure the URL in your $CFG->wwwroot setting is exactly the same as the one you are actually using to access the site.
+
+8. Error when uploading a file
+
+ 	- If you obtain a 'File not found' error when uploading a file, it indicates that slash arguments are not enabled on your web server. Please try enabling it.
+	- If your web server doesn't support slash arguments, its use in Moodle can be disabled by un-ticking the checkbox 'Use slash arguments' in Administration > Site administration > Server > HTTP.
+	- Warning: Disabling the use of slash arguments will result in SCORM packages not working and slash arguments warnings being displayed!
+
+9. site is stuck in maintenance mode
+
+	- Sometimes Moodle gets stuck in maintenance mode and you'll see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
+	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files folder). To fix this try the following:
+	- Check that the web server user has write permissions to the moodledata folder.
+	- Manually delete the maintenance.html file.
+
+
+
+
+
 </details> 
