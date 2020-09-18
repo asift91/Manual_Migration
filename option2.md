@@ -744,14 +744,14 @@
 		# After the changes, Save the file. 
 		# Press CTRL+o to save and CTRL+x to exit.
 		```
--  **Configuring Php & WebServer**
+-	**Configuring Php & WebServer**
 	- Update the nginx conf file
 		```
 		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
 		cd /home/azureadmin/storage/configuration/nginx/sites-enabled/
 		sudo cp *.conf /etc/nginx/sites-enabled/
 
-		 ```
+		```
 	 - Update the php config file
 		```
 		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
@@ -765,7 +765,7 @@
 		sudo systemctl restart php(phpVersion)-fpm
 		ex: sudo systemctl restart php7.4-fpm
 		```
- - **Copy of Configuration files:**
+-	**Copy of Configuration files:**
      -   Copying php and webserver configuration files to shared location.
         -   Configuration files can be copied to VMSS instance(s) from the shared location easily.
         -   Creating directory for configuration in shared location.
@@ -780,6 +780,35 @@
             cp /etc/nginx/sites-enabled/* /moodle/config/nginx
             cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
         ```
+-	**Setup Cron Job:**
+	- To update local instance in VMSS instance(s), need to have a script file which should be executed from the Controller Vitual Machine.
+	- Execute the following commands.
+```
+SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
+LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
+
+LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_time.moodle_on_azure.sh"
+function create_last_modified_time_update_script {
+
+    mkdir -p $(dirname $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH)
+    cat <<EOF > $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+#!/bin/bash
+echo \$(date +%Y%m%d%H%M%S) > $SERVER_TIMESTAMP_FULLPATH
+EOF
+    cd $(dirname $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH)
+    chmod +x $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+
+}
+
+
+function run_once_last_modified_time_update_script {
+  $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+}
+
+create_last_modified_time_update_script
+run_once_last_modified_time_update_script
+
+```
   
 -  **Scale Set:**
 	- A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic. An Azure load balancer then distributes traffic to the VM instances in the scale set. For more information on [Scaleset](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-portal).
@@ -921,61 +950,95 @@
 
 -  **Set a cron job**
 
-	- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
+- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
 
-	- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
-	- *Setup Cron Job:*
-		```
-		local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
 
-		mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
-		
-		local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
-		
-		cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+- Create a file to set up a cron job by following command.
+	```
+	cd /home/azureadmin/
+	sudo nano setup_cron.sh
+	# Above command will open a new file.
+	```
+- Copy the below code into the created setup_cron.sh file.
+```
 
-		 #!/bin/bash
-		sleep \$((\$RANDOM%30))
-		if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
-		SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
-		if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
-		LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
-		else
-		logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
-		mkdir -p /var/www/html
-		fi
-		if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
-		logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
-		if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
-		truncate -s 0 $SYNC_LOG_FULLPATH
-		fi
-		echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
-		rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
-		fi
-		else
-		logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
-		exit 1
-		fi
-		EOF
-		chmod 500 ${SYNC_SCRIPT_FULLPATH}
-		local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
-		cat <<EOF > ${CRON_DESC_FULLPATH}
-		* * * * * root ${SYNC_SCRIPT_FULLPATH}
-		EOF
-		chmod 644 ${CRON_DESC_FULLPATH}
-		# Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
-		local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
-		cat <<EOF > ${CRON_DESC_FULLPATH2}
-		* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
-		EOF
-		chmod 644 ${CRON_DESC_FULLPATH2}
-		```
+# setup_html_local_copy_cron_job
 
-		- Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
+LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
+SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
 
-		```
-		echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
-		```
+function setup_html_local_copy_cron_job {
+if [ "$(whoami)" != "root" ]; then
+echo "${0}: Must be run as root!"
+return 1
+fi
+
+local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
+
+local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+
+cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+#!/bin/bash
+sleep \$((\$RANDOM%30))
+if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
+  SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
+  if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
+    LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
+  else
+    logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
+    mkdir -p /var/www/html
+  fi
+  if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
+    logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
+    if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
+      truncate -s 0 $SYNC_LOG_FULLPATH
+    fi
+    echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
+    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+  fi
+else
+  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+  exit 1
+fi
+EOF
+
+chmod 500 ${SYNC_SCRIPT_FULLPATH}
+
+local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
+cat <<EOF > ${CRON_DESC_FULLPATH}
+* * * * * root ${SYNC_SCRIPT_FULLPATH}
+EOF
+
+chmod 644 ${CRON_DESC_FULLPATH}
+
+# Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
+local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
+cat <<EOF > ${CRON_DESC_FULLPATH2}
+* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+EOF
+
+chmod 644 ${CRON_DESC_FULLPATH2}
+}
+
+mkdir -p /var/www/html
+rsync -av --delete /moodle/html/moodle /var/www/html
+htmlRootDir="/var/www/html/moodle"
+setup_html_local_copy_cron_job
+
+```
+
+- Save the above content by pressing keys.
+```
+Ctrl + O and press enter to save file.
+Ctrl + X to come out of the file.
+``` 
+- Set the cron job by executing the below commands.
+	```
+	cd /home/azureadmin/
+	bash setup_cron.sh
+	```
 
 -  **Restart Servers**
 	- Restart nginx server & php-fpm server
@@ -985,14 +1048,14 @@
 		```
 	- With the above steps Moodle infrastructure is ready.
 
-  -  **Log Paths**
+-	**Log Paths**
 		- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 		- TBD Need to be check how to configure log paths in Azure.
--  **Restart servers**
+-	**Restart servers**
 	- Update the time stamp to update the local copy in VMSS instance.
 
 		```
-		/usr/local/bin/update_last_modified_time.azlamp.sh
+		/usr/local/bin/update_last_modified_time.moodle_on_azure.sh
 		```
 	- Restart the nginx and php-fpm servers
 		```
