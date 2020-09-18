@@ -677,7 +677,7 @@
             sudo -s
             /usr/local/bin/update_last_modified_time.moodle_on_azure.sh
             ```
-        -  By executing the script last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)  everytime the /moodle/html/moodle directory content is updated in local copy (/var/www/html).
+        -  By executing the script last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)  every time the /moodle/html/moodle directory content is updated in local copy (/var/www/html).
 
         <!-- -   In Virtual Machine scale set a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/). -->
         
@@ -710,13 +710,13 @@
 
 1.   Error: database connection failed: If you get errors like "database connection failed" or "could not connect to the database you specified", here are some possible reasons and some possible solutions.
 	
-		- 	Your database server isn't installed or running. To check this for MySQL try typing the following command line
+		- 	Your database server is not installed or running. To check this for MySQL try typing the following command line
 			```
 			$telnet database_host_name 3306
 			```
 		- You should get a cryptic response which includes the version number of the MySQL server.
 		- If you are attempting to run two instances of Moodle on different ports, use the ip address of the host (not localhost) in the $CFG->dbhost setting, e.g. $CFG->dbhost = 127.0.0.1:3308.
-		- You haven't created a Moodle database and assigned a user with the correct privileges to access it.
+		- You have not created a Moodle database and assigned a user with the correct privileges to access it.
         - The Moodle database settings are incorrect. The database name, database user or database user password in your Moodle configuration file config.php are incorrect. 
 		- Check that there are no apostrophes or non-alphabetic letters in your MySQL username or password.
 2.  Error: "500:Internal Server Error": There are several possible causes for this error. It is a good idea to start by checking your web server error log which should have a more comprehensive explanation. However, here are some known possibilities....
@@ -738,14 +738,14 @@
 		php_value memory_limit <value>M
 		Example: php_value memory_limit 40M
 		```
-	- If you have your own server with shell access, edit your php.ini file (make sure it's the correct one by checking in your phpinfo output) as follows:
+	- If you have your own server with shell access, edit your php.ini file (make sure it is the correct one by checking in your phpinfo output) as follows:
 		```
 		memory_limit <value>M
 		Example: memory_limit 40M
 		```
 	- Remember that you need to restart your web server to make changes to php.ini effective. An alternative is to disable the memory_limit by using the command memory_limit 0.
 
-4. I can't log in - I just stay stuck on the login screen
+4. I can not log in - I just stay stuck on the login screen
 	
 	- This may also apply if you are seeing “Your session has timed out. Please login again” or "A server error that affects your login session was detected. Please login again or restart your browser" and cannot log in.
 	- The following are possible causes and actions you can take.
@@ -754,7 +754,7 @@
 	- Carefully check the permissions in your 'moodledata' area. The web server needs to be able to write to the 'sessions' subdirectory. 
 5. Fatal error: $CFG->dataroot is not writable, admin has to fix directory permissions! Exiting.
 
-	- Check the moodle and moodledata permissions and make sure they are www-data:www-data only.IF not change the group and ownership permissions.
+	- Check the moodle and moodledata permissions and make sure they are www-data:www-data only. If not change the group and ownership permissions.
 	- Command to update the permissions
 
 		```
@@ -765,19 +765,19 @@
 
 	- If this appears immediately after you have attempted to install Moodle it almost certainly means that the installation did not complete. A complete installation will ask you for the administrator profile and to name the site just before it completes. Check your logs for errors. Then drop the database and start again. If you used the web-based installer try the command line one.
 
-7. I log in but the login link doesn't change. I am logged in and can navigate freely.
+7. I log in but the login link does not change. I am logged in and can navigate freely.
 
 	- Make sure the URL in your $CFG->wwwroot setting is exactly the same as the one you are actually using to access the site.
 
 8. Error when uploading a file
 
  	- If you obtain a 'File not found' error when uploading a file, it indicates that slash arguments are not enabled on your web server. Please try enabling it.
-	- If your web server doesn't support slash arguments, its use in Moodle can be disabled by un-ticking the checkbox 'Use slash arguments' in Administration > Site administration > Server > HTTP.
+	- If your web server does not support slash arguments, its use in Moodle can be disabled by un-ticking the checkbox 'Use slash arguments' in Administration > Site administration > Server > HTTP.
 	- Warning: Disabling the use of slash arguments will result in SCORM packages not working and slash arguments warnings being displayed!
 
 9. site is stuck in maintenance mode
 
-	- Sometimes Moodle gets stuck in maintenance mode and you'll see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
+	- Sometimes Moodle gets stuck in maintenance mode and you will see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
 	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files directory). To fix this try the following:
 	- Check that the web server user has write permissions to the moodledata directory.
 	- Manually delete the maintenance.html file.
@@ -785,7 +785,7 @@
 
 	- Syslog
         - While accessing a page either error or access log are generated.
-        - They are captured ar /var/log/nginx/ location.
+        - They are captured at /var/log/nginx/ location.
 	- Cron Log
         - Cron job will be running and it will update the local copy in instance.
         -  The path is  /var/log/sitelogs/moodle/cron.log
