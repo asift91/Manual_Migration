@@ -393,16 +393,17 @@
 				```
 			- Click your newly created MySQL server, and then click Connection security.
 
-	![connectionSecurity SS](images-1/databaseconnectionsecurity.png.png)
-				- You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
+	        ![connectionSecurity SS](images-1/databaseconnectionsecurity.png.png)
+			
+            	- You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
 				- You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool.
 
   
 
-	-  **Get connection information:**
-	- From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
+    -  **Get connection information:**
+        - From the MySQL server resource page, note down Server Name and Server admin login name. You may click the copy button next to each field to copy to the clipboard.
 
-	  ![Connection Info ss](images-1/databaseconnection.png)
+        ![Connection Info ss](images-1/databaseconnection.png)
 
 	 - For example, the server name is mydemoserver.mysql.database.azure.com, and the server admin login is myadmin@mydemoserver.
 
