@@ -73,7 +73,7 @@
         - Once you have a subscription handy, you will need to create a Resource Group.
         - One option is to create resource group using Azure portal.
         - Navigate to home section and search for resource group, after clicking on add fill the mandatory fields and click on create.
-        ![image](/images/resource-group.PNG)
+        ![image](/ss/rg1.PNG)
         - Alternatively, you can use the Azure CLI command to create a resource group.
         - Provide the same default Location provided in previous steps.
         - More details on [Location in Azure](https://azure.microsoft.com/en-in/global-infrastructure/data-residency/).
@@ -81,7 +81,7 @@
             az group create -l location -n name -s Subscription_NAME_OR_ID
             # Update the screenshot and subscription name with sample test account
 
-            # example: az group create -l eastus -n manual_migration -s FreeTrail
+            # example: az group create -l eastus -n manual_migration -s ComputePM
             ```
          - In above step resource group is created as "manual_migration". Use the same resource group in further steps.
     -   **Create Storage Account:**
