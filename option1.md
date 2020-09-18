@@ -393,7 +393,7 @@
 				```
 			- Click your newly created MySQL server, and then click Connection security.
 
-	        ![connectionSecurity SS](images-1/databaseconnectionsecurity.png.png)
+	        ![connectionSecurity SS](images-1/databaseconnectionsecurity.png)
 			
             	- You can Add My IP, or configure firewall rules here. Click on save after you have created the rules.
 				- You can now connect to the server using mysql command-line tool or MySQL Workbench GUI tool.
