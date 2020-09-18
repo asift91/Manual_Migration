@@ -202,14 +202,14 @@
     
     ![image](images-1/cc.png)
     
-        -   Command to copy archive file to blob storage.
-            ```
-            sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
+    -   Command to copy archive file to blob storage.
+        ```
+        sudo azcopy copy '/home/azureadmin/storage.tar.gz' 'https://<storageAccountName>.blob.core.windows.net/<containerName>/<SAStoken>
 
-            Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
-            ```
-            ![image](ss/ArchivefileinBlobstorage.PNG)
-        -  Now, you should have a copy of your archive inside the Azure blob storage account.
+        Example: azcopy copy '/home/azureadmin/storage.tar.gz' 'https://onpremisesstorage.blob.core.windows.net/migration/?sv=2019-12-12&ss='
+        ```
+        ![image](ss/ArchivefileinBlobstorage.PNG)
+    -  Now, you should have a copy of your archive inside the Azure blob storage account.
 </details> 
 
 ## **Actual Migration:**
