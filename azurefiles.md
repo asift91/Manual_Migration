@@ -23,32 +23,35 @@
 -   **Mount Manually:**
     -   Now login into Virtual Machine where you want to mount Azure Files and run the following steps.
             Note: Make sure that Azure Premium Files should be created before running the below steps.
-    -   Install cifs with the following command 
+    -   Install cifs with the following command.
         ``` 
-            sudo apt-get -y --force-yes install cifs-utils
+        sudo apt-get -y --force-yes install cifs-utils
         ```
-    -   Get the storageAccountName and storageAccountKey from Azure Portal
+    -   Get the storageAccountName and storageAccountKey from Azure Portal.
         -   Go to the storage account and navigete to Access Keys in left panel.
-        -   storageAccountName : Storage account name 
+        -   storageAccountName : Storage account name
         -   storageAccountKey : key1
 -   **Set up and Mount Azure Files Share:**
-    -   Create a credentials file with the moodle_azure_files.credential name
-    -   Run the following commands
+    -   Create a credentials file with the moodle_azure_files.credential name.
+    -   Run the following commands.
         ```
-        # Replace gathered $storageAccountName and Key values in the below command
+        # Replace gathered $storageAccountName and Key values in the below command.
+        
         cat <<EOF > /etc/moodle_azure_files.credential
         username=$storageAccountName
         password=$storageAccountKey
         EOF
         chmod 600 /etc/moodle_azure_files.credential
         ```
-    -   It will create a file and change the permissions 
-    -   Now run the following commands to set the azure premium files to fstab file
-    -   Create a shell file “entry.sh” with the commands
+    -   It will create a file and change the permissions.
+    -   Now run the following commands to set the azure premium files to fstab file.
+    -   Create a shell file “fstab_entry.sh” with the below command.
         ```
-        nano /home/azureadmin/entry.sh
+        nano /home/azureadmin/fstab_entry.sh
         # Above command will create a new file and copy below lines to the file and save it.
-            
+        ```
+        - Add the below command in the newly created file.
+        ```
             #!/bin/bash
             grep -q -s "^//$storageAccountName.file.core.windows.net/moodle\s\s*/moodle\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
             if [ $_RET != "0" ]; then
@@ -56,21 +59,21 @@
             fi
             mkdir -p /moodle
             mount /moodle
+        ```
 
-        # Press ctrl + O and ctrl + x to come out of file.
-            
+        - Save the file by following command.
         ```
-    -   Run the entry.sh file with following command and Azure Premium Files will be mounted successfully.
+        # Press ctrl + O and press enter
+        # Press ctrl + X to come out of file.            
         ```
-        	bash /home/azureadmin/entry.sh
+    -   Run the fstab_entry.sh file with following command and Azure Premium Files will be mounted successfully.
+        ```
+        bash /home/azureadmin/fstab_entry.sh
         ```
 
     -   Check the list of mounted systems.
         ```
-            df -h
+        df -h
         ```
-    -   Check the cron job status 
-        ```
-            sudo systemctl status cron
-        ```
+    
 

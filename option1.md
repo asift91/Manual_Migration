@@ -43,7 +43,7 @@
             ```
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
             ```
-        -   Now login into your Azure account
+        -   Now login into your Azure account.
             ```
             az login
             ```
@@ -91,7 +91,7 @@
         - To create using portal, navigate to portal and search for storage account and click on Add button.
         - After filling the mandatory details, click on create.
         ![image](/images-1/storageaccountcreating.png)
-        - Alternatively, you can use Azure CLI command 
+        - Alternatively, you can use Azure CLI command.
             ```
             az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind BlobStorage -l location
 
@@ -156,7 +156,7 @@
 			
             #following command will allow to you to take the backup of database.
 			mysqldump -h dbServerName -u dbUserId -pdbPassword dbName > /home/azureadmin/storage/database.sql
-			# Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details
+			# Replace dbServerName, dbUserId, dbPassword and dbName with on-premises database details.
 			```
 
 	- Create an archive storage.tar.gz file of backup directory.
@@ -166,7 +166,7 @@
     	```
 
     -   **Download and install AzCopy**
-        - Execute the below commands to install AzCopy
+        - Execute the below commands to install AzCopy.
         ```
         sudo -s
         wget https://aka.ms/downloadazcopy-v10-linux
@@ -227,7 +227,7 @@
 ### Deploy Azure Infrastructure with Azure ARM Templates
 - Deploying Azure infrastructure using ARM template.
 - When using an ARM template to deploy infrastructure on Azure, you have a couple of available options.
-- The following diagram will give an idea about Moodle architecture.
+- The following diagram will give an idea about Infrastructure Resources.
     ![images](images-1/architecture.png)
 - A pre-defined deployment size using one of the four pre-defined Moodle sizes.
 - A fully configurable deployment that gives more flexibility and choice around deployments.
@@ -557,7 +557,7 @@
 
         # 172.31.X.X is the Virtual Machine Scale Set Instance private IP.
         ```
-    -   Login to Scale Set VM instance and execute the following sequence of steps.
+    -   Login to Scale Set Virtual Machine instance and execute the following sequence of steps.
     
     -   A backup directory is extracted as storage/ at /home/azureadmin.
         -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
@@ -725,12 +725,12 @@
 		```
 		nginx -t
 		```
-    - you may also see a 403: Forbidden error
+    - you may also see a 403: Forbidden error.
 	-  the webserver executes under your own username and all files have a maximum permissions level of 755. Check that this is set for your Moodle directory in your control panel or (if you have access to the shell) use this command:
 		```
 		#chmod -R 755 moodle
 		```
-3. Error "403: Forbidden"
+3. Error "403: Forbidden".
 
 	- This error means that the php memory_limit value is not enough for the php script. The memory_limit value is the "allowed memory size" - 64M in the example above (67108864 bytes / 1024 = 65536 KB. 65536 KB / 1024 = 64 MB). You will need to increase the php memory_limit value until this message is not shown anymore. There are two methods of doing this.
 	- On a hosted installation you should ask your host's support how to do this. However, many allow .htaccess files. If yours does, add the following line to your .htaccess file (or create one in the moodle directory if it does not already exist):
@@ -789,8 +789,5 @@
 	- Cron Log
         - Cron job will be running and it will update the local copy in instance.
         -  The path is  /var/log/sitelogs/moodle/cron.log.
-
-
-
 
 </details> 
