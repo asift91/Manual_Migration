@@ -1066,11 +1066,7 @@ Ctrl + X to come out of the file.
 		- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 		- TBD Need to be check how to configure log paths in Azure.
 -	**Restart servers**
-	- Update the time stamp to update the local copy in VMSS instance.
-
-		```
-		/usr/local/bin/update_last_modified_time.moodle_on_azure.sh
-		```
+	
 	- Restart the nginx and php-fpm servers
 		```
 		sudo systemctl restart nginx
@@ -1090,13 +1086,25 @@ Ctrl + X to come out of the file.
  <summary>(For detailed steps click on expand!)</summary>
 - Post migration of Moodle application user need to update the certs and log paths as follows.
 
-- **Virtual Machine:**
+- **Virtual Machine Scale Set:**
 
-		- Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
+		- Go to VMSS instance and update the log paths, SSL Certificates, update time stamp and restart servers.
 -  **Log Paths**
 	- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
 	- nginx log path are defaulted to /var/log/nginx.
 	- access.log and error.log are created.
+
+-  **Restart servers:**
+	- Restart the nginx and php-fpm servers
+		```
+		sudo systemctl restart nginx
+		sudo systemctl restart php<phpVersion>-fpm
+		```
+
+
+- **Virtual Machine:**
+- Login to Controller Virtual Machine and execute the following steps.
+
 -   **Certs:**
 	-   *SSL Certs*: The certificates for your Moodle application reside in /moodle/certs/
 	- Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to recognize by the configured nginx servers. Depending on your local environment, you may choose to use the utility scp or a tool like WinSCP to copy these files over to the cluster controller virtual machine.

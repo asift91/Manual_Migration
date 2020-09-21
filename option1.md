@@ -611,7 +611,7 @@
 
 
 - Post migration tasks are around final application configuration that includes setup of logging destinations, SSL certificates and scheduled tasks / cron jobs.
--   **Controller Virtual Machine:**
+-   **Controller Virtual Machine Scale Set:**
     
     -   **Log Paths**
         
@@ -629,6 +629,16 @@
             # After the changes, Save the file. 
             # Press CTRL+o to save and CTRL+x to exit.
             ``` 
+
+    -   **Restart Servers**
+        
+        -   Restart the nginx and php-fpm servers.
+            ```
+            sudo systemctl restart nginx
+            sudo systemctl restart php<phpVersion>-fpm
+            ```
+
+-   **Controller Virtual Machine:**
 
     -   **Certs:**
         -   Login to the Controller Virtual Machine and follow the below steps.
@@ -679,7 +689,6 @@
             ```
         -  By executing the script last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)  every time the /moodle/html/moodle directory content is updated in local copy (/var/www/html).
 
-        <!-- -   In Virtual Machine scale set a local copy of moodle site data (/moodle/html/moodle) is copied to its root directory (/var/www/html/). -->
         
     -   **Restart Servers**
         
