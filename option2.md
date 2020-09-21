@@ -391,7 +391,7 @@
 		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
     	- Configure DNS name for load balancer.
-			- Navigate to the load balancer created in Azure Portal.
+			- Navigate to the load balancer IP created in Azure Portal.
 			- In the left panel, look for configuration and click on it.
 			- Add the DNS name and click on save.
 
@@ -441,10 +441,6 @@
 		az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
 		```
 
-	- To access the containers and file share etc. navigate to storage account in resource group in the portal.
-
-  
-		![storage_account](ss/Storageaccountcreated.PNG)
 
   -  **Database Resources** -
 
