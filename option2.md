@@ -432,7 +432,7 @@
 	- Replication is Premium Locally-redundant storage (LRS)
 	- Type is File Storage
 	
-	![image](ss/storageaccountAPF.PNG)
+	![image](images-1/Storage account with premium.PNG)
 	- Azure CLI command to create storage account
 
   
