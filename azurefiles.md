@@ -75,5 +75,7 @@
         ```
         df -h
         ```
-    
+    - After running the above command Mounted Azure Files should be like as shown below.
+    ![mount](ss/mount.PNG)
+    - With the above steps mounting of Azure Files is completed.
 
