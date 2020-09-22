@@ -539,7 +539,7 @@
 		```
 		az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
 
-		ex: az vm create --resource-group migration_option2 --name igrattionvm --image UbuntuLTS --admin-username azureadmin --authentication-type ssh --generate-ssh-keys
+		ex: az vm create --resource-group migration_option2 --name controller-vm --image UbuntuLTS --admin-username azureadmin --authentication-type ssh --generate-ssh-keys
 		```
 
 	 - Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
@@ -1063,8 +1063,20 @@ Ctrl + X to come out of the file.
 	- With the above steps Moodle infrastructure is ready.
 
 -	**Log Paths**
-		- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
-		- TBD Need to be check how to configure log paths in Azure.
+		-   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
+			-   Ex: /var/log/syslogs/moodle/access.log
+			-   Ex: /var/log/syslogs/moodle/error.log 
+		- Update log files location
+			```
+			nano /etc/nginx/nginx.conf
+			# Above command will open the configuration file.
+			# 
+			# Change the log path location.
+			# Find access_log and error_log and update the log path.
+			#
+			# After the changes, Save the file. 
+			# Press CTRL+o to save and CTRL+x to exit.
+			``` 
 -	**Restart servers**
 	
 	- Restart the nginx and php-fpm servers
@@ -1084,15 +1096,27 @@ Ctrl + X to come out of the file.
 	- Mapping DNS name with the Load Balancer public IP
  <details> 
  <summary>(For detailed steps click on expand!)</summary>
+
 - Post migration of Moodle application user need to update the certs and log paths as follows.
 
 - **Virtual Machine Scale Set:**
 
 		- Go to VMSS instance and update the log paths, SSL Certificates, update time stamp and restart servers.
 -  **Log Paths**
-	- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
-	- nginx log path are defaulted to /var/log/nginx.
-	- access.log and error.log are created.
+	-   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
+		-   Ex: /var/log/syslogs/moodle/access.log
+		-   Ex: /var/log/syslogs/moodle/error.log 
+		- Update log files location
+			```
+			nano /etc/nginx/nginx.conf
+			# Above command will open the configuration file.
+			# 
+			# Change the log path location.
+			# Find access_log and error_log and update the log path.
+			#
+			# After the changes, Save the file. 
+			# Press CTRL+o to save and CTRL+x to exit.
+			``` 
 
 -  **Restart servers:**
 	- Restart the nginx and php-fpm servers
@@ -1135,15 +1159,30 @@ Ctrl + X to come out of the file.
 
 -  **Auto Scaling Rules**
 	- Go to the Virtual Machine Scale Set Resource in Azure portal.
+	
+	- To enable autoscale on a scale set, first define an autoscale profile.
+	- This profile defines the default, minimum, and maximum scale set capacity.
+		```
+		az monitor autoscale create --resource-group myResourceGroup --resource myScaleSet --resource-type Microsoft.Compute/virtualMachineScaleSets --name autoscale --min-count 2 --max-count 10 --count 2
+
+		# Example: az monitor autoscale create --resource-group migration_option2 --resource migrationss --resource-type Microsoft.Compute/virtualMachineScaleSets --name autoscaling-profile --min-count 2 --max-count 10 --count 2
+		```
+	
+	
 	- In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
 		```
 		# Auto scaling rules can be created by scaling precentage or by the scaling count.
-		az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-		--scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
 		# Scale to 5 instances when the CPU Percentage across instances is greater than 75 averaged over 10 minutes.
-		az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-		--scale in 50% --condition "Percentage CPU < 25 avg 15m"
+		az monitor autoscale rule create -g myResourceGroup --autoscale-name {myvmss} --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
+		# Example: az monitor autoscale rule create -g migration_option2 --autoscale-name autoscaling-profile --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
+		
 		# Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
+		az monitor autoscale rule create -g myResourceGroup --autoscale-name {myvmss} --scale in 50% --condition "Percentage CPU < 25 avg 15m"
+		
+		# Example: az monitor autoscale rule create -g migration_option2 --autoscale-name autoscaling-profile --scale in 50% --condition "Percentage CPU < 25 avg 15m"
 		```
 -  **Mapping IP:**
 	- Map the load balancer IP with the DNS name.
@@ -1245,8 +1284,5 @@ Ctrl + X to come out of the file.
 	- Cron Log
         - Cron job will be running and it will update the local copy in instance.
         -  The path is  /var/log/sitelogs/moodle/cron.log.
-
-
-
 
 </details> 
