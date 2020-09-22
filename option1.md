@@ -220,10 +220,9 @@
     -   Deploy Azure Infrastructure with Azure ARM Templates.
     -   Download and install AzCopy.
     -   Copy over the backup archive to the Controller Virtual Machine instance from the ARM deployment.
-    -   Migration of application and configuration.
-    
+    -   Migration of Moodle application and configuration.
     -   Setup Moodle controller instance and worker nodes. 
-    -   Data migration tasks.
+    -   Configuring PHP & webserver.
 
 <details>
 <summary>(For detailed steps click on expand!)</summary>
@@ -334,7 +333,7 @@
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images-1/overview.PNG)
 
--   **Copy over the backup archive to the Controller Virtual Machine instance from the ARM deployment**
+
 
 -  **Controller Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
@@ -356,6 +355,7 @@
                 sudo rm /usr/bin/azcopy
                 sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
                 ```
+        -   **Copy over the backup archive to the Controller Virtual Machine instance from the ARM deployment.**
             -   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
                 ```
                 sudo -s
@@ -369,10 +369,11 @@
                 cd /home/azureadmin
                 tar -zxvf storage.tar.gz
                 ```
-    - **Migration of application and configuration**
+    - **Migration of Moodle application and configuration**
+        -   Before migrating take a backup of existing configuration.
         -   A backup directory is extracted as storage/ at /home/azureadmin.
-        - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
-        - Create a backup directory.
+        -   This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
+        -   Create a backup directory.
             ```
             cd /home/azureadmin/
             mkdir -p backup
@@ -544,8 +545,8 @@
             cp /etc/nginx/sites-enabled/* /moodle/config/nginx
             cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
             ```
-    
--   **Virtual Machine Scale Set**
+-   **Setup Moodle controller instance and worker nodes**    
+    -   **Virtual Machine Scale Set**
     -   VMSS instances are assigned with Private IP and can be accessible only with the controller virtual machine which is associated with in the same Virtual Network.
     -   For connecting the VMSS instance with private IP, need to have gateway enabled. 
     -   [Deploy Virtual Network Gateway](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md) to set the gateway access to VMSS instances. 
@@ -575,32 +576,32 @@
             mkdir -p backup/moodle
             ```
         
-        - **Configuring PHP & webserver**
-            - Create a backup of php and webserver configuration.
-                ```
-                # Set PHP version to a variable.
-                _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
-                echo $_PHPVER
+    - **Configuring PHP & webserver**
+        - Create a backup of php and webserver configuration.
+            ```
+            # Set PHP version to a variable.
+            _PHPVER=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+            echo $_PHPVER
 
-                sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/
-                sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf  
+            sudo mv /etc/nginx/sites-enabled/*.conf  /home/azureadmin/backup/
+            sudo mv /etc/php/$_PHPVER/fpm/pool.d/www.conf /home/azureadmin/backup/www.conf  
+            ```
+        - Copy the php and webserver configuration files.
+            ```
+            sudo cp /moodle/config/nginx/*.conf  /etc/nginx/sites-enabled/
+            sudo  cp /moodle/config/php/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
+            ```
+        -   Install Missing PHP extensions.
+                - ARM template install the following PHP extensions.
+                    - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+            -   To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
                 ```
-            - Copy the php and webserver configuration files.
+                php -m
                 ```
-                sudo cp /moodle/config/nginx/*.conf  /etc/nginx/sites-enabled/
-                sudo  cp /moodle/config/php/www.conf /etc/php/$_PHPVER/fpm/pool.d/ 
-                ```
-            -   Install Missing PHP extensions.
-                    - ARM template install the following PHP extensions.
-                        - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-                -   To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+                - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
                     ```
-                    php -m
+                    sudo apt-get install -y php-<extensionName>
                     ```
-                    - Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
-                        ```
-                        sudo apt-get install -y php-<extensionName>
-                        ```
 </details>
 
 ## **Post Migration:**
