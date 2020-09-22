@@ -27,12 +27,13 @@
 ## **Pre-Migration:**
 - Data Export from on-premises to Azure involves the following tasks.
     -   Install Azure CLI.
-    -   Have an Azure subscription handy.
-    -   Create a Resource Group inside Azure.
-    -   Create a Storage Account inside Azure.
-    -   Backup all relevant data from on-premises infrastructure.
-    -   Ensure the on-premises database instance has mysql-client installed.
-    -   Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
+    -   Create Subscription.
+    -   Create Resource Group.
+    -   Create Storage Account.
+    -   Backup of on-premises data.
+    -   Download and install AzCopy.
+    -   Copy Archive file to Blob storage.
+    
 
 <details> 
 <summary>(For detailed steps click on expand!)</summary>
@@ -215,11 +216,14 @@
 ## **Actual Migration:**
 
 - Actual migration tasks involve the following tasks.
-    - The migration of application and all data.
-    - Deploy infrastructure on Azure using Moodle ARM template.
-    - Copy over the backup archive (storage.tar.gz) to the moodle controller instance from the ARM deployment.
-    - Setup Moodle controller instance and worker nodes. 
-    - Data migration tasks.
+
+    -   Deploy Azure Infrastructure with Azure ARM Templates.
+    -   Download and install AzCopy.
+    -   Copy over the backup archive to the Controller Virtual Machine instance from the ARM deployment.
+    -   Migration of application and configuration.
+    
+    -   Setup Moodle controller instance and worker nodes. 
+    -   Data migration tasks.
 
 <details>
 <summary>(For detailed steps click on expand!)</summary>
@@ -329,7 +333,9 @@
     - Go to the created Resource Group and find all the created resources. 
     - The following image will give some idea on how the resources will be created.
     ![resourcesoverview](images-1/overview.PNG)
-    
+
+-   **Copy over the backup archive to the Controller Virtual Machine instance from the ARM deployment**
+
 -  **Controller Virtual Machine**
     - Login into this controller machine using any of the free open-source terminal emulator or serial console tools. 
         - Copy the public IP of controller Virtual Machine to use as the hostname.
@@ -363,6 +369,7 @@
                 cd /home/azureadmin
                 tar -zxvf storage.tar.gz
                 ```
+    - **Migration of application and configuration**
         -   A backup directory is extracted as storage/ at /home/azureadmin.
         - This storage directory contains moodle, moodledata and configuration directory along with database backup file. These will be copied to desired locations.
         - Create a backup directory.

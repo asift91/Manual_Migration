@@ -1097,11 +1097,10 @@ Ctrl + X to come out of the file.
  <details> 
  <summary>(For detailed steps click on expand!)</summary>
 
-- Post migration of Moodle application user need to update the certs and log paths as follows.
+- Post migration of Moodle application user need to update the log paths, SSL Certificates, update time stamp and restart servers as follows.
 
 - **Virtual Machine Scale Set:**
-
-		- Go to VMSS instance and update the log paths, SSL Certificates, update time stamp and restart servers.
+- Perform the below steps in VMSS instance(s).
 -  **Log Paths**
 	-   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
 		-   Ex: /var/log/syslogs/moodle/access.log
@@ -1125,9 +1124,8 @@ Ctrl + X to come out of the file.
 		sudo systemctl restart php<phpVersion>-fpm
 		```
 
-
 - **Virtual Machine:**
-- Login to Controller Virtual Machine and execute the following steps.
+- Perform the below steps in Controller Virtual Machine.
 
 -   **Certs:**
 	-   *SSL Certs*: The certificates for your Moodle application reside in /moodle/certs/
@@ -1167,7 +1165,6 @@ Ctrl + X to come out of the file.
 
 		# Example: az monitor autoscale create --resource-group migration_option2 --resource migrationss --resource-type Microsoft.Compute/virtualMachineScaleSets --name autoscaling-profile --min-count 2 --max-count 10 --count 2
 		```
-	
 	
 	- In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
 		```
