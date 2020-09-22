@@ -610,7 +610,7 @@
     - Post migration tasks that include application configuration.
     - Update Log paths in VMSS instance(s).
     - Restart servers in VMSS instance(s).
-    - Update Certifiactes.
+    - Update Certificates.
     - Update certificate location.
     - Update HTML Local Copy.
     - Restarting PHP and nginx servers.
@@ -764,7 +764,7 @@
 		```
 	- Remember that you need to restart your web server to make changes to php.ini effective. An alternative is to disable the memory_limit by using the command memory_limit 0.
 
-4. I can not log in - I just stay stuck on the login screen
+4. I cannot log in - I just stay stuck on the login screen
 	
 	- This may also apply if you are seeing “Your session has timed out. Please login again” or "A server error that affects your login session was detected. Please login again or restart your browser" and cannot log in.
 	- The following are possible causes and actions you can take.
