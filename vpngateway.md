@@ -10,6 +10,9 @@ This document explains how to setup Virtual Network Gateway in Azure.
 	-	Fill all the details like Name, Region, Gateway type, sku, vnet and keep the rest to default values.
         -   Select the vnet which is associated with VM's created under the same resource group.
 	-	Click on create then it will start deploying.
+	
+		![image](ss/vpngateway.png)
+		
 -	Create Virtual Network gateway by Azure CLI command
 	```
 	az network vnet-gateway create -g MyResourceGroup -n MyVnetGateway --public-ip-address MyGatewayIp --vnet MyVnet --gateway-type Vpn --sku VpnGw1 --vpn-type RouteBased --no-wait
@@ -60,7 +63,7 @@ This document explains how to setup Virtual Network Gateway in Azure.
     -	Go to the resource group where the Virtual Network Gateway is created.
     -   Go to Point-to-Site-configuration on the left panel.
     -   Click on Configure now in the center panel.
-    -   Add the address pool
+    -   Add the address pool (ex: 192.168.xx.0/24)
     -   Select the tunnel type to IKEv2
     -   Authentication type to Azure certification
     -   Paste the copied root certificate code in the portal and give name as root & click on Save.

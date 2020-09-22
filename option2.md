@@ -25,10 +25,14 @@
 	- PHP 7.2, 7.3, or 7.4
 	- Moodle 3.8 & 3.9
 
-  
+  ## Migration Approach
+-   Migration of Moodle application to Azure is broken down in the following three stages:
+    - Pre-migration tasks.
+    - Actual migration of the application.
+    - Post-migration tasks.
 
--  **Pre-Migration**
-	- Data Export from on-premises to Azure involves the following tasks.
+## **Pre Migration:**
+- Data Export from on-premises to Azure involves the following tasks.
 	- Install Azure CLI.
 	- Have an Azure subscription handy.
 	- Create a Resource Group inside Azure.
@@ -37,31 +41,8 @@
 	- Ensure the on-premises database instance has MySQL-client installed.
 	- Copy backup archive file (such as storage.tar.gz) to Blob storage on Azure.
 
-  
-
--  **Migration**
-	- Migration of Moodle.
-	- Install prerequisites for Moodle.
-	- Create Moodle Shared folder.
-	- Download On-premises archive file.
-	- Download and run the migrate_moodle.sh script.
-	- Configuring permissions.
-	- Importing Database.
-	- Configuring PHP & Webserver.
-	- Configuring VMSS.
-	- Set a cron job.
-
-  
--  **Post Migration**
-	- Post migration tasks that include application configuration.
-	-  Update general configuration (e.g. log file destinations).
-	- Update any cron jobs / scheduled tasks.
-	- Configuring certificates.
-	- Restarting PHP and nginx servers.
-	- Mapping DNS name with the Load Balancer public IP.
-
-## Pre Migration
-
+<details> 
+ <summary>(For detailed steps click on expand!)</summary>
   
 
 -  **Data Export from on-premises to Azure Cloud:**
@@ -96,6 +77,14 @@
 	- To create the subscription using azure portal, navigate to Subscription from Home section.
 
 		![image](/images/subscription1.png)
+
+	 - Command to set the subscription.
+            ```
+            az account set --subscription "Subscription Name"
+
+            # Example: az account set --subscription "FreeTrail"
+            ```
+
 
 -  **Create Resource Group:**
 	- Once you have a subscription handy, you will need to create a Resource Group.
@@ -137,7 +126,7 @@
 
 -  **Backup of on-premises data:**
 	 - Before taking backup of on-premises data, enable maintenance mode for moodle site.
-        - Run the below commnad in on-premises virtual machine.
+        - Run the below command in on-premises virtual machine.
          ```
              sudo /usr/bin/php admin/cli/maintenance.php --enable
          ```
@@ -159,7 +148,6 @@
 		cd /home/azureadmin
 		mkdir storage
 		```
-
   
 
 -  **Backup of moodle and moodledata**
@@ -276,10 +264,25 @@
 	- Now, you should have a copy of your archive inside the Azure blob storage account.
 	 ![image](ss/ArchivefileinBlobstorage.PNG)
 
-
+</details>
   
+## **Actual Migration:**
 
--  ## Migration
+- Actual Migration involves the following tasks.
+	- Migration of Moodle.
+	- Install prerequisites for Moodle.
+	- Create Moodle Shared directory.
+	- Download On-premises archive file.
+	- Download and run the migrate_moodle.sh script.
+	- Configuring permissions.
+	- Importing Database.
+	- Configuring PHP & Webserver.
+	- Configuring VMSS.
+	- Set a cron job.
+
+<details> 
+<summary>(For detailed steps click on expand!)</summary>
+
 -  **Resources Creation**
 	- To install the infrastructure for Moodle, navigate to the [azure portal](portal.azure.com) and select the created Resource Group.
 	- Create the infrastructure by adding the resources.
@@ -387,16 +390,36 @@
 
 		ex: az network lb create --resource-group migration_option2 --name migration_lb --sku Standard --public-ip-address migration_lb_ip --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
 		```
+    	- Configure DNS name for load balancer.
+			- Navigate to the load balancer IP created in Azure Portal.
+			- In the left panel, look for configuration and click on it.
+			- Add the DNS name and click on save.
 
-  
+	 	![image](ss/DNSConfiguration.PNG)
+
+		 
+	-  **Load Balancing Rules**
+		- Go to the Load Balancer Resource in Azure portal.
+			- In the left panel, find Health Probes in setting.
+				- Create by clicking add button.
+				- Enter Name, Port as 80 for http and 443 for https, Interval as 5 and Unhealthy threshold as 3.
+				- Click on ok to save.
+			- In the left panel, find Load Balancing Rules.
+				- Add http and https rules by clicking add button.
+				- Fill the Name, select the front end IP (load balancer IP), Port, Backend Port, select the backend pool and health probe.
+				- Cick on ok button to save the rule.
+
+
+		- Alternatively, Set the http (TCP/80) and https (TCP/443) rules from Azure CLI.
+			```
+			az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
+			```
 
   -  **Azure Application GateWay**
 		- An Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. For more details on [Azure application gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
 		- To deploy the Application gate way from [Azure Portal](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal).
 
-	 	![image](images/agwcreate.PNG)
-
-	  - To deploy the Application gate way from [Azure CLI](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
+	  	- To deploy the Application gate way from [Azure CLI](https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-cli)
 
 		  *Note:* Azure Application Gateway is optional, this migration document supports only Azure Load Balancer.
 
@@ -405,15 +428,11 @@
 -  **Storage Resources**
 	* An Azure storage account contains all of your Azure Storage data objects: blobs, files, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS
 	* Storage account will have specific type, replication, Performance, Size. For more details on [Storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
-	* The types of storage accounts are General-purpose V2, General-purpose V1, BlockBlobStorage, File Storage, BlobStorage accounts. For more information on [types of storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview#types-of-storage-accounts)
-	- Replication types are Locally-redundant storage (LRS), Zone-redundant storage (ZRS), Geo redundant storage (GRS). For more details on[replication types](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy).
-	- Standard- A standard performance tier for storing blobs, files, tables, queues, and Azure virtual machine disks.
-	- Premium- A premium performance tier for storing unmanaged virtual machine disks.
-	- Size(sku): A single storage account can store up to 500 TB of data and like any other Azure service. For more details on [size types](https://docs.microsoft.com/en-us/rest/api/storagerp/srp_sku_types).
 	- Creating storage account with Azure Files Premium below should be the mandatory parameters.
 	- Replication is Premium Locally-redundant storage (LRS)
 	- Type is File Storage
-	![image](ss/storageaccount2.png)
+	
+		![image](ss/Storageaccountwithpremium.PNG)
 	- Azure CLI command to create storage account
 
   
@@ -422,10 +441,6 @@
 		az storage account create -n storageAccountName -g resourceGroupName --sku Standard_LRS --kind StorageV2 -l eastus2euap -t Account
 		```
 
-	- To access the containers and file share etc. navigate to storage account in resource group in the portal.
-
-  
-		![storage_account](ss/Storageaccountcreated.PNG)
 
   -  **Database Resources** -
 
@@ -478,7 +493,7 @@
 
 	- If you already have an SSH key pair, you can skip this step.
 
-	- Go to the PuTTY installation folder (the default location is C:\Program Files\PuTTY) and run: puttygen.exe
+	- Go to the PuTTY installation directory (the default location is C:\Program Files\PuTTY) and run: puttygen.exe
 
 	- In the PuTTY Key Generator window, set Type of key to generate to RSA, and set Number of bits in a generated key to 2048.
 
@@ -505,12 +520,18 @@
 	- Select Authentication type SSH, give the username give the SSH key generated in previous step.
 	- Select the inbound rule for SSH as 22 and HTTP as 80.
 	- Click next on Disk section.
+
+		 ![image](ss/vm.png)
 	- Select the OS disk type. There are 3 choices Standard SSD, Premium SSD, Standard HDD
 	- Keep the other parameters as default.
+
+	    ![image](ss/vm01.PNG)
+
 	- Click next on networking and select the virtual network created in above step and the public IP and keep the above parameters as default.
+
+		![image](ss/vm02.PNG)
 	- Click on next for management and keep the parameters as default.
 	- Keeping the other parameters as default Click on review and create.
-	 ![image](ss/vm.png)
 	- Alternatively Virtual Machine can be created using AZ CLI command
 
   
@@ -518,7 +539,7 @@
 		```
 		az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --admin-username azureuser --authentication-type ssh --generate-ssh-keys
 
-		ex: az vm create --resource-group migration_option2 --name igrattionvm --image UbuntuLTS --admin-username azureadmin --authentication-type ssh --generate-ssh-keys
+		ex: az vm create --resource-group migration_option2 --name controller-vm --image UbuntuLTS --admin-username azureadmin --authentication-type ssh --generate-ssh-keys
 		```
 
 	 - Login into this controller machine using any of the free open-source terminal emulator or serial console tools.
@@ -535,267 +556,278 @@
   
   
 
-# Install Moodle
+# Migrate Moodle
 
  -  **Install prerequisites for Moodle**.
 	- To install prerequisites for Moodle run the following commands
-	- Update and install rsyslog, unzip
-
-  
-
+	
+	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
 		```
 		sudo -s
+		sudo add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
+		sudo apt-get update > /dev/null 2>&1
+		```
+	-	Update and install rsyslog, unzip, mysql-client, php and php extensions.
+		```
 		sudo apt-get -y update
-		sudo apt-get -y install unattended-upgrades fail2ban
-		sudo apt-get -y update
-		sudo apt-get -y --force-yes install rsyslog git
-		sudo apt-get -y update
-		sudo apt-get install -y --fix-missing python-software-properties unzip
+		sudo apt-get -y install unattended-upgrades
+		sudo apt-get -y install python-software-properties unzip rsyslog
+		sudo apt-get -y install mysql-client git
+		sudo apt-get -y install php$phpVersion
 		```
 
-	 - Install Php and extensions
-	- If you are installing PHP greater than 7.2 then upgrade ppa package
+	 - Install Php extensions and varnish.
+	 	```
+		# set php version to a variable 
+		phpVersion=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+		echo $phpVersion
 
-  
-
-		```
-		sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
-		```
-	- List of Extensions are below
-	- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2
-
-		 ```
+		sudo apt-get -y install varnish php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
 		sudo apt-get -y --force-yes install php$phpVersion-fpm
-		sudo apt-get -y --force-yes install php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip
 		sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
-		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
+		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 
 		```
-	 
+
 	- Install Missing PHP extensions.
-	- ARM template install the following PHP extensions - fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
-	- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
-
-		```
-		php -m
-		```
-	- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
-		```
-		sudo apt-get install -y php-<extensionName>
-		```
-	- By default php with 7.2 and higher versions are installing apache2.
-	- This documentation will support only nginx and if apache is installed then mask the apache service.
-	- Check the apache service is installed by below command.
-		```
-		apache2 -v
-		```
-	- If the apache service is installed it will show up the service version,so you can identify that apache service is installed.
-	- Run the below commands to mask the apache2 service.
-		```
-		sudo systemctl stop apache2
-		sudo systemctl mask apache2
-		```	
+		- ARM template install the following PHP extensions 
+			- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+		- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+			```
+			php -m
+			```
+		- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+			```
+			sudo apt-get install -y php-extensionName
+			```
+	- PHP with 7.2 and higher versions are installing apache2 by default.
+		- This documentation will support only nginx and if apache is installed then mask the apache service.
+		- Check the apache service is installed by below command.
+			```
+			apache2 -v
+			```
+		- If the apache service is installed it will show up the service version, so you can identify that apache service is installed.
+		- Run the below commands to mask the apache2 service.
+			```
+			sudo systemctl stop apache2
+			sudo systemctl mask apache2
+			```	
 	- Install nginx webserver
-
 		```
 		sudo apt-get -y --force-yes install nginx
 		```
+	-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+		```
+		curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+		```
 
-  -  **Create Moodle Shared folder**
-		- Create a moodle shared folder to install Moodle (/moodle)
-
-  
-
+  -  **Create Moodle Shared directory**
+		- Create a moodle shared directory to install Moodle (/moodle)
 			```
 			mkdir -p /moodle
 			mkdir -p /moodle/moodledata
 			mkdir -p /moodle/html
 			mkdir -p /moodle/certs
 			```
-
-	  - Mount shared [moodle folder with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
+		-   Install Azure CLI on a host inside the on-premises infrastructure for all Azure related tasks.
+			```
+			curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+			```
+		- Mount shared [moodle directory with storage account](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) for more information.
 
   -  **Download On-Premises archive file**
-		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
+		- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration directory with database backup file to /home/azureadmin location
 
-  -  **Download and Install AzCopy:**
-		
-		- Execute the below commands to install Az Copy
-			
+ 		- Execute the below commands to install AzCopy
 			```
-
 			sudo -s
-
 			wget https://aka.ms/downloadazcopy-v10-linux
-
 			tar -xvf downloadazcopy-v10-linux
-
 			sudo rm /usr/bin/azcopy
-
 			sudo cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
+			```
+		-   Download the compressed backup file(storage.tar.gz) from blob storage to Controller virtual Machine at /home/azureadmin/ location.
+			```
+			sudo -s
+			cd /home/azureadmin/
+			azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectoryName<SASToken>' '/home/azureadmin/'
 
+			Example: azcopy copy 'https://onpremisesstorage.blob.core.windows.net/migration/storage.tar.gz?sv=2019-12-12&ss=' '/home/azureadmin/storage.tar.gz'
+			```
+		- Extract the compressed content to a directory.
+			```
+			cd /home/azureadmin
+			tar -zxvf storage.tar.gz
 			```
 
-		- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
-
-		```
-		cd /home/azureadmin 
-		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-		```
-		- Extract archive storage.tar.gz file
-
-		```
-		tar -zxvf yourfile.tar.gz
-		ex: tar -zxvf storage.tar.gz
-		```
-
-		- Storage folder contains Moodle, Moodledata and configuration folders along with database backup file.
+		- Storage directory contains Moodle, Moodledata and configuration directory along with database backup file.
 
   
  -  **Migrate On-Premises Moodle:**
-	- Create a backup folder
 
-  
-		
-		```
-		cd /home/azureadmin/
-		mkdir -p backup
-		```
 
-  
-
-	- Copy and replace moodle folder with On-Premises moodle folder
-
-		  
-
+	- Copy and replace moodle directory with On-Premises moodle directory
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodle /moodle/html/moodle
 		```
 
-	 - Replace the moodledata folder
-	- Copy and replace this moodledata (/moodle/moodledata) folder with existing folder
-	- Copy the moodledata folder existing path
-
-  
-
+	- Copy and replace moodledata directory with On-Premises moodle directory
 		```
 		cd /home/azureadmin/
 		cp -rf storage/moodledata /moodle/moodledata
 		```
 
-  
-
 -  **Configuring permissions**
-	- Set the Moodle and Moodledata folder permissions.
-	- Set 755 and www-data owner:group permissions to Moodle folder
-
-  
-		
+	- Set the Moodle and Moodledata directory permissions.
+	- Set 755 and www-data owner:group permissions to Moodle directory
 		```
 		sudo chmod 755 /moodle
 		sudo chown -R www-data:www-data /moodle
 		```
 
-	 - Set 770 and www-data owner:group permissions to Moodledata folder
-
-  
-
+	 - Set 770 and www-data owner:group permissions to Moodledata directory
 		```
 		sudo chmod 755 /moodle/moodledata
 		sudo chown -R www-data:www-data /moodle/moodledata
 		```
 
-  
-
 -  **Importing Database**
-	- Import the database from a backup file to a new database created in Azure Database for MySQL.
-	- Before creating database install mysql-clinet on controller VM.
+	
+  - Importing the moodle Database to Azure moodle DB.
+	- Before importing database, make sure that Azure Database for MySQL server details are handy.
+		- Navigate to Azure Portal and go to the created Resource Group.
+		- Select the Azure Database for MySQL server resource.
+		- In the overview panel find Azure Database for MySQL server details such as Server name, Server admin login name.
+		- Reset the password by clicking the Reset Password button at top let of the page.
+		- Use above gathered database server details in the below commands.
 
-  
-
+	- Import the on-premises database to Azure Database for MySQL.
+	- Create a database to import on-premises database.
+		```    
+		mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "CREATE DATABASE $moodledbname CHARACTER SET utf8;"
 		```
-		sudo apt install mysql-client
+	- Assign right permissions to database.
 		```
-
-	- A database needs to be created prior to the import.
-
-  
-
+		mysql -h $server_name -u $server_admin_login_name -p$admin_password -e "GRANT ALL ON $moodledbname.* TO '$server_admin_login_name' IDENTIFIED BY '$admin_password';"
+		``` 
+	- Import the database.
 		```
-		mysql -h $server_name -u $ server_admin_login_name -p$admin_password -e "CREATE DATABASE ${moodledbname} CHARACTER SET utf8;"
+		mysql -h $server_name -u $server_admin_login_name -p$admin_password $moodledbname < /home/azureadmin/storage/database.sql
 		```
+	
+	- [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
 
-	  Note: User can get the Database servername, admin login, password from the azure portal, select the created Azure Database for MySQL.
-
-  - Change the permissions.
-
-	  ```
-		mysql -h $ server_name -u $ server_admin_login_name -p${admin_password } -e "GRANT ALL ON ${moodledbname}. * TO ${moodledbuser} IDENTIFIED BY '${moodledbpass}';"
-    ```
-
-  - Import the database.
-
-  
-
+- Update the database details in moodle configuration file (/moodle/config.php).
+	- Update the following parameters in config.php.
+	- Prior to this make sure that DNS name is handy.
+		- Navigate to Azure Portal and go to the created Resource group.
+		- Find the Load Balancer public IP and get the DNS name from overview panel. 
+	- dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
 		```
-		mysql -h db_server_name -u db_login_name -pdb_pass dbname >/home/azureadmin/storage/database.sql
+		cd /moodle/html/moodle/
+		nano config.php
+		# Update the database details and save the file.
+		#
+		# Example:
+		# $CFG->dbhost    = 'localhost';                - change the localhost with servername.
+		# $CFG->dbname    = 'moodle';                   - change moodle to newly created database name.
+		# $CFG->dbuser    = 'root';                     - change root with Server admin login name.
+		# $CFG->dbpass    = 'password';                 - change password with Server admin login password.
+		# $CFG->wwwroot   = 'http://on-premises.com';   - change on-premises with DNS name.
+		# $CFG->dataroot  = '/var/moodledata';          - change the path to '/moodle/moodledata'
+			# On-premises dataroot directory can be at any location.
+		# 
+		# After the changes, Save the file. 
+		# Press CTRL+o to save and CTRL+x to exit.
 		```
-
-  - Change the database details in moodle configuration file (/moodle/config.php).
-- Update the following parameters in config.php
-- dbhost, dbname, dbuser, dbpass, dataroot and wwwroot
-
-
-  
-
-	```
-	cd /moodle/html/moodle/
-	vi config.php
-	# update the database details and save the file.
-	```
-- [Database general FAQ/troubleshooting questions](https://docs.azure.cn/en-us/mysql-database-on-azure/mysql-database-tech-faq)
-
-  
-
--  **Configuring Php & WebServer**
+-	**Configuring Php & WebServer**
 	- Update the nginx conf file
 		```
-		sudo mv /etc/nginx/sites-enabled/<dns>.conf /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/nginx
-		sudo cp <dns>.conf /etc/nginx/sites-enabled/
+		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
+		cd /home/azureadmin/storage/configuration/nginx/sites-enabled/
+		sudo cp *.conf /etc/nginx/sites-enabled/
 
-		 ```
-	- Update the apache conf file
-				
-	```
-		sudo mv /etc/apache/sites-enabled/<dns>.conf /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/apache
-		sudo cp <dns>.conf /etc/apache/sites-enabled/
-	```
-
-	  - Update the php config file
-
-  
-
-	```
-	sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-	sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
-	```
-
+		```
+	 - Update the php config file
+		```
+		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
+		cd /home/azureadmin/storage
+		sudo cp configuration/php/<phpVersion>/fpm/pool.d/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		```
 	  - Restart the web servers
 
-	```
-	sudo systemctl restart nginx
-	sudo systemctl restart php(phpVersion)-fpm
-	ex: sudo systemctl restart php7.4-fpm
-	```
+		```
+		sudo systemctl restart nginx
+		sudo systemctl restart php(phpVersion)-fpm
+		ex: sudo systemctl restart php7.4-fpm
+		```
+-	**Copy of Configuration files:**
+     -   Copying php and webserver configuration files to shared location.
+        -   Configuration files can be copied to VMSS instance(s) from the shared location easily.
+        -   Creating directory for configuration in shared location.
+            ```
+            mkdir -p /moodle/config
+            mkdir -p /moodle/config/php
+            mkdir -p /moodle/config/nginx
+            ```
+    -   Copying the php and webserver config files to configuration directory.
+          
+		 ```
+            cp /etc/nginx/sites-enabled/* /moodle/config/nginx
+            cp /etc/php/$_PHPVER/fpm/pool.d/www.conf /moodle/config/php
+        ```
+-	**Setup Cron Job:**
+- To update local instance in VMSS instance(s), need to have a script file which should be executed from the Controller Vitual Machine.
+- Execute the following commands.
+- Create a file setup_cron_on_vm.sh
+```
+cd /home/azureadmin/
+nano setup_cron_on_vm.sh
+# Above command will create a new file.
+```
+- Copy the below content to the setup_cron_on_vm.sh
+```
+SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
+LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
 
+LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_time.moodle_on_azure.sh"
+function create_last_modified_time_update_script {
+
+    mkdir -p $(dirname $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH)
+    cat <<EOF > $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+#!/bin/bash
+echo \$(date +%Y%m%d%H%M%S) > $SERVER_TIMESTAMP_FULLPATH
+EOF
+    cd $(dirname $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH)
+    chmod +x $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+
+}
+
+
+function run_once_last_modified_time_update_script {
+  $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
+}
+
+create_last_modified_time_update_script
+run_once_last_modified_time_update_script
+
+```
+- Save the file with the below commands.
+```
+Press Ctrl + O and enter to save the file.
+Press Ctrl + X to come out the file.
+```
+
+- Execute the below command to set cron job.
+```
+cd /home/azureadmin/
+bash setup_cron_on_vm.sh
+```
   
 -  **Scale Set:**
 	- A virtual machine scale set allows you to deploy and manage a set of auto-scaling virtual machines. You can scale the number of VMs in the scale set manually or define rules to auto scale based on resource usage like CPU, memory demand, or network traffic. An Azure load balancer then distributes traffic to the VM instances in the scale set. For more information on [Scaleset](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-portal).
 	- Create a scale set in same resource group.
 	- Prerequisites is the to create a public Standard Load Balancer.
-	- User can create Azure Application Gateway. For more information [Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview).
 	- The name and public IP address created are automatically configured as the load balancer's front end.
 	- Scale set creates an VM instance with Ubuntu 16.04 OS.
 	- Search Virtual machine scale sets. Select Create on the Virtual machine scale sets page, which will open the Create a virtual machine scale set page.
@@ -805,152 +837,222 @@
 	- Leave the default value of Scale Set VMs for Orchestration mode.
 	- Enter your desired username and select which authentication type as SSH and give the same SSH key and username as azureadmin.
 	- Select the image or browse the image for the scale set
+
+		![image](ss/ss1.png)
 	- Select the size for the disk.
 	- Click Next for the disk tab select the OS disk type as per choice
+				
+		 ![image](ss/ss2.png)
+
 	- Click Next for the networking section
 	- Select the created virtual network.
+
+		![image](ss/ss3.png)
+
 	- Give the instance count and the scaling policy as manual or custom.
 	- set the rules to scale up/down a VM based on the average cpu percentage.
+
+		 ![image](ss/ss4.png)
+
 	- Select Next and keep the other things as default.
+
+		![image](ss/ss5.png)
+
 	- Click on review and create and the scale set.
 	- Scale set can be created from Azure CLI
-
-  
-
 		```
 		az vmss create -n MyVmss -g MyResourceGroup --public-ip-address-dns-name my-globally-dns-name --load-balancer MyLoadBalancer --vnet-name MyVnet --subnet MySubnet --image UbuntuLTS --generate-ssh-keys
 		```
-
-	 
 	- VMSS will create a VM instance with an internal IP. User need to have a VPN gateway to access the VM.
 	- To setup the Virtual Network Gateway access the [document](https://github.com/asift91/Manual_Migration/blob/master/vpngateway.md).
 
   
 -  **Configuring VMSS**
 
--  **Download install_prerequisites.sh script**.
-	- Install Moodle prerequisites in VMSS instance same as controller VM.
-	- Install web server (nginx/apache) with the given version
-	- Install PHP with its extensions.
-	-  *Note:* Use same commands as controller VM to install PHP and Webserver.
--  **Create Moodle Shared Folder**
-	- Create a moodle shared folder (/moodle)
+-  **Install prerequisites for Moodle**.
+	- To install prerequisites for Moodle run the following commands
+	
+	- If you are installing PHP greater than or equal to 7.2 then upgrade ppa package
+		```
+		sudo -s
+		sudo add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
+		sudo apt-get update > /dev/null 2>&1
+		```
+	-	Update and install rsyslog, unzip, mysql-client, php and php extensions.
+		```
+		sudo apt-get -y update
+		sudo apt-get -y install unattended-upgrades
+		sudo apt-get -y install python-software-properties unzip rsyslog
+		sudo apt-get -y install mysql-client git
+		sudo apt-get -y install php$phpVersion
+		```
+
+	 - Install Php extensions and varnish.
+	 	```
+		# set php version to a variable 
+		phpVersion=`/usr/bin/php -r "echo PHP_VERSION;" | /usr/bin/cut -c 1,2,3`
+		echo $phpVersion
+
+		sudo apt-get -y install varnish php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt
+		sudo apt-get -y --force-yes install php$phpVersion-fpm
+		sudo apt-get install -y --force-yes graphviz aspell php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis
+		sudo apt-get install -y --force-yes php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 
+		```
+
+	- Install Missing PHP extensions.
+		- ARM template install the following PHP extensions 
+			- fpm, cli, curl, zip, pear, mbstring, dev, mcrypt, soap, json, redis, bcmath, gd, mysql, xmlrpc, intl, xml and bz2.
+		- To know the PHP extensions which are installed on on-premises run the below command on on-premises virtual machine to get the list.
+			```
+			php -m
+			```
+		- Note: If on-premises has any additional PHP extensions which are not present in Controller Virtual Machine can be installed manually.
+			```
+			sudo apt-get install -y php-extensionName
+			```
+	- PHP with 7.2 and higher versions are installing apache2 by default.
+		- This documentation will support only nginx and if apache is installed then mask the apache service.
+		- Check the apache service is installed by below command.
+			```
+			apache2 -v
+			```
+		- If the apache service is installed it will show up the service version, so you can identify that apache service is installed.
+		- Run the below commands to mask the apache2 service.
+			```
+			sudo systemctl stop apache2
+			sudo systemctl mask apache2
+			```	
+	- Install nginx webserver
+		```
+		sudo apt-get -y --force-yes install nginx
+		```
+-  **Create Moodle Shared directory**
+	- Create a moodle shared directory (/moodle)
 		```
 		mkdir -p /moodle
 		mkdir -p /moodle/moodledata
 		mkdir -p /moodle/html
 		mkdir -p /moodle/certs
 		```
-
-  
-
 -  **Mounting File Share**
 	- Mount Azure File share in VM instance
 	- Follow the [documentation](https://github.com/asift91/Manual_Migration/blob/master/azurefiles.md) to set the Azure File Share on VMSS
 
-  
 
--  **Download On-Premises archive file**
-	- Download the On-Premises archived data from Azure Blob storage to VM such as Moodle, Moodledata, configuration folders with database backup file to /home/azureadmin location
-	- Download storage.tar.gz file from the blob storage. The path to download will be /home/azureadmin.
-
-  
-
-		```
-		sudo -s
-		cd /home/azureadmin
-		azcopy copy 'https://storageaccount.blob.core.windows.net/container/BlobDirectory/*' 'Path/to/folder'
-		```
-
-  
-	- Extract archive storage.tar.gz file
-		```
-		tar -zxvf yourfile.tar.gz
-		ex: tar -zxvf storage.tar.gz
-		```
-
-  
-
--  **Configuring Php & WebServer**
+-  **Copy Php & WebServer Configuration files:**
 	- Update nginx configuration file (/moodle/config.php)
 
 		```
 		mkdir -p /home/azureadmin/backup/
-		sudo mv /etc/nginx/sites-enabled/<dns>.conf /home/azureadmin/backup/
-		cd /home/azureadmin/storage/configuration/
-		sudo cp <dns>.conf /etc/nginx/sites-enabled/
+		sudo mv /etc/nginx/sites-enabled/* /home/azureadmin/backup/
+		cd /moodle/config/nginx/
+		sudo cp *.conf /etc/nginx/sites-enabled/
 		```
-
-  
-
-	- Update the php config file
-
+	- Update the php config file.
 		```
 		sudo mv /etc/php/<phpVersion>/fpm/pool.d/www.conf /home/azureadmin/backup
-		sudo cp /home/azureadmin/storage/configuration/www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		cd /moodle/config/php/
+		sudo cp www.conf /etc/php/<phpVersion>/fpm/pool.d/
+		```
+	- Restart the servers. 
+		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php(phpVersion)-fpm
-		ex: sudo systemctl restart php7.4-fpm
+		ex: sudo systemctl restart php7.2-fpm
 
 		```
 
-  -  **Set a cron job**
+-  **Set a cron job**
 
-		- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
+- A cron job will be set to update a local copy of /moodle/html/ to webroot directory (/var/www/html/) by updating a time stamp.
 
-		- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
-	-  *Setup Cron Job:*
+- Cron job will run for every minute, It will check for time stamp update and local copy of VMSS get updated.
 
-  
-		
-		```
-		local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
-		mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
-		local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
-		cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+- Create a file to set up a cron job by following command.
+	```
+	cd /home/azureadmin/
+	sudo nano setup_cron.sh
+	# Above command will open a new file.
+	```
+- Copy the below code into the created setup_cron.sh file.
+```
 
-		 #!/bin/bash
-		sleep \$((\$RANDOM%30))
-		if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
-		SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
-		if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
-		LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
-		else
-		logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
-		mkdir -p /var/www/html
-		fi
-		if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
-		logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
-		if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
-		truncate -s 0 $SYNC_LOG_FULLPATH
-		fi
-		echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
-		rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
-		fi
-		else
-		logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
-		exit 1
-		fi
-		EOF
-		chmod 500 ${SYNC_SCRIPT_FULLPATH}
-		local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
-		cat <<EOF > ${CRON_DESC_FULLPATH}
-		* * * * * root ${SYNC_SCRIPT_FULLPATH}
-		EOF
-		chmod 644 ${CRON_DESC_FULLPATH}
-		# Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
-		local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
-		cat <<EOF > ${CRON_DESC_FULLPATH2}
-		* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
-		EOF
-		chmod 644 ${CRON_DESC_FULLPATH2}
-		```
+# setup_html_local_copy_cron_job
 
-		- Moodle site has a cron job. It is scheduled for once per minute. It can be changed as needed.
+LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
+SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
+
+function setup_html_local_copy_cron_job {
+if [ "$(whoami)" != "root" ]; then
+echo "${0}: Must be run as root!"
+return 1
+fi
+
+local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
+
+local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+
+cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
+#!/bin/bash
+sleep \$((\$RANDOM%30))
+if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
+  SERVER_TIMESTAMP=\$(cat $SERVER_TIMESTAMP_FULLPATH)
+  if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
+    LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
+  else
+    logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
+    mkdir -p /var/www/html
+  fi
+  if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
+    logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
+    if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
+      truncate -s 0 $SYNC_LOG_FULLPATH
+    fi
+    echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
+    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+  fi
+else
+  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+  exit 1
+fi
+EOF
+
+chmod 500 ${SYNC_SCRIPT_FULLPATH}
+
+local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
+cat <<EOF > ${CRON_DESC_FULLPATH}
+* * * * * root ${SYNC_SCRIPT_FULLPATH}
+EOF
+
+chmod 644 ${CRON_DESC_FULLPATH}
+
+# Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
+local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
+cat <<EOF > ${CRON_DESC_FULLPATH2}
+* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+EOF
+
+chmod 644 ${CRON_DESC_FULLPATH2}
+}
+
+mkdir -p /var/www/html
+rsync -av --delete /moodle/html/moodle /var/www/html
+htmlRootDir="/var/www/html/moodle"
+setup_html_local_copy_cron_job
 
 ```
-	echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+
+- Save the above content by pressing keys.
 ```
+Ctrl + O and press enter to save file.
+Ctrl + X to come out of the file.
+``` 
+- Set the cron job by executing the below commands.
+	```
+	cd /home/azureadmin/
+	bash setup_cron.sh
+	```
 
 -  **Restart Servers**
 	- Restart nginx server & php-fpm server
@@ -960,48 +1062,79 @@
 		```
 	- With the above steps Moodle infrastructure is ready.
 
-  -  **Log Paths**
-		- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
-		- TBD Need to be check how to configure log paths in Azure.
--  **Restart servers**
-	- Update the time stamp to update the local copy in VMSS instance.
-
-		```
-		/usr/local/bin/update_last_modified_time.azlamp.sh
-		```
-
+-	**Log Paths**
+		-   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
+			-   Ex: /var/log/syslogs/moodle/access.log
+			-   Ex: /var/log/syslogs/moodle/error.log 
+		- Update log files location
+			```
+			nano /etc/nginx/nginx.conf
+			# Above command will open the configuration file.
+			# 
+			# Change the log path location.
+			# Find access_log and error_log and update the log path.
+			#
+			# After the changes, Save the file. 
+			# Press CTRL+o to save and CTRL+x to exit.
+			``` 
+-	**Restart servers**
+	
 	- Restart the nginx and php-fpm servers
+		```
+		sudo systemctl restart nginx
+		sudo systemctl restart php<phpVersion>-fpm
+		```
+</details>
 
+## **Post Migration:** 
+- Post Migration involves the following tasks.
+	- Post migration tasks that include application configuration.
+	- Update general configuration (e.g. log file destinations).
+	- Update any cron jobs / scheduled tasks.
+	- Configuring certificates.
+	- Restarting PHP and nginx servers.
+	- Mapping DNS name with the Load Balancer public IP
+ <details> 
+ <summary>(For detailed steps click on expand!)</summary>
+
+- Post migration of Moodle application user need to update the log paths, SSL Certificates, update time stamp and restart servers as follows.
+
+- **Virtual Machine Scale Set:**
+- Perform the below steps in VMSS instance(s).
+-  **Log Paths**
+	-   on-premises might be having different log path location and those paths need to be updated with Azure log paths. 
+		-   Ex: /var/log/syslogs/moodle/access.log
+		-   Ex: /var/log/syslogs/moodle/error.log 
+		- Update log files location
+			```
+			nano /etc/nginx/nginx.conf
+			# Above command will open the configuration file.
+			# 
+			# Change the log path location.
+			# Find access_log and error_log and update the log path.
+			#
+			# After the changes, Save the file. 
+			# Press CTRL+o to save and CTRL+x to exit.
+			``` 
+
+-  **Restart servers:**
+	- Restart the nginx and php-fpm servers
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
 		```
 
-  
+- **Virtual Machine:**
+- Perform the below steps in Controller Virtual Machine.
 
-## Post Migration
-- Post migration of Moodle application user need to update the certs and log paths as follows
--  **Virtual Machine:**
-
-	 - Go to Controller VM and update the log paths, SSL Certificates, update time stamp and restart servers.
--  **Log Paths**
-	- On-Premises might be having different log path location and those paths need to be updated with Azure log paths.
-	- nginx log path are defaulted to /var/log/nginx.
-	- access.log and error.log are created.
 -   **Certs:**
 	-   *SSL Certs*: The certificates for your Moodle application reside in /moodle/certs/
 	- Copy over the .crt and .key files over to /moodle/certs/. The file names should be changed to nginx.crt and nginx.key in order to recognize by the configured nginx servers. Depending on your local environment, you may choose to use the utility scp or a tool like WinSCP to copy these files over to the cluster controller virtual machine.
 	- You can also generate a self-signed certificate, useful for testing only:
-
-  
-
 		```
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=mydomain.com"
 		```
-	- It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:
-
-  
-
+	- It's recommended that the certificate files be read-only to owner and that these files are owned by www-data:www-data.
 		```
 		chown www-data:www-data /moodle/certs/nginx.*
 		chmod 400 /moodle/certs/nginx.*
@@ -1009,61 +1142,49 @@
 
  -  **Restart servers:**
 	- Restart the nginx and php-fpm servers
-
-  
-		
 		```
 		sudo systemctl restart nginx
 		sudo systemctl restart php<phpVersion>-fpm
 		```
 
-  
-
 -  **Update Time Stamp:**
-	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared folder (/moodle/html/moodle).
+	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared directory (/moodle/html/moodle).
 	- Update the time stamp to update the local copy in VMSS instance.
-
-  
-
 		```
-		/usr/local/bin/update_last_modified_time.azlamp.sh
+		sudo -s
+		/usr/local/bin/update_last_modified_time.moodle_on_azure.sh
 		```
-
-  
-
--  **Set Rules**
-	- Set the Load Balancing rules and Auto Scaling rules.
--  **Load Balancing Rules**
-	- Go to the Load Balancer Resource in Azure portal.
-	- Set the http (TCP/80) and https (TCP/443) rules.
-		```
-		az network lb rule create --resource-group myResourceGroupLB --lb-name myLoadBalancer --name myHTTPRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool --probe-name myHealthProbe --disable-outbound-snat true
-		```
-
-  
 
 -  **Auto Scaling Rules**
 	- Go to the Virtual Machine Scale Set Resource in Azure portal.
+	
+	- To enable autoscale on a scale set, first define an autoscale profile.
+	- This profile defines the default, minimum, and maximum scale set capacity.
+		```
+		az monitor autoscale create --resource-group myResourceGroup --resource myScaleSet --resource-type Microsoft.Compute/virtualMachineScaleSets --name autoscale --min-count 2 --max-count 10 --count 2
+
+		# Example: az monitor autoscale create --resource-group migration_option2 --resource migrationss --resource-type Microsoft.Compute/virtualMachineScaleSets --name autoscaling-profile --min-count 2 --max-count 10 --count 2
+		```
+	
 	- In Scaling section, add a scale condition, user can add a rule to scale up and scale down an instance based up on the VM load.
-
-  
-
 		```
 		# Auto scaling rules can be created by scaling precentage or by the scaling count.
-		az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-		--scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
 		# Scale to 5 instances when the CPU Percentage across instances is greater than 75 averaged over 10 minutes.
-		az monitor autoscale rule create -g {myrg} --autoscale-name {myvmss} \
-		--scale in 50% --condition "Percentage CPU < 25 avg 15m"
+		az monitor autoscale rule create -g myResourceGroup --autoscale-name {myvmss} --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
+		# Example: az monitor autoscale rule create -g migration_option2 --autoscale-name autoscaling-profile --scale to 5 --condition "Percentage CPU > 75 avg 10m"
+		
+		
 		# Scale down 50% when the CPU Percentage across instances is less than 25 averaged over 15 minutes.
+		az monitor autoscale rule create -g myResourceGroup --autoscale-name {myvmss} --scale in 50% --condition "Percentage CPU < 25 avg 15m"
+		
+		# Example: az monitor autoscale rule create -g migration_option2 --autoscale-name autoscaling-profile --scale in 50% --condition "Percentage CPU < 25 avg 15m"
 		```
-
-  
-
 -  **Mapping IP:**
 	- Map the load balancer IP with the DNS name.
 	-   Disable Moodle website from Maintenance mode.
-         - Run the below commnad in Controller Virtual Machine.
+         - Run the below command in Controller Virtual Machine.
               ```
                 sudo /usr/bin/php admin/cli/maintenance.php --disable
              ```
@@ -1072,3 +1193,93 @@
                 sudo /usr/bin/php admin/cli/maintenance.php
              ```
  	- Hit the load balancer DNS name to get the migrated moodle web page.
+</details>
+
+**General FAQ/Troubleshooting Questions**
+
+<details> 
+<summary>(For Similar questions click on expand!)</summary>
+
+1.   Error: database connection failed: If you get errors like "database connection failed" or "could not connect to the database you specified", here are some possible reasons and some possible solutions.
+	
+		- 	Your database server is not installed or running. To check this for MySQL try typing the following command line
+			```
+			$telnet database_host_name 3306
+			```
+		- You should get a cryptic response which includes the version number of the MySQL server.
+		- If you are attempting to run two instances of Moodle on different ports, use the ip address of the host (not localhost) in the $CFG->dbhost setting, e.g. $CFG->dbhost = 127.0.0.1:3308.
+		- You have not created a Moodle database and assigned a user with the correct privileges to access it.
+        - The Moodle database settings are incorrect. The database name, database user or database user password in your Moodle configuration file config.php are incorrect. 
+		- Check that there are no apostrophes or non-alphabetic letters in your MySQL username or password.
+2.  Error: "500:Internal Server Error": There are several possible causes for this error. It is a good idea to start by checking your web server error log which should have a more comprehensive explanation. However, here are some known possibilities....
+			
+	- There is a syntax error in your .htaccess or httpd.conf files. The way in which directives are written differs depending on which file you are using. You can test for configuration errors in your nginx files using the command:
+		```
+		nginx -t
+		```
+    - you may also see a 403: Forbidden error
+	-  the webserver executes under your own username and all files have a maximum permissions level of 755. Check that this is set for your Moodle directory in your control panel or (if you have access to the shell) use this command:
+		```
+		#chmod -R 755 moodle
+		```
+3. Error "403: Forbidden"
+
+	- This error means that the php memory_limit value is not enough for the php script. The memory_limit value is the "allowed memory size" - 64M in the example above (67108864 bytes / 1024 = 65536 KB. 65536 KB / 1024 = 64 MB). You will need to increase the php memory_limit value until this message is not shown anymore. There are two methods of doing this.
+	- On a hosted installation you should ask your host's support how to do this. However, many allow .htaccess files. If yours does, add the following line to your .htaccess file (or create one in the moodle directory if it does not already exist):
+		```
+		php_value memory_limit <value>M
+		Example: php_value memory_limit 40M
+		```
+	- If you have your own server with shell access, edit your php.ini file (make sure it is the correct one by checking in your phpinfo output) as follows:
+		```
+		memory_limit <value>M
+		Example: memory_limit 40M
+		```
+	- Remember that you need to restart your web server to make changes to php.ini effective. An alternative is to disable the memory_limit by using the command memory_limit 0.
+
+4. I can not log in - I just stay stuck on the login screen
+	
+	- This may also apply if you are seeing “Your session has timed out. Please login again” or "A server error that affects your login session was detected. Please login again or restart your browser" and cannot log in.
+	- The following are possible causes and actions you can take.
+	- Check first that your main admin account (which will be a manual account) is also a problem. If your users are using an external authentication method (e.g. LDAP) that could be the problem. Isolate the fault and make sure it really is Moodle before going any further.
+	- Check that your hard disk is not full or if your server is on shared hosting check that you have not reached your disk space quota. This will prevent new sessions being created and nobody will be able to log in.
+	- Carefully check the permissions in your 'moodledata' area. The web server needs to be able to write to the 'sessions' subdirectory. 
+5. Fatal error: $CFG->dataroot is not writable, admin has to fix directory permissions! Exiting.
+
+	- Check the moodle and moodledata permissions and make sure they are www-data:www-data only. If not change the group and ownership permissions.
+	- Command to update the permissions
+
+		```
+		sudo chown -R /moodle/moodledata
+		```
+
+6. Could not find a top level course
+
+	- If this appears immediately after you have attempted to install Moodle it almost certainly means that the installation did not complete. A complete installation will ask you for the administrator profile and to name the site just before it completes. Check your logs for errors. Then drop the database and start again. If you used the web-based installer try the command line one.
+
+7. I log in but the login link does not change. I am logged in and can navigate freely.
+
+	- Make sure the URL in your $CFG->wwwroot setting is exactly the same as the one you are actually using to access the site.
+
+8. Error when uploading a file
+
+ 	- If you obtain a 'File not found' error when uploading a file, it indicates that slash arguments are not enabled on your web server. Please try enabling it.
+	- If your web server does not support slash arguments, its use in Moodle can be disabled by un-ticking the checkbox 'Use slash arguments' in Administration > Site administration > Server > HTTP.
+	- Warning: Disabling the use of slash arguments will result in SCORM packages not working and slash arguments warnings being displayed!
+
+9. Site is stuck in maintenance mode
+
+	- Sometimes Moodle gets stuck in maintenance mode and you will see the message "This site is undergoing maintenance and is currently unavailable" despite your attempts to turn-off maintenance mode.
+	- When you put Moodle into maintenance mode it creates a file called maintenance.html in moodledata/maintenance.html (the site files directory). To fix this try the following:
+	- Check that the web server user has write permissions to the moodledata directory.
+	- Manually delete the maintenance.html file.
+10. Where to find the logs
+
+	- Syslog
+        - While accessing a page either error or access log are generated.
+        - They are captured at /var/log/nginx/ location.
+	- Cron Log
+        - Cron job will be running and it will update the local copy in instance.
+        -  The path is  /var/log/sitelogs/moodle/cron.log.
+
+</details> 
