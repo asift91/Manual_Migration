@@ -608,11 +608,13 @@
 
 - Post Migration involves the following tasks.
     - Post migration tasks that include application configuration.
-    - Update general configuration (e.g. log file destinations).
-    - Update any cron jobs / scheduled tasks.
-    - Configuring certificates.
+    - Update Log paths in VMSS instance(s).
+    - Restart servers in VMSS instance(s).
+    - Update Certifiactes.
+    - Update certificate location.
+    - Update HTML Local Copy.
     - Restarting PHP and nginx servers.
-    - Mapping DNS name with the Load Balancer public IP.
+    - Map DNS Name with Load Balancer IP.
 
 <details> 
 <summary>(For detailed steps click on expand!)</summary>
