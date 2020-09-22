@@ -1129,7 +1129,8 @@ Ctrl + X to come out of the file.
 	- A cron job is running in the VMSS which will check the updates in time stamp for every minute. If there is an update in time stamp then local copy of VMSS (/var/www/html/moodle) is updated from shared directory (/moodle/html/moodle).
 	- Update the time stamp to update the local copy in VMSS instance.
 		```
-		/usr/local/bin/update_last_modified_time.azlamp.sh
+		sudo -s
+		/usr/local/bin/update_last_modified_time.moodle_on_azure.sh
 		```
 
 -  **Auto Scaling Rules**
